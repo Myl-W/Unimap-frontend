@@ -25,7 +25,11 @@ export default function MapScreen() {
   const bottomSheetRef = useRef(null);
 
   const handleOpenBottomSheet = useCallback(() => {
-    bottomSheetRef.current?.snapToIndex(0);
+    console.log("Ouvrir la bottom sheet");
+    setTimeout(() => {
+      alert("Test d'ouverture");
+      bottomSheetRef.current?.snapToIndex(0);
+    }, 100);
   }, []);
 
   useEffect(() => {
