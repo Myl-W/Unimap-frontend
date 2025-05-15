@@ -1,6 +1,6 @@
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { StyleSheet } from "react-native";
+import { StyleSheet, StatusBar } from "react-native";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
@@ -26,6 +26,13 @@ const DrawerNavigator = () => {
       screenOptions={{
         drawerStyle: { width: "45%" },
         drawerPosition: "right",
+        headerStyle: {
+          backgroundColor: "#DFF0FF",
+        },
+        headerTintColor: "#000",
+        headerTitleStyle: {
+          fontWeight: "bold",
+        },
       }}
     >
       <Drawer.Screen
@@ -50,6 +57,7 @@ const DrawerNavigator = () => {
 export default function App() {
   return (
     <GestureHandlerRootView>
+      <StatusBar barStyle="dark-content" />
       <Provider store={store}>
         <NavigationContainer>
           <Stack.Navigator>
@@ -80,5 +88,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
+  },
+  content: {
+    backgroundColor: "red",
   },
 });
