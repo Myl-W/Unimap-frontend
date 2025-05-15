@@ -1,41 +1,43 @@
 import "react-native-reanimated";
-import {
-  BottomSheetModal,
-  BottomSheetView,
-  BottomSheetModalProvider,
-} from "@gorhom/bottom-sheet";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { useRef, useMemo, useState, useEffect, useCallback } from "react";
-import {
-  View,
-  StyleSheet,
-  TextInput,
-  Text,
-  TouchableOpacity,
-  Image,
-} from "react-native";
+import { View, StyleSheet, TouchableOpacity, Image } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
+
+import SearchBottomSheet from "./bottomSheet/SearchBottomSheet";
+import FilterBottomSheet from "./bottomSheet/FilterBottomSheet";
 
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { useNavigation } from "@react-navigation/native";
 
 export default function MapScreen() {
-  const bottomSheetModalRef = useRef(null);
+  const searchSheetRef = useRef(null);
+  const filterSheetRef = useRef(null);
+
+  const [checked, setChecked] = useState(false);
+
   const [currentPosition, setCurrentPosition] = useState(null);
   const [search, setSearch] = useState("");
   const [results, setResults] = useState([]);
   const navigation = useNavigation();
 
-  const handlePresentModalPress = useCallback(() => {
-    bottomSheetModalRef.current?.present();
+  const handleSearch = useCallback(() => {
+    searchSheetRef.current?.present();
   }, []);
-  const handleSheetChanges = useCallback((index) => {}, []);
+
+  const handleFilter = useCallback(() => {
+    filterSheetRef.current?.present();
+  }, []);
+
+  const handleSheetFilters = useCallback((index) => {}, []);
+  const handleSheetSearch = useCallback((index) => {}, []);
 
   useEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
         <TouchableOpacity
-          onPress={handlePresentModalPress}
+          onPress={() => searchSheetRef.current?.present()}
           style={{ marginLeft: 15 }}
         >
           <FontAwesome name="search" size={24} color="black" />
@@ -61,6 +63,41 @@ export default function MapScreen() {
     })();
   }, []);
 
+  const [checkboxes, setCheckboxes] = useState({
+    fauteuil: false,
+    pied: false,
+    aveugle: false,
+    voiture: false,
+    malvoyant: false,
+    moto: false,
+    malentendant: false,
+    velo: false,
+    sourd: false,
+    autisme: false,
+    autres: false,
+    autres2: false,
+  });
+
+  const toggleCheckbox = (key) => {
+    setCheckboxes((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const multiCheckboxHandicap = () => {
+    toggleCheckbox("fauteuil");
+    toggleCheckbox("aveugle");
+    toggleCheckbox("malvoyant");
+    toggleCheckbox("malentendant");
+    toggleCheckbox("sourd");
+    toggleCheckbox("autisme");
+  };
+
+  const multiCheckboxTransport = () => {
+    toggleCheckbox("pied");
+    toggleCheckbox("voiture");
+    toggleCheckbox("moto");
+    toggleCheckbox("velo");
+  };
+
   return (
     <View style={styles.container}>
       <MapView
@@ -82,7 +119,7 @@ export default function MapScreen() {
           />
         )}
         <View style={styles.buttonFiltre}>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => filterSheetRef.current?.present()}>
             <FontAwesome name="filter" size={24} color="black" />
           </TouchableOpacity>
         </View>
@@ -97,55 +134,22 @@ export default function MapScreen() {
       </MapView>
 
       <BottomSheetModalProvider>
-        <BottomSheetModal
-          ref={bottomSheetModalRef}
-          onChange={handleSheetChanges}
-          snapPoints={["50%", "75%"]}
-        >
-          <BottomSheetView style={styles.contentContainer}>
-            <View style={styles.buttonRow}>
-              <TouchableOpacity style={styles.optionButton}>
-                <View style={styles.optionButtonContent}>
-                  <FontAwesome name="home" size={24} color="black" />
-                  <Text style={styles.optionButtonText}>Domicile</Text>
-                </View>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.optionButton}>
-                <View style={styles.optionButtonContent}>
-                  <FontAwesome name="briefcase" size={24} color="black" />
-                  <Text style={styles.optionButtonText}>Travail</Text>
-                </View>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.searchInputContainer}>
-              <TouchableOpacity>
-                <FontAwesome name="search" size={24} color="black" />
-              </TouchableOpacity>
+        {/*BottomSheet pour la recherche*/}
+        <SearchBottomSheet
+          ref={searchSheetRef}
+          checkboxes={checkboxes}
+          handleSheetSearch={handleSheetSearch}
+        />
 
-              <TextInput
-                style={styles.searchInput}
-                placeholder="Rechercher une adresse..."
-                value={search}
-                onChangeText={setSearch}
-                onFocus={() => {
-                  bottomSheetModalRef.current?.present();
-                  bottomSheetModalRef.current?.snapToIndex(2);
-                }}
-              />
-              <TouchableOpacity>
-                <FontAwesome name="microphone" size={24} color="black" />
-              </TouchableOpacity>
-            </View>
-
-            <View style={styles.addressHistory}>
-              <Text style={styles.historyTitle}>Adresses consultées :</Text>
-
-              <Text style={styles.historyAdress}>Adresse</Text>
-              <Text style={styles.historyAdress}>Adresse</Text>
-              <Text style={styles.historyAdress}>Adresse</Text>
-            </View>
-          </BottomSheetView>
-        </BottomSheetModal>
+        {/*BottomSheet pour les filtres*/}
+        <FilterBottomSheet
+          ref={filterSheetRef}
+          checkboxes={checkboxes}
+          toggleCheckbox={toggleCheckbox}
+          multiCheckboxHandicap={multiCheckboxHandicap}
+          multiCheckboxTransport={multiCheckboxTransport}
+          handleSheetFilters={handleSheetFilters}
+        />
       </BottomSheetModalProvider>
     </View>
   );
@@ -166,76 +170,10 @@ const styles = StyleSheet.create({
   sheetContent: {
     padding: 16,
   },
-  searchInput: {
-    borderBottomWidth: 1,
-    borderColor: "#ccc",
-    marginBottom: 12,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 4,
-  },
-  searchInputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-  },
+
   resultItem: {
     paddingVertical: 8,
     fontSize: 16,
-  },
-  /////////// styles BottomSheet recherche /////////////
-  contentContainer: {
-    padding: 16,
-    backgroundColor: "#fff",
-  },
-  buttonRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 16,
-  },
-  optionButton: {
-    flex: 1,
-    backgroundColor: "#f0f0f0",
-    paddingVertical: 12,
-    marginHorizontal: 5,
-    borderRadius: 8,
-    alignItems: "center",
-  },
-  optionButtonText: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginLeft: 20,
-  },
-  optionButtonContent: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  searchInput: {
-    borderBottomWidth: 1,
-    borderColor: "#ccc",
-    marginBottom: 16,
-    paddingVertical: 5,
-    paddingHorizontal: 12,
-    borderRadius: 10,
-    height: 50,
-    width: "70%",
-  },
-  addressHistory: {
-    marginTop: 8,
-    alignItems: "center",
-  },
-  historyTitle: {
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  historyAdress: {
-    fontSize: 16,
-    padding: 10,
-    margin: 5,
-    borderWidth: 1,
-    borderRadius: 10,
-    width: "90%",
   },
 
   /////////// Bouton Signalement et filtres///////////////
@@ -277,5 +215,27 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderRadius: 20,
     borderWidth: 1,
+  },
+
+  ///////////// CheckBox des filtres /////////////
+
+  checkBoxRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 15,
+    paddingHorizontal: 20,
+  },
+
+  checkBoxItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+    maxWidth: 160,
+  },
+  textCheckbox: {
+    marginLeft: 10,
+    fontSize: 16,
+    fontFamily: "Kanit",
   },
 });
