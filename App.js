@@ -49,7 +49,7 @@ const DrawerNavigator = () => {
 
 export default function App() {
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView>
       <Provider store={store}>
         <NavigationContainer>
           <Stack.Navigator>

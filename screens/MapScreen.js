@@ -1,42 +1,41 @@
-import "react-native-gesture-handler";
 import "react-native-reanimated";
+import {
+  BottomSheetModal,
+  BottomSheetView,
+  BottomSheetModalProvider,
+} from "@gorhom/bottom-sheet";
 import { useRef, useMemo, useState, useEffect, useCallback } from "react";
 import {
   View,
   StyleSheet,
   TextInput,
-  FlatList,
   Text,
   TouchableOpacity,
+  Image,
 } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
-import BottomSheet from "@gorhom/bottom-sheet";
+
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { useNavigation } from "@react-navigation/native";
 
 export default function MapScreen() {
+  const bottomSheetModalRef = useRef(null);
   const [currentPosition, setCurrentPosition] = useState(null);
   const [search, setSearch] = useState("");
   const [results, setResults] = useState([]);
-
-  const snapPoints = useMemo(() => ["25%", "50%", "80%"], []);
   const navigation = useNavigation();
-  const bottomSheetRef = useRef(null);
 
-  const handleOpenBottomSheet = useCallback(() => {
-    console.log("Ouvrir la bottom sheet");
-    setTimeout(() => {
-      alert("Test d'ouverture");
-      bottomSheetRef.current?.snapToIndex(0);
-    }, 100);
+  const handlePresentModalPress = useCallback(() => {
+    bottomSheetModalRef.current?.present();
   }, []);
+  const handleSheetChanges = useCallback((index) => {}, []);
 
   useEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
         <TouchableOpacity
-          onPress={handleOpenBottomSheet}
+          onPress={handlePresentModalPress}
           style={{ marginLeft: 15 }}
         >
           <FontAwesome name="search" size={24} color="black" />
@@ -51,7 +50,7 @@ export default function MapScreen() {
         </TouchableOpacity>
       ),
     });
-  }, [navigation, handleOpenBottomSheet]);
+  }, [navigation]);
 
   useEffect(() => {
     (async () => {
@@ -61,21 +60,6 @@ export default function MapScreen() {
       setCurrentPosition(location.coords);
     })();
   }, []);
-
-  const handleSearch = (text) => {
-    setSearch(text);
-    const dummyData = [
-      "Supermarché",
-      "Pharmacie",
-      "Station essence",
-      "Restaurant",
-      "Hôpital",
-    ];
-    const filtered = dummyData.filter((item) =>
-      item.toLowerCase().includes(text.toLowerCase())
-    );
-    setResults(filtered);
-  };
 
   return (
     <View style={styles.container}>
@@ -97,25 +81,62 @@ export default function MapScreen() {
             pinColor="#fecb2d"
           />
         )}
+        <View style={styles.buttonSignalement}>
+          <TouchableOpacity>
+            <Image
+              style={styles.iconSignalement}
+              source={require("../assets/icon/alert.png")}
+            />
+          </TouchableOpacity>
+        </View>
       </MapView>
 
-      <BottomSheet ref={bottomSheetRef} index={-1} snapPoints={snapPoints}>
-        <View style={styles.sheetContent}>
-          <TextInput
-            placeholder="Rechercher..."
-            style={styles.searchInput}
-            value={search}
-            onChangeText={handleSearch}
-          />
-          <FlatList
-            data={results}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={({ item }) => (
-              <Text style={styles.resultItem}>{item}</Text>
-            )}
-          />
-        </View>
-      </BottomSheet>
+      <BottomSheetModalProvider>
+        <BottomSheetModal
+          ref={bottomSheetModalRef}
+          onChange={handleSheetChanges}
+          snapPoints={["50%", "75%"]}
+        >
+          <BottomSheetView style={styles.contentContainer}>
+            <View style={styles.buttonRow}>
+              <TouchableOpacity style={styles.optionButton}>
+                <View style={styles.optionButtonContent}>
+                  <FontAwesome name="home" size={24} color="black" />
+                  <Text style={styles.optionButtonText}>Domicile</Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.optionButton}>
+                <View style={styles.optionButtonContent}>
+                  <FontAwesome name="briefcase" size={24} color="black" />
+                  <Text style={styles.optionButtonText}>Travail</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.searchInputContainer}>
+              <FontAwesome name="search" size={24} color="black" />
+              <TextInput
+                style={styles.searchInput}
+                placeholder="Rechercher une adresse..."
+                value={search}
+                onChangeText={setSearch}
+                onFocus={() => {
+                  bottomSheetModalRef.current?.present();
+                  bottomSheetModalRef.current?.snapToIndex(2);
+                }}
+              />
+              <FontAwesome name="microphone" size={24} color="black" />
+            </View>
+
+            <View style={styles.addressHistory}>
+              <Text style={styles.historyTitle}>Adresses consultées :</Text>
+
+              <Text style={styles.historyAdress}>Adresse</Text>
+              <Text style={styles.historyAdress}>Adresse</Text>
+              <Text style={styles.historyAdress}>Adresse</Text>
+            </View>
+          </BottomSheetView>
+        </BottomSheetModal>
+      </BottomSheetModalProvider>
     </View>
   );
 }
@@ -126,6 +147,11 @@ const styles = StyleSheet.create({
   },
   map: {
     flex: 1,
+  },
+  bottomSheet: {
+    backgroundColor: "white",
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
   },
   sheetContent: {
     padding: 16,
@@ -138,8 +164,85 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     borderRadius: 4,
   },
+  searchInputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
   resultItem: {
     paddingVertical: 8,
     fontSize: 16,
+  },
+  /////////// styles BottomSheet recherche /////////////
+  contentContainer: {
+    padding: 16,
+    backgroundColor: "#fff",
+  },
+  buttonRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 16,
+  },
+  optionButton: {
+    flex: 1,
+    backgroundColor: "#f0f0f0",
+    paddingVertical: 12,
+    marginHorizontal: 5,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  optionButtonText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginLeft: 20,
+  },
+  optionButtonContent: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  searchInput: {
+    borderBottomWidth: 1,
+    borderColor: "#ccc",
+    marginBottom: 16,
+    paddingVertical: 5,
+    paddingHorizontal: 12,
+    borderRadius: 10,
+    height: 50,
+    width: "70%",
+  },
+  addressHistory: {
+    marginTop: 8,
+    alignItems: "center",
+  },
+  historyTitle: {
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  historyAdress: {
+    fontSize: 16,
+    padding: 10,
+    margin: 5,
+    borderWidth: 1,
+    borderRadius: 10,
+    width: "90%",
+  },
+
+  /////////// Bouton Signalement ///////////////
+  buttonSignalement: {
+    position: "absolute",
+    bottom: 60,
+    right: 60,
+    width: 80,
+    height: 80,
+    backgroundColor: "white",
+    alignItems: "center",
+    borderRadius: "50%",
+    borderWidth: 1,
+  },
+  iconSignalement: {
+    width: 50,
+    height: 50,
+    marginTop: 10,
   },
 });
