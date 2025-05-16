@@ -7,15 +7,18 @@ import * as Location from "expo-location";
 
 import SearchBottomSheet from "./bottomSheet/SearchBottomSheet";
 import FilterBottomSheet from "./bottomSheet/FilterBottomSheet";
+import SignalBottomSheet from "./bottomSheet/SignalBottomSheet";
 
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { useNavigation } from "@react-navigation/native";
+import { use } from "react";
 
 export default function MapScreen() {
   const searchSheetRef = useRef(null);
   const filterSheetRef = useRef(null);
+  const signalSheetRef = useRef(null);
 
-  const [checked, setChecked] = useState(false);
+  //const [checked, setChecked] = useState(false);
 
   const [currentPosition, setCurrentPosition] = useState(null);
   const [search, setSearch] = useState("");
@@ -30,8 +33,13 @@ export default function MapScreen() {
     filterSheetRef.current?.present();
   }, []);
 
+  const handleSignal = useCallback(() => {
+    signalSheetRef.current?.present();
+  }, []);
+
   const handleSheetFilters = useCallback((index) => {}, []);
   const handleSheetSearch = useCallback((index) => {}, []);
+  const handleSheetSignal = useCallback((index) => {}, []);
 
   useEffect(() => {
     navigation.setOptions({
@@ -124,7 +132,7 @@ export default function MapScreen() {
           </TouchableOpacity>
         </View>
         <View style={styles.buttonSignalement}>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => signalSheetRef.current?.present()}>
             <Image
               style={styles.iconSignalement}
               source={require("../assets/icon/alert.png")}
@@ -149,6 +157,12 @@ export default function MapScreen() {
           multiCheckboxHandicap={multiCheckboxHandicap}
           multiCheckboxTransport={multiCheckboxTransport}
           handleSheetFilters={handleSheetFilters}
+        />
+
+        {/*BottomSheet pour le signalement*/}
+        <SignalBottomSheet
+          ref={signalSheetRef}
+          handleSheetSearch={handleSheetSignal}
         />
       </BottomSheetModalProvider>
     </View>

@@ -3,7 +3,6 @@ import { TouchableOpacity } from "react-native";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { FontAwesome } from "@expo/vector-icons";
 import MapScreen from "../screens/MapScreen";
-import { useNavigation } from "@react-navigation/native";
 
 const Drawer = createDrawerNavigator();
 

@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { StyleSheet, StatusBar, View, ActivityIndicator } from "react-native";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { FontAwesome } from "@expo/vector-icons";
 import { useFonts } from "expo-font";
 import fonts from "./assets/fonts/kanit";
 
@@ -11,6 +12,7 @@ import HomeScreen from "./screens/HomeScreen";
 import MapScreen from "./screens/MapScreen";
 import CompteScreen from "./screens/CompteScreen";
 import FavorisScreen from "./screens/FavorisScreen";
+import ParametreScreen from "./screens/ParametreScreen";
 
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
@@ -74,7 +76,13 @@ export default function App() {
         <StatusBar barStyle="dark-content" />
         <Provider store={store}>
           <NavigationContainer>
-            <Stack.Navigator>
+            <Stack.Navigator
+              screenOptions={{
+                headerStyle: {
+                  backgroundColor: "#DFF0FF",
+                },
+              }}
+            >
               <Stack.Screen
                 name="search"
                 component={HomeScreen}
@@ -87,6 +95,14 @@ export default function App() {
                 component={DrawerNavigator}
                 options={{
                   headerShown: false,
+                }}
+              />
+              <Stack.Screen
+                name="Parametre"
+                component={ParametreScreen}
+                options={{
+                  title: "Paramètres",
+                  headerBackTitle: "Retour",
                 }}
               />
             </Stack.Navigator>
