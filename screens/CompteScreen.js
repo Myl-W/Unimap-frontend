@@ -18,7 +18,13 @@ export default function CompteScreen({ navigation }) {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         <ScrollView contentContainerStyle={styles.scrollContent}>
-          <Text style={styles.title}>Points</Text>
+          <Text
+            style={styles.title}
+            accessibilityLabel="Nombre de points"
+            accessibilityRole="number"
+          >
+            Points
+          </Text>
 
           <View style={styles.avatarContainer}>
             <View style={styles.point}>
@@ -32,36 +38,81 @@ export default function CompteScreen({ navigation }) {
                 size={150}
                 color="black"
                 style={styles.icon}
+                accessibilityLabel="Photo d'identité"
+                accessibilityRole="Image"
               />
             </View>
           </View>
 
           <View style={styles.bodyContainer}>
             <Text style={styles.bodyText}>
-              <Text style={styles.bold}>Prénom: </Text>John
+              <Text
+                style={styles.bold}
+                accessibilityLabel="Prénom"
+                accessibilityRole="text"
+              >
+                Prénom:{" "}
+              </Text>
+              John
             </Text>
             <Text style={styles.bodyText}>
-              <Text style={styles.bold}>Nom: </Text>Doe
+              <Text
+                style={styles.bold}
+                accessibilityLabel="Nom"
+                accessibilityRole="text"
+              >
+                Nom:{" "}
+              </Text>
+              Doe
             </Text>
             <Text style={styles.bodyText}>
-              <Text style={styles.bold}>Âge: </Text>22 ans
+              <Text
+                style={styles.bold}
+                accessibilityLabel="Age"
+                accessibilityRole="text"
+              >
+                Âge:{" "}
+              </Text>
+              22 ans
             </Text>
             <View style={styles.bodyTextColumn}>
-              <Text style={styles.bold}>Date de naissance:</Text>
+              <Text
+                style={styles.bold}
+                accessibilityLabel="Date de naissance"
+                accessibilityRole="text"
+              >
+                Date de naissance:
+              </Text>
               <Text style={styles.bodyText}>01/01/2003</Text>
             </View>
             <View style={styles.bodyTextColumn}>
-              <Text style={styles.bold}>Email:</Text>
+              <Text
+                style={styles.bold}
+                accessibilityLabel="Email"
+                accessibilityRole="text"
+              >
+                Email:
+              </Text>
               <Text style={styles.bodyText}>john.doe@gmail.com</Text>
             </View>
             <View style={styles.bodyTextColumn}>
-              <Text style={styles.bold}>Téléphone:</Text>
+              <Text
+                style={styles.bold}
+                accessibilityLabel="Téléphone"
+                accessibilityRole="text"
+              >
+                Téléphone:
+              </Text>
               <Text style={styles.bodyText}>06.99.99.99.99</Text>
             </View>
           </View>
 
           <View style={styles.buttonRow}>
-            <TouchableOpacity style={styles.optionButton}>
+            <TouchableOpacity
+              style={styles.optionButton}
+              accessibilityLabel="Adresse domicile et travail"
+              accessibilityRole="button"
+            >
               <View style={styles.iconTextRow}>
                 <FontAwesome
                   name="home"
@@ -86,11 +137,20 @@ export default function CompteScreen({ navigation }) {
 
           <View style={styles.footer}>
             <TouchableOpacity
+              accessibilityLabel="Aller aux paramètres"
+              accessibilityRole="button"
               style={styles.optionButton}
               onPress={() => navigation.navigate("Parametre")}
             >
               <Text style={styles.optionButtonText}>
-                <FontAwesome name="gear" size={24} color="black" /> Paramètres
+                <FontAwesome
+                  name="gear"
+                  size={24}
+                  color="black"
+                  accessibilityLabel="Parametre"
+                  accessibilityRole="image"
+                />{" "}
+                Paramètres
               </Text>
             </TouchableOpacity>
           </View>

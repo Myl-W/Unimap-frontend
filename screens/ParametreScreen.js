@@ -18,7 +18,11 @@ export default function ParametreScreen({ navigation }) {
       >
         <View style={styles.container}>
           <View>
-            <TouchableOpacity style={styles.optionAvatar}>
+            <TouchableOpacity
+              style={styles.optionAvatar}
+              accessibilityLabel="Modifier son avatar"
+              accessibilityRole="button"
+            >
               <View style={styles.optionButtonContent}>
                 <View>
                   <FontAwesome name="pencil" size={28} color="black" />
@@ -33,6 +37,8 @@ export default function ParametreScreen({ navigation }) {
                 size={100}
                 color="black"
                 style={styles.icon}
+                accessibilityLabel="Avatar"
+                accessibilityRole="Image"
               />
             </View>
           </View>
@@ -40,7 +46,11 @@ export default function ParametreScreen({ navigation }) {
           <View style={styles.body}>
             <Text style={styles.optionText}>Informations sur le compte</Text>
           </View>
-          <TouchableOpacity style={styles.optionButtonDown}>
+          <TouchableOpacity
+            style={styles.optionButtonDown}
+            accessibilityLabel="Modifier son nom complet"
+            accessibilityRole="button"
+          >
             <View style={styles.optionButtonContent}>
               <View>
                 <Text style={styles.optionButtonText}>Nom Complet</Text>
@@ -57,7 +67,11 @@ export default function ParametreScreen({ navigation }) {
             <Text style={styles.optionText}>Informations de connexion</Text>
           </View>
 
-          <TouchableOpacity style={styles.optionButton}>
+          <TouchableOpacity
+            style={styles.optionButton}
+            accessibilityLabel="Modifier son mail"
+            accessibilityRole="button"
+          >
             <View style={styles.optionButtonContent}>
               <View>
                 <Text style={styles.optionButtonText}>Adresse e-mail</Text>
@@ -68,7 +82,11 @@ export default function ParametreScreen({ navigation }) {
               </View>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.optionButton}>
+          <TouchableOpacity
+            style={styles.optionButton}
+            accessibilityLabel="Modifier le nom d'utilisateur"
+            accessibilityRole="button"
+          >
             <View style={styles.optionButtonContent}>
               <View>
                 <Text style={styles.optionButtonText}>Nom d'utilisateur</Text>
@@ -81,7 +99,11 @@ export default function ParametreScreen({ navigation }) {
               </View>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.optionButtonDown}>
+          <TouchableOpacity
+            style={styles.optionButtonDown}
+            accessibilityLabel="Modifier le mot de passe"
+            accessibilityRole="button"
+          >
             <View style={styles.optionButtonContent}>
               <View>
                 <Text style={styles.optionButtonText}>Mot de passe</Text>
@@ -98,7 +120,11 @@ export default function ParametreScreen({ navigation }) {
             <Text style={styles.optionText}>Avancé</Text>
           </View>
 
-          <TouchableOpacity style={styles.optionButton}>
+          <TouchableOpacity
+            style={styles.optionButton}
+            accessibilityLabel="Se déconnecter"
+            accessibilityRole="button"
+          >
             <View style={styles.optionButtonContent}>
               <View>
                 <Text style={styles.optionButtonText}>Se déconnecter</Text>
@@ -108,7 +134,11 @@ export default function ParametreScreen({ navigation }) {
               </View>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.optionButtonDown}>
+          <TouchableOpacity
+            style={styles.optionButtonDown}
+            accessibilityLabel="Supprimer le compte"
+            accessibilityRole="button"
+          >
             <View style={styles.optionButtonContent}>
               <View>
                 <Text style={styles.optionButtonDelete}>

@@ -1,74 +1,77 @@
 import React, { forwardRef, useState } from "react";
 import { Text, TouchableOpacity, View, StyleSheet, Image } from "react-native";
 import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
-import { MaterialIcons, FontAwesome } from "@expo/vector-icons";
-import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import { useNavigation } from "@react-navigation/native";
+
+import { useDispatch, useSelector } from "react-redux";
+import { toggleSignalement } from "../../reducers/signalement";
+import {
+  getSignalButtons,
+  signalButtonStyles,
+} from "./signalButton/SignalButton";
 
 const SignalBottomSheet = forwardRef(({ handleSheetSignal }, ref) => {
-  const [search, setSearch] = useState("");
+  const navigation = useNavigation();
+
   const snapPoints = ["50%", "75%"];
+  const signalement = useSelector((state) => state.signalement);
+  console.log(signalement);
+
+  const dispatch = useDispatch();
+
+  const handleToggle = (key) => {
+    dispatch(toggleSignalement(key));
+  };
+
+  const icons = getSignalButtons(signalButtonStyles);
+
+  const chunkedIcons = [...Array(Math.ceil(icons.length / 3))].map((_, i) =>
+    icons.slice(i * 3, i * 3 + 3)
+  );
+
+  const handleToggleSignal = (key) => {
+    handleToggle(key);
+    ref?.current?.close();
+    navigation.navigate("Signalement");
+  };
 
   return (
     <BottomSheetModal
       ref={ref}
       onChange={handleSheetSignal}
       snapPoints={snapPoints}
+      enablePanDownToClose={true}
     >
       <BottomSheetView style={styles.contentContainer}>
-        <View style={styles.buttonRow}>
-          <View style={styles.buttonCouleur_Deaf}>
-            <TouchableOpacity style={styles.optionButton}>
-              <View style={styles.optionButtonContent}>
-                <FontAwesome name="deaf" size={42} color="black" />
+        {chunkedIcons.map((row, idx) => (
+          <View key={idx} style={styles.buttonRow}>
+            {row.map((item) => (
+              <View key={item.key} style={item.style}>
+                <TouchableOpacity
+                  style={
+                    item.key === "alerte"
+                      ? styles.optionButtonAlert
+                      : styles.optionButton
+                  }
+                  onPress={() => handleToggleSignal(item.key)}
+                  accessible={true}
+                  accessibilityLabel={item.label}
+                  accessibilityRole="button"
+                >
+                  <View
+                    style={
+                      item.key === "alerte"
+                        ? styles.optionButtonContentAlert
+                        : styles.optionButtonContent
+                    }
+                  >
+                    {item.icon}
+                  </View>
+                </TouchableOpacity>
               </View>
-            </TouchableOpacity>
+            ))}
           </View>
-          <View style={styles.buttonCouleur_WeelChair}>
-            <TouchableOpacity style={styles.optionButton}>
-              <View style={styles.optionButtonContent}>
-                <FontAwesome name="wheelchair" size={42} color="black" />
-              </View>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.buttonCouleur_Alert}>
-            <TouchableOpacity style={styles.optionButtonAlert}>
-              <View style={styles.optionButtonContentAlert}>
-                <Image
-                  style={styles.iconAlert}
-                  source={require("../../assets/icon/alert.png")}
-                />
-              </View>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        <View style={styles.buttonRow}>
-          <View style={styles.buttonCouleur_Aveugle}>
-            <TouchableOpacity style={styles.optionButton}>
-              <View style={styles.optionButtonContent}>
-                <FontAwesome name="eye-slash" size={42} color="black" />
-              </View>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.buttonCouleur_Poussette}>
-            <TouchableOpacity style={styles.optionButton}>
-              <View style={styles.optionButtonContent}>
-                <FontAwesome6 name="baby-carriage" size={42} color="black" />
-              </View>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.buttonCouleur_Canne}>
-            <TouchableOpacity style={styles.optionButton}>
-              <View style={styles.optionButtonContent}>
-                <FontAwesome6
-                  name="person-walking-with-cane"
-                  size={42}
-                  color="black"
-                />
-              </View>
-            </TouchableOpacity>
-          </View>
-        </View>
+        ))}
       </BottomSheetView>
     </BottomSheetModal>
   );
@@ -86,7 +89,6 @@ const styles = StyleSheet.create({
     gap: 20,
     marginBottom: 20,
   },
-
   optionButton: {
     width: 60,
     height: 60,
@@ -96,40 +98,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginHorizontal: 10,
   },
-  optionButtonContent: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  buttonCouleur_WeelChair: {
-    width: 70,
-    height: 70,
-    borderRadius: 35,
-    justifyContent: "center",
-    alignItems: "center",
-    marginHorizontal: 10,
-    backgroundColor: "blue",
-  },
-  buttonCouleur_Deaf: {
-    width: 70,
-    height: 70,
-    borderRadius: 35,
-    justifyContent: "center",
-    alignItems: "center",
-    marginHorizontal: 10,
-    backgroundColor: "green",
-  },
-  buttonCouleur_Alert: {
-    width: 70,
-    height: 70,
-    borderRadius: 35,
-    justifyContent: "center",
-    alignItems: "center",
-    marginHorizontal: 10,
-    backgroundColor: "#ffb71e",
-    borderWidth: 2,
-    borderColor: "black",
-  },
   optionButtonAlert: {
     width: 60,
     height: 60,
@@ -138,43 +106,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginHorizontal: 10,
-  },
-  optionButtonContentAlert: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#ffb71e",
-  },
-  iconAlert: {
-    width: 42,
-    height: 42,
-  },
-  buttonCouleur_Aveugle: {
-    width: 70,
-    height: 70,
-    borderRadius: 35,
-    justifyContent: "center",
-    alignItems: "center",
-    marginHorizontal: 10,
-    backgroundColor: "red",
-  },
-  buttonCouleur_Poussette: {
-    width: 70,
-    height: 70,
-    borderRadius: 35,
-    justifyContent: "center",
-    alignItems: "center",
-    marginHorizontal: 10,
-    backgroundColor: "orange",
-  },
-  buttonCouleur_Canne: {
-    width: 70,
-    height: 70,
-    borderRadius: 35,
-    justifyContent: "center",
-    alignItems: "center",
-    marginHorizontal: 10,
-    backgroundColor: "#2dfcfc",
   },
 });
 export default SignalBottomSheet;

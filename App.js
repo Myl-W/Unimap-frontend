@@ -1,31 +1,42 @@
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { StyleSheet, StatusBar, View, ActivityIndicator } from "react-native";
+import {
+  StyleSheet,
+  StatusBar,
+  View,
+  ActivityIndicator,
+  AccessibilityInfo,
+} from "react-native";
+import { useEffect, useState } from "react";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { FontAwesome } from "@expo/vector-icons";
 import { useFonts } from "expo-font";
 import fonts from "./assets/fonts/kanit";
 
+////////////////  PAGES ///////////////////////////
 import HomeScreen from "./screens/HomeScreen";
 import MapScreen from "./screens/MapScreen";
 import CompteScreen from "./screens/CompteScreen";
 import FavorisScreen from "./screens/FavorisScreen";
 import ParametreScreen from "./screens/ParametreScreen";
+import AddSignalement from "./screens/AddSignalement";
 
+////////////////////  REDUCERS  //////////////////////
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import user from "./reducers/user";
+import accessibility from "./reducers/accessibility";
+import signalement from "./reducers/signalement";
 
 const store = configureStore({
-  reducer: { user },
+  reducer: { user, accessibility, signalement },
 });
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
 
-const DrawerNavigator = () => {
+const DrawerNavigator = ({ screenReaderEnabled }) => {
   return (
     <Drawer.Navigator
       screenOptions={{
@@ -40,27 +51,46 @@ const DrawerNavigator = () => {
         },
       }}
     >
-      <Drawer.Screen
-        name="MapScreen"
-        component={MapScreen}
-        options={{ title: "Carte" }}
-      />
-      <Drawer.Screen
-        name="CompteScreen"
-        component={CompteScreen}
-        options={{ title: "Mon compte" }}
-      />
-      <Drawer.Screen
-        name="FavorisScreen"
-        component={FavorisScreen}
-        options={{ title: "Favoris" }}
-      />
+      <Drawer.Screen name="MapScreen" options={{ title: "Carte" }}>
+        {(props) => (
+          <MapScreen {...props} screenReaderEnabled={screenReaderEnabled} />
+        )}
+      </Drawer.Screen>
+      <Drawer.Screen name="CompteScreen" options={{ title: "Mon compte" }}>
+        {(props) => (
+          <CompteScreen {...props} screenReaderEnabled={screenReaderEnabled} />
+        )}
+      </Drawer.Screen>
+      <Drawer.Screen name="FavorisScreen" options={{ title: "Favoris" }}>
+        {(props) => (
+          <FavorisScreen {...props} screenReaderEnabled={screenReaderEnabled} />
+        )}
+      </Drawer.Screen>
     </Drawer.Navigator>
   );
 };
 
 export default function App() {
   const [fontsLoaded] = useFonts(fonts);
+  const [screenReaderEnabled, setScreenReaderEnabled] = useState(false);
+
+  useEffect(() => {
+    const checkScreenReader = async () => {
+      const enabled = await AccessibilityInfo.isScreenReaderEnabled();
+      setScreenReaderEnabled(enabled);
+    };
+
+    checkScreenReader();
+
+    const subscription = AccessibilityInfo.addEventListener(
+      "screenReaderChanged",
+      setScreenReaderEnabled
+    );
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
 
   if (!fontsLoaded) {
     return (
@@ -72,7 +102,7 @@ export default function App() {
 
   return (
     <BottomSheetModalProvider>
-      <GestureHandlerRootView>
+      <GestureHandlerRootView style={{ flex: 1 }}>
         <StatusBar barStyle="dark-content" />
         <Provider store={store}>
           <NavigationContainer>
@@ -86,23 +116,30 @@ export default function App() {
               <Stack.Screen
                 name="search"
                 component={HomeScreen}
-                options={{
-                  headerShown: false,
-                }}
+                options={{ headerShown: false }}
               />
-              <Stack.Screen
-                name="Map"
-                component={DrawerNavigator}
-                options={{
-                  headerShown: false,
-                }}
-              />
+              <Stack.Screen name="Map" options={{ headerShown: false }}>
+                {(props) => (
+                  <DrawerNavigator
+                    {...props}
+                    screenReaderEnabled={screenReaderEnabled}
+                  />
+                )}
+              </Stack.Screen>
               <Stack.Screen
                 name="Parametre"
                 component={ParametreScreen}
                 options={{
                   title: "Paramètres",
-                  headerBackTitle: "Retour",
+                  headerBackTitle: "",
+                }}
+              />
+              <Stack.Screen
+                name="Signalement"
+                component={AddSignalement}
+                options={{
+                  title: "Ajouter un signalement",
+                  headerBackTitle: "",
                 }}
               />
             </Stack.Navigator>

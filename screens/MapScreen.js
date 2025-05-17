@@ -1,6 +1,7 @@
 import "react-native-reanimated";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { useRef, useMemo, useState, useEffect, useCallback } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { View, StyleSheet, TouchableOpacity, Image } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
@@ -11,31 +12,19 @@ import SignalBottomSheet from "./bottomSheet/SignalBottomSheet";
 
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { useNavigation } from "@react-navigation/native";
-import { use } from "react";
 
 export default function MapScreen() {
   const searchSheetRef = useRef(null);
   const filterSheetRef = useRef(null);
   const signalSheetRef = useRef(null);
 
-  //const [checked, setChecked] = useState(false);
+  const accessibility = useSelector((state) => state.accessibility.sourd);
+  console.log(accessibility);
 
   const [currentPosition, setCurrentPosition] = useState(null);
   const [search, setSearch] = useState("");
   const [results, setResults] = useState([]);
   const navigation = useNavigation();
-
-  const handleSearch = useCallback(() => {
-    searchSheetRef.current?.present();
-  }, []);
-
-  const handleFilter = useCallback(() => {
-    filterSheetRef.current?.present();
-  }, []);
-
-  const handleSignal = useCallback(() => {
-    signalSheetRef.current?.present();
-  }, []);
 
   const handleSheetFilters = useCallback((index) => {}, []);
   const handleSheetSearch = useCallback((index) => {}, []);
@@ -71,41 +60,6 @@ export default function MapScreen() {
     })();
   }, []);
 
-  const [checkboxes, setCheckboxes] = useState({
-    fauteuil: false,
-    pied: false,
-    aveugle: false,
-    voiture: false,
-    malvoyant: false,
-    moto: false,
-    malentendant: false,
-    velo: false,
-    sourd: false,
-    autisme: false,
-    autres: false,
-    autres2: false,
-  });
-
-  const toggleCheckbox = (key) => {
-    setCheckboxes((prev) => ({ ...prev, [key]: !prev[key] }));
-  };
-
-  const multiCheckboxHandicap = () => {
-    toggleCheckbox("fauteuil");
-    toggleCheckbox("aveugle");
-    toggleCheckbox("malvoyant");
-    toggleCheckbox("malentendant");
-    toggleCheckbox("sourd");
-    toggleCheckbox("autisme");
-  };
-
-  const multiCheckboxTransport = () => {
-    toggleCheckbox("pied");
-    toggleCheckbox("voiture");
-    toggleCheckbox("moto");
-    toggleCheckbox("velo");
-  };
-
   return (
     <View style={styles.container}>
       <MapView
@@ -127,14 +81,24 @@ export default function MapScreen() {
           />
         )}
         <View style={styles.buttonFiltre}>
-          <TouchableOpacity onPress={() => filterSheetRef.current?.present()}>
+          <TouchableOpacity
+            onPress={() => filterSheetRef.current?.present()}
+            accessibilityLabel="Sélectionner des filtres"
+            accessibilityRole="button"
+          >
             <FontAwesome name="filter" size={24} color="black" />
           </TouchableOpacity>
         </View>
         <View style={styles.buttonSignalement}>
-          <TouchableOpacity onPress={() => signalSheetRef.current?.present()}>
+          <TouchableOpacity
+            onPress={() => signalSheetRef.current?.present()}
+            accessibilityLabel="Effectuer un signalement"
+            accessibilityRole="button"
+          >
             <Image
               style={styles.iconSignalement}
+              accessibilityLabel="Effectuer un signalement"
+              accessibilityRole="Image"
               source={require("../assets/icon/alert.png")}
             />
           </TouchableOpacity>
@@ -145,17 +109,12 @@ export default function MapScreen() {
         {/*BottomSheet pour la recherche*/}
         <SearchBottomSheet
           ref={searchSheetRef}
-          checkboxes={checkboxes}
           handleSheetSearch={handleSheetSearch}
         />
 
         {/*BottomSheet pour les filtres*/}
         <FilterBottomSheet
           ref={filterSheetRef}
-          checkboxes={checkboxes}
-          toggleCheckbox={toggleCheckbox}
-          multiCheckboxHandicap={multiCheckboxHandicap}
-          multiCheckboxTransport={multiCheckboxTransport}
           handleSheetFilters={handleSheetFilters}
         />
 
