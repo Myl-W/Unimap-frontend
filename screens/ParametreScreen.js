@@ -1,4 +1,8 @@
 import { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { Alert } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { resetUser } from "../reducers/user";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -10,6 +14,35 @@ import {
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 
 export default function ParametreScreen({ navigation }) {
+  const dispatch = useDispatch();
+
+  // Si confirmer, dispatch dans le reducer, suppression du token dans asyncStorage, retour a la page login
+  const logoutAsync = async () => {
+    try {
+      await AsyncStorage.removeItem("userToken");
+      dispatch(resetUser());
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "Login" }],
+      });
+    } catch (error) {
+      console.error("Erreur lors de la déconnexion :", error);
+    }
+  };
+
+  // Ouverture de l'alerte pour la confirmation de la déconnection
+  const handleLogout = () => {
+    Alert.alert(
+      "Se déconnecter",
+      "Êtes-vous sûr de vouloir vous déconnecter ?",
+      [
+        { text: "Annuler", style: "cancel" },
+        { text: "Se déconnecter", style: "destructive", onPress: logoutAsync },
+      ],
+      { cancelable: true }
+    );
+  };
+
   return (
     <>
       <KeyboardAvoidingView
@@ -124,13 +157,11 @@ export default function ParametreScreen({ navigation }) {
             style={styles.optionButton}
             accessibilityLabel="Se déconnecter"
             accessibilityRole="button"
+            onPress={handleLogout}
           >
             <View style={styles.optionButtonContent}>
               <View>
                 <Text style={styles.optionButtonText}>Se déconnecter</Text>
-              </View>
-              <View>
-                <FontAwesome name="chevron-right" size={28} color="black" />
               </View>
             </View>
           </TouchableOpacity>

@@ -22,16 +22,28 @@ import FavorisScreen from "./screens/FavorisScreen";
 import ParametreScreen from "./screens/ParametreScreen";
 import AddSignalement from "./screens/AddSignalement";
 
-////////////////////  REDUCERS  //////////////////////
+////////////////////  REDUCERS  + LOCALSTORAGE//////////////////////
 import { Provider } from "react-redux";
-import { configureStore } from "@reduxjs/toolkit";
+import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import user from "./reducers/user";
 import accessibility from "./reducers/accessibility";
 import signalement from "./reducers/signalement";
+import { persistStore, persistReducer } from "redux-persist";
+import { PersistGate } from "redux-persist/integration/react";
+const reducers = combineReducers({ user, accessibility, signalement });
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import LoginScreen from "./screens/LoginScreen";
+import RegisterScreen from "./screens/RegisterScreen";
+
+const persistConfig = { key: "unimap+", storage: AsyncStorage };
 
 const store = configureStore({
-  reducer: { user, accessibility, signalement },
+  reducer: persistReducer(persistConfig, reducers),
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({ serializableCheck: false }),
 });
+
+const persistor = persistStore(store);
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -105,45 +117,63 @@ export default function App() {
       <GestureHandlerRootView style={{ flex: 1 }}>
         <StatusBar barStyle="dark-content" />
         <Provider store={store}>
-          <NavigationContainer>
-            <Stack.Navigator
-              screenOptions={{
-                headerStyle: {
-                  backgroundColor: "#DFF0FF",
-                },
-              }}
-            >
-              <Stack.Screen
-                name="search"
-                component={HomeScreen}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen name="Map" options={{ headerShown: false }}>
-                {(props) => (
-                  <DrawerNavigator
-                    {...props}
-                    screenReaderEnabled={screenReaderEnabled}
-                  />
-                )}
-              </Stack.Screen>
-              <Stack.Screen
-                name="Parametre"
-                component={ParametreScreen}
-                options={{
-                  title: "Paramètres",
-                  headerBackTitle: "",
+          <PersistGate persistor={persistor}>
+            <NavigationContainer>
+              <Stack.Navigator
+                screenOptions={{
+                  headerStyle: {
+                    backgroundColor: "#DFF0FF",
+                  },
                 }}
-              />
-              <Stack.Screen
-                name="Signalement"
-                component={AddSignalement}
-                options={{
-                  title: "Ajouter un signalement",
-                  headerBackTitle: "",
-                }}
-              />
-            </Stack.Navigator>
-          </NavigationContainer>
+              >
+                <Stack.Screen
+                  name="search"
+                  component={HomeScreen}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen name="Map" options={{ headerShown: false }}>
+                  {(props) => (
+                    <DrawerNavigator
+                      {...props}
+                      screenReaderEnabled={screenReaderEnabled}
+                    />
+                  )}
+                </Stack.Screen>
+                <Stack.Screen
+                  name="Parametre"
+                  component={ParametreScreen}
+                  options={{
+                    title: "Paramètres",
+                    headerBackTitle: "",
+                  }}
+                />
+                <Stack.Screen
+                  name="Signalement"
+                  component={AddSignalement}
+                  options={{
+                    title: "Ajouter un signalement",
+                    headerBackTitle: "",
+                  }}
+                />
+                <Stack.Screen
+                  name="Login"
+                  component={LoginScreen}
+                  options={{
+                    title: "Connexion",
+                    headerBackTitle: "",
+                  }}
+                />
+                <Stack.Screen
+                  name="Register"
+                  component={RegisterScreen}
+                  options={{
+                    title: "Créer un compte",
+                    headerBackTitle: "",
+                  }}
+                />
+              </Stack.Navigator>
+            </NavigationContainer>
+          </PersistGate>
         </Provider>
       </GestureHandlerRootView>
     </BottomSheetModalProvider>

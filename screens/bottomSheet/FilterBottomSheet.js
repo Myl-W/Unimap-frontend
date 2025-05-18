@@ -42,7 +42,6 @@ const FilterBottomSheet = forwardRef(({ handleSheetFilters }, ref) => {
   /////////// RECUPERATION BOOLEAN DU REDUCER ////////////////////////
 
   const accessibility = useSelector((state) => state.accessibility);
-  console.log(accessibility);
 
   ////////////////////////////////////////////////////////////////////
 
@@ -86,7 +85,7 @@ const FilterBottomSheet = forwardRef(({ handleSheetFilters }, ref) => {
         {/* Ligne 1 */}
         <View style={styles.checkBoxRow}>
           <TouchableOpacity
-            accessibilityLabel="Fautueil roulant"
+            accessibilityLabel="Personne a mobilité"
             accessibilityRole="button"
             style={styles.checkBoxItem}
             onPress={() => handleToggle("fauteuil")}
@@ -98,7 +97,7 @@ const FilterBottomSheet = forwardRef(({ handleSheetFilters }, ref) => {
               size={24}
               color={accessibility.fauteuil ? "#007AFF" : "#aaa"}
             />
-            <Text style={styles.textCheckbox}>Fauteuil roulant</Text>
+            <Text style={styles.textCheckbox}>Mobilité réduite</Text>
           </TouchableOpacity>
           <TouchableOpacity
             accessibilityLabel="Trajet a pied"

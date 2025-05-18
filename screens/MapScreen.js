@@ -18,12 +18,7 @@ export default function MapScreen() {
   const filterSheetRef = useRef(null);
   const signalSheetRef = useRef(null);
 
-  const accessibility = useSelector((state) => state.accessibility.sourd);
-  console.log(accessibility);
-
   const [currentPosition, setCurrentPosition] = useState(null);
-  const [search, setSearch] = useState("");
-  const [results, setResults] = useState([]);
   const navigation = useNavigation();
 
   const handleSheetFilters = useCallback((index) => {}, []);

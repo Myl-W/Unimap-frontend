@@ -11,8 +11,11 @@ export const userSlice = createSlice({
     updateEmail: (state, action) => {
       state.value.email = action.payload;
     },
+    resetUser: (state) => {
+      state.value = { nickname: null, places: [] };
+    },
   },
 });
 
-export const { updateEmail } = userSlice.actions;
+export const { updateEmail, resetUser } = userSlice.actions;
 export default userSlice.reducer;
