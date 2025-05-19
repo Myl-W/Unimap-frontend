@@ -16,7 +16,6 @@ const SignalBottomSheet = forwardRef(({ handleSheetSignal }, ref) => {
 
   const snapPoints = ["50%", "75%"];
   const signalement = useSelector((state) => state.signalement);
-  console.log(signalement);
 
   const dispatch = useDispatch();
 

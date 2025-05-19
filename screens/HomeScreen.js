@@ -64,7 +64,11 @@ export default function HomeScreen({ navigation }) {
         >
           <Text style={styles.textButton}>S'inscrire</Text>
         </TouchableOpacity>
-        <Text style={styles.textInscription}>Continuer en tant qu'invitée</Text>
+        <TouchableOpacity onPress={() => navigation.navigate("Map")}>
+          <Text style={styles.textInscription}>
+          Continuer en tant qu'invitée
+          </Text>
+        </TouchableOpacity>
       </KeyboardAvoidingView>
     </View>
   );
