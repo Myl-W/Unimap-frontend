@@ -13,11 +13,15 @@ import {
   ScrollView,
 } from "react-native";
 import Text from "../assets/fonts/CustomText";
+import { userInfos } from "../reducers/user";
 
 export default function LoginScreen({ navigation }) {
   const backUrl = Constants.expoConfig?.extra?.BACK_URL;
+  const dispatch = useDispatch();
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
+
+  const userInfo = useSelector((state) => state.user.value.profile);
 
   const handleLogin = () => {
     fetch(`${backUrl}/login`, {
@@ -30,6 +34,8 @@ export default function LoginScreen({ navigation }) {
     })
       .then((response) => response.json())
       .then(async (data) => {
+        dispatch(userInfos(data));
+
         if (data.result && data.token) {
           try {
             await AsyncStorage.setItem("userToken", data.token);

@@ -152,8 +152,8 @@ const styles = StyleSheet.create({
   //---------------- Bouton Signalement et filtres  -----------------
   buttonSignalement: {
     position: "absolute",
-    bottom: 60,
-    right: 60,
+    bottom: 30,
+    right: 30,
     width: 80,
     height: 80,
     backgroundColor: "#ffb71e",
