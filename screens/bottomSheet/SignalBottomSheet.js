@@ -1,7 +1,8 @@
 import React, { forwardRef, useState } from "react";
-import { Text, TouchableOpacity, View, StyleSheet, Image } from "react-native";
+import { TouchableOpacity, View, StyleSheet, Image } from "react-native";
 import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
 import { useNavigation } from "@react-navigation/native";
+import Text from "../../assets/fonts/CustomText";
 
 import { useDispatch, useSelector } from "react-redux";
 import { toggleSignalement } from "../../reducers/signalement";

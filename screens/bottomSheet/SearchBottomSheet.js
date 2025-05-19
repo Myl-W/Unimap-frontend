@@ -1,11 +1,6 @@
 import React, { forwardRef, useState } from "react";
-import {
-  Text,
-  TouchableOpacity,
-  View,
-  StyleSheet,
-  TextInput,
-} from "react-native";
+import { TouchableOpacity, View, StyleSheet, TextInput } from "react-native";
+import Text from "../../assets/fonts/CustomText";
 import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
 import { MaterialIcons, FontAwesome } from "@expo/vector-icons";
 

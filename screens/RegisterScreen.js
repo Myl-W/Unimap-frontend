@@ -8,12 +8,12 @@ import {
   Platform,
   StyleSheet,
   View,
-  Text,
   TextInput,
   TouchableOpacity,
   Image,
   ScrollView,
 } from "react-native";
+import Text from "../assets/fonts/CustomText";
 import { toggleHandicap } from "../reducers/accessibility";
 import DateTimePicker from "@react-native-community/datetimepicker";
 

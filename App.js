@@ -14,7 +14,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useFonts } from "expo-font";
 import fonts from "./assets/fonts/kanit";
 
-////////////////  PAGES ///////////////////////////
+// -------------------  IMPORT DES PAGES -----------------------
 import HomeScreen from "./screens/HomeScreen";
 import MapScreen from "./screens/MapScreen";
 import CompteScreen from "./screens/CompteScreen";
@@ -22,7 +22,7 @@ import FavorisScreen from "./screens/FavorisScreen";
 import ParametreScreen from "./screens/ParametreScreen";
 import AddSignalement from "./screens/AddSignalement";
 
-////////////////////  REDUCERS  + LOCALSTORAGE//////////////////////
+// ----------------------  REDUCERS  + LOCALSTORAGE  ---------------------
 import { Provider } from "react-redux";
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import user from "./reducers/user";
@@ -104,6 +104,7 @@ export default function App() {
     };
   }, []);
 
+  // ---------  Application de la police KANIT ----------
   if (!fontsLoaded) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>

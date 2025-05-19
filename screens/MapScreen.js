@@ -1,17 +1,18 @@
 import "react-native-reanimated";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { useRef, useMemo, useState, useEffect, useCallback } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { View, StyleSheet, TouchableOpacity, Image } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
+import { useNavigation } from "@react-navigation/native";
 
+//  --------------  Import des BottomSheets -----------------
 import SearchBottomSheet from "./bottomSheet/SearchBottomSheet";
 import FilterBottomSheet from "./bottomSheet/FilterBottomSheet";
 import SignalBottomSheet from "./bottomSheet/SignalBottomSheet";
 
+//  ----------  Import des icones FontAwesome ---------------
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import { useNavigation } from "@react-navigation/native";
 
 export default function MapScreen() {
   const searchSheetRef = useRef(null);
@@ -25,9 +26,11 @@ export default function MapScreen() {
   const handleSheetSearch = useCallback((index) => {}, []);
   const handleSheetSignal = useCallback((index) => {}, []);
 
+  // -------- Navigation dans le header ---------------
   useEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
+        //  ----------  Bouton rechercher ---------------
         <TouchableOpacity
           onPress={() => searchSheetRef.current?.present()}
           style={{ marginLeft: 15 }}
@@ -36,6 +39,7 @@ export default function MapScreen() {
         </TouchableOpacity>
       ),
       headerRight: () => (
+        // -------- Bouton menu drawer  --------------
         <TouchableOpacity
           onPress={() => navigation.openDrawer()}
           style={{ marginRight: 15 }}
@@ -46,6 +50,7 @@ export default function MapScreen() {
     });
   }, [navigation]);
 
+  // -------------  Permission de la geolocalisation  --------------
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
@@ -144,7 +149,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 
-  /////////// Bouton Signalement et filtres///////////////
+  //---------------- Bouton Signalement et filtres  -----------------
   buttonSignalement: {
     position: "absolute",
     bottom: 60,
@@ -158,13 +163,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#e0e0e0",
 
-    // shadow iOS
+    // -----  shadow iOS  -----
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.7,
     shadowRadius: 5.84,
 
-    // shadow Android
+    // -----  shadow Android  -----
     elevation: 5,
   },
   iconSignalement: {
@@ -185,7 +190,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
 
-  ///////////// CheckBox des filtres /////////////
+  //  -------- CheckBox des filtres -----------
 
   checkBoxRow: {
     flexDirection: "row",

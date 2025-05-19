@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import { KeyboardAvoidingView, Platform, StyleSheet, View } from "react-native";
 
 export default function FavorisScreen({ navigation }) {

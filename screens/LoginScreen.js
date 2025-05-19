@@ -7,12 +7,12 @@ import {
   Platform,
   StyleSheet,
   View,
-  Text,
   TextInput,
   TouchableOpacity,
   Image,
   ScrollView,
 } from "react-native";
+import Text from "../assets/fonts/CustomText";
 
 export default function LoginScreen({ navigation }) {
   const backUrl = Constants.expoConfig?.extra?.BACK_URL;

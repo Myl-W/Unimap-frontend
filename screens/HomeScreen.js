@@ -3,15 +3,13 @@ import {
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
-  Text,
-  TextInput,
   TouchableOpacity,
   View,
   Image,
   Alert,
 } from "react-native";
+import Text from "../assets/fonts/CustomText";
 import { useDispatch } from "react-redux";
-import { updateEmail } from "../reducers/user";
 import MapView from "react-native-maps";
 import * as Location from "expo-location";
 
@@ -19,7 +17,6 @@ export default function HomeScreen({ navigation }) {
   const backUrl = process.env.BACK_URL;
   const dispatch = useDispatch();
   const [currentPosition, setCurrentPosition] = useState(null);
-  const [email, setEmail] = useState("");
 
   const handleRegister = () => {
     navigation.navigate("Register");

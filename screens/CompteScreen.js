@@ -3,10 +3,10 @@ import {
   Platform,
   StyleSheet,
   View,
-  Text,
   TouchableOpacity,
   ScrollView,
 } from "react-native";
+import Text from "../assets/fonts/CustomText";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import ParametreScreen from "./ParametreScreen";
 import { Component } from "react";

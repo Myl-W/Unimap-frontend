@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -8,15 +7,29 @@ import {
   Platform,
   StyleSheet,
   View,
-  Text,
   TouchableOpacity,
 } from "react-native";
+import Text from "../assets/fonts/CustomText";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 
 export default function ParametreScreen({ navigation }) {
   const dispatch = useDispatch();
 
-  // Si confirmer, dispatch dans le reducer, suppression du token dans asyncStorage, retour a la page login
+  // ------------ Ouverture de l'alerte pour la confirmation de la déconnection -----------------
+  const handleLogout = () => {
+    Alert.alert(
+      "Se déconnecter",
+      "Êtes-vous sûr de vouloir vous déconnecter ?",
+      [
+        // ---------  Bouton de selection ---------------------
+        { text: "Annuler", style: "cancel" },
+        { text: "Se déconnecter", style: "destructive", onPress: logoutAsync },
+      ],
+      { cancelable: true }
+    );
+  };
+
+  // -----  Si confirmer, dispatch dans le reducer, suppression du token dans asyncStorage, retour a la page login  -----
   const logoutAsync = async () => {
     try {
       await AsyncStorage.removeItem("userToken");
@@ -28,19 +41,6 @@ export default function ParametreScreen({ navigation }) {
     } catch (error) {
       console.error("Erreur lors de la déconnexion :", error);
     }
-  };
-
-  // Ouverture de l'alerte pour la confirmation de la déconnection
-  const handleLogout = () => {
-    Alert.alert(
-      "Se déconnecter",
-      "Êtes-vous sûr de vouloir vous déconnecter ?",
-      [
-        { text: "Annuler", style: "cancel" },
-        { text: "Se déconnecter", style: "destructive", onPress: logoutAsync },
-      ],
-      { cancelable: true }
-    );
   };
 
   return (

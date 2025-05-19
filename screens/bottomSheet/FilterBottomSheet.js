@@ -1,8 +1,9 @@
 import React, { forwardRef, useState } from "react";
-import { Text, TouchableOpacity, View, StyleSheet } from "react-native";
+import { TouchableOpacity, View, StyleSheet } from "react-native";
 import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
 import { MaterialIcons, FontAwesome } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
+import Text from "../../assets/fonts/CustomText";
 import {
   toggleHandicap,
   resetAccessibility,
