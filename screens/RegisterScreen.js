@@ -21,8 +21,8 @@ export default function RegisterScreen({ navigation }) {
   const backUrl = Constants.expoConfig?.extra?.BACK_URL;
   const dispatch = useDispatch();
 
-  const [nom, setNom] = useState("");
-  const [prenom, setPrenom] = useState("");
+  const [firstname, setFirstname] = useState("");
+  const [lastname, setLastname] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [date, setDate] = useState(new Date());
@@ -40,7 +40,7 @@ export default function RegisterScreen({ navigation }) {
   const handicapKeys = [
     "sourd",
     "aveugle",
-    "fauteuil",
+    "mobilité",
     "canne",
     "malvoyant",
     "malentendant",
@@ -60,12 +60,12 @@ export default function RegisterScreen({ navigation }) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        nom: nom,
-        username: prenom,
+        lastname: lastname,
+        firstname: firstname,
         email: email.trim().toLowerCase(),
         password: password.trim(),
-        dateNaissance: date,
-        handicap: selectedHandicaps,
+        birthdate: date,
+        disability: selectedHandicaps,
       }),
     })
       .then((response) => response.json())
@@ -97,15 +97,15 @@ export default function RegisterScreen({ navigation }) {
       >
         <ScrollView contentContainerStyle={styles.scrollContent}>
           <TextInput
-            placeholder="Nom"
-            onChangeText={setNom}
-            value={nom}
+            placeholder="nom"
+            onChangeText={setLastname}
+            value={lastname}
             style={styles.input}
           />
           <TextInput
             placeholder="Prénom"
-            onChangeText={setPrenom}
-            value={prenom}
+            onChangeText={setFirstname}
+            value={firstname}
             style={styles.input}
           />
           <TextInput
