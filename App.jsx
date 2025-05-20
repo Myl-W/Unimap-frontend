@@ -21,6 +21,7 @@ import CompteScreen from "./screens/CompteScreen";
 import FavorisScreen from "./screens/FavorisScreen";
 import ParametreScreen from "./screens/ParametreScreen";
 import AddSignalement from "./screens/AddSignalement";
+import CameraScreen from './screens/CameraScreen';
 
 // ----------------------  REDUCERS  + LOCALSTORAGE  ---------------------
 import { Provider } from "react-redux";
@@ -155,6 +156,10 @@ export default function App() {
                     title: "Ajouter un signalement",
                     headerBackTitle: "",
                   }}
+                />
+                <Stack.Screen 
+                  name="Camera" 
+                  component={CameraScreen} 
                 />
                 <Stack.Screen
                   name="Login"
