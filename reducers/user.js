@@ -9,6 +9,7 @@ const initialState = {
     birthdate: "",
     email: "",
     token: "",
+    username: ""
   },
 };
 
@@ -27,13 +28,22 @@ export const userSlice = createSlice({
         birthdate: "",
         email: "",
         token: "",
+        username: ""
       };
     },
     userInfos: (state, action) => {
       state.value.profile = action.payload;
     },
+     updateFullName: (state, action) => {
+      const { firstname, lastname } = action.payload;
+      state.profile.firstname = firstname;
+      state.profile.lastname = lastname;
+    },
+    updateUsername: (state, action) => {
+      state.profile.username = action.payload;
+    }
   },
 });
 
-export const { updateEmail, resetUser, userInfos } = userSlice.actions;
+export const { updateEmail, resetUser, userInfos, updateFullName, updateUsername } = userSlice.actions;
 export default userSlice.reducer;

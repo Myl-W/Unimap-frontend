@@ -29,20 +29,20 @@ export default function MapScreen() {
   // -------- Navigation dans le header ---------------
   useEffect(() => {
     navigation.setOptions({
-      headerLeft: () => (
+      headerRight: () => (
         //  ----------  Bouton rechercher ---------------
         <TouchableOpacity
           onPress={() => searchSheetRef.current?.present()}
-          style={{ marginLeft: 15 }}
+          style={{ marginRight: 15 }}
         >
           <FontAwesome name="search" size={24} color="black" />
         </TouchableOpacity>
       ),
-      headerRight: () => (
+      headerLeft: () => (
         // -------- Bouton menu drawer  --------------
         <TouchableOpacity
           onPress={() => navigation.openDrawer()}
-          style={{ marginRight: 15 }}
+          style={{ marginLeft: 15 }}
         >
           <FontAwesome name="bars" size={24} color="black" />
         </TouchableOpacity>
@@ -73,13 +73,13 @@ export default function MapScreen() {
           longitudeDelta: 0.5,
         }}
       >
-        {currentPosition && (
+        {/* {currentPosition && (
           <Marker
             coordinate={currentPosition}
             title="Ma position"
             pinColor="#fecb2d"
           />
-        )}
+        )} */}
         <View style={styles.buttonFiltre}>
           <TouchableOpacity
             onPress={() => filterSheetRef.current?.present()}
@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
   buttonFiltre: {
     position: "absolute",
     top: 20,
-    right: 40,
+    right: 20,
     width: 50,
     height: 30,
     backgroundColor: "#DFF0FF",

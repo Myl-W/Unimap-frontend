@@ -118,7 +118,7 @@ export default function CompteScreen({ navigation }) {
               </Text>
               <Text style={styles.bodyText}>{userInfo.email}</Text>
             </View>
-            <View style={styles.bodyTextColumn}>
+            {/* <View style={styles.bodyTextColumn}>
               <Text
                 style={styles.bold}
                 accessibilityLabel="Téléphone"
@@ -127,7 +127,7 @@ export default function CompteScreen({ navigation }) {
                 Téléphone:
               </Text>
               <Text style={styles.bodyText}>06.99.99.99.99</Text>
-            </View>
+            </View> */}
           </View>
 
           <View style={styles.buttonRow}>
@@ -292,7 +292,7 @@ const styles = StyleSheet.create({
     color: "black",
   },
   footer: {
-    marginTop: 5,
+    marginTop: 70,
     width: "100%",
     alignItems: "center",
     backgroundColor: "#DFF0FF",
