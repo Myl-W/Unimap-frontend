@@ -20,6 +20,7 @@
     "@react-navigation/native-stack": "^6.9.12",
     "@reduxjs/toolkit": "^1.9.7",
     "expo": "^53.0.0",
+    "expo-camera": "~16.1.6",
     "expo-font": "^13.3.1",
     "expo-location": "~18.1.5",
     "expo-splash-screen": "~0.30.8",
