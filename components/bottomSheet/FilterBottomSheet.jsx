@@ -40,11 +40,11 @@ const FilterBottomSheet = forwardRef(({ handleSheetFilters }, ref) => {
     dispatch(toggleHandicap(key));
   };
 
-  /////////// RECUPERATION BOOLEAN DU REDUCER ////////////////////////
+  //  ---------- RECUPERATION BOOLEAN DU REDUCER ----------------
 
   const accessibility = useSelector((state) => state.accessibility);
 
-  ////////////////////////////////////////////////////////////////////
+  //---------------------------------------------------------
 
   return (
     <BottomSheetModal

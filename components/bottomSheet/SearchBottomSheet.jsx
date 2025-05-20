@@ -4,21 +4,22 @@ import Text from "../../assets/fonts/CustomText";
 import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
 import { MaterialIcons, FontAwesome } from "@expo/vector-icons";
 import Constants from "expo-constants";
+import { useSelector } from "react-redux";
 
 const SearchBottomSheet = forwardRef(({ handleSheetSearch }, ref) => {
-  const google = Constants.expoConfig?.extra?.API_GOOGLE;
+  const loc = useSelector((state) => state.trips.value);
+  const google = process.env.EXPO_PUBLIC_API_GOOGLE;
   const [search, setSearch] = useState("");
   const snapPoints = ["50%", "75%"];
 
   const searchGoogle = () => {
     fetch(
-      `https://maps.googleapis.com/maps/api/directions/json?origin=Disneyland&destination=Universal+Studios+Hollywood&key=${google}`
+      `https://maps.googleapis.com/maps/api/directions/json?origin=${loc.latitude},${loc.longitude}&destination=${search}&mode=walking&key=${google}`
     )
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
-
-        res.json(data);
+        //console.log(data);
+        console.log(data.routes[0].legs);
       });
   };
 
