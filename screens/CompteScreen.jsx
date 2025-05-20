@@ -40,7 +40,7 @@ export default function CompteScreen({ navigation }) {
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
-        <ScrollView contentContainerStyle={styles.scrollContent}>
+        <View style={styles.scrollContent}>
           <Text
             style={styles.title}
             accessibilityLabel="Nombre de points"
@@ -177,7 +177,7 @@ export default function CompteScreen({ navigation }) {
               </Text>
             </TouchableOpacity>
           </View>
-        </ScrollView>
+        </View>
       </KeyboardAvoidingView>
     </View>
   );
@@ -191,6 +191,7 @@ const styles = StyleSheet.create({
   scrollContent: {
     alignItems: "center",
     paddingVertical: 20,
+    height: '100%'
   },
   title: {
     fontSize: 15,
@@ -292,11 +293,11 @@ const styles = StyleSheet.create({
     color: "black",
   },
   footer: {
-    marginTop: 70,
+    position: 'absolute',
+    bottom: 0,
     width: "100%",
     alignItems: "center",
     backgroundColor: "#DFF0FF",
     padding: 20,
-    height: "100%",
   },
 });
