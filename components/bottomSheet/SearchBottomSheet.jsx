@@ -1,12 +1,17 @@
-import React, { forwardRef, useState } from "react";
+import React, { forwardRef, useState, useEffect } from "react";
 import { TouchableOpacity, View, StyleSheet, TextInput } from "react-native";
 import Text from "../../assets/fonts/CustomText";
 import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
 import { MaterialIcons, FontAwesome } from "@expo/vector-icons";
-import Constants from "expo-constants";
-import { useSelector } from "react-redux";
+//import Constants from "expo-constants";
+import { useSelector, useDispatch } from "react-redux";
+import polyline from "@mapbox/polyline";
+
+import { setRouteCoords } from "../../reducers/trips";
 
 const SearchBottomSheet = forwardRef(({ handleSheetSearch }, ref) => {
+  const transport = useSelector((state) => state.trips.selectedTransport);
+  const dispatch = useDispatch();
   const loc = useSelector((state) => state.trips.value);
   const google = process.env.EXPO_PUBLIC_API_GOOGLE;
   const [search, setSearch] = useState("");
@@ -14,14 +19,27 @@ const SearchBottomSheet = forwardRef(({ handleSheetSearch }, ref) => {
 
   const searchGoogle = () => {
     fetch(
-      `https://maps.googleapis.com/maps/api/directions/json?origin=${loc.latitude},${loc.longitude}&destination=${search}&mode=walking&key=${google}`
+      `https://maps.googleapis.com/maps/api/directions/json?origin=${loc.latitude},${loc.longitude}&destination=${search}&mode=${transport}&key=${google}`
     )
       .then((response) => response.json())
       .then((data) => {
-        //console.log(data);
-        console.log(data.routes[0].legs);
+        const encodedPolyline = data.routes[0].overview_polyline.points;
+        const decodedPoints = polyline.decode(encodedPolyline);
+        const coords = decodedPoints.map((point) => ({
+          latitude: point[0],
+          longitude: point[1],
+        }));
+
+        dispatch(setRouteCoords(coords));
+        ref?.current?.close();
       });
   };
+
+  useEffect(() => {
+    if (search.trim() !== "") {
+      searchGoogle();
+    }
+  }, [transport]);
 
   return (
     <BottomSheetModal

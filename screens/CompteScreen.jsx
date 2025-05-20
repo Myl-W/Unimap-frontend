@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
   scrollContent: {
     alignItems: "center",
     paddingVertical: 20,
-    height: '100%'
+    height: "100%",
   },
   title: {
     fontSize: 15,
@@ -293,7 +293,7 @@ const styles = StyleSheet.create({
     color: "black",
   },
   footer: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 0,
     width: "100%",
     alignItems: "center",

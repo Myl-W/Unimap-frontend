@@ -4,14 +4,12 @@ import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
 import { MaterialIcons, FontAwesome } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
 import Text from "../../assets/fonts/CustomText";
-import {
-  toggleHandicap,
-  resetAccessibility,
-  setMultipleHandicaps,
-  toggleMultiple,
-} from "../../reducers/accessibility";
+import { toggleHandicap, toggleMultiple } from "../../reducers/accessibility";
+import { setTransport, resetTransport } from "../../reducers/trips";
 
 const FilterBottomSheet = forwardRef(({ handleSheetFilters }, ref) => {
+  const transport = useSelector((state) => state.trips.selectedTransport);
+
   const snapPoints = ["50%", "75%"];
 
   const dispatch = useDispatch();
@@ -26,18 +24,28 @@ const FilterBottomSheet = forwardRef(({ handleSheetFilters }, ref) => {
     "autisme",
   ];
 
-  const transportKeys = ["pied", "voiture", "moto", "velo", "bus"];
+  const transportKeys = [
+    "walking",
+    "driving",
+    "two_wheeler",
+    "bicycling",
+    "transit",
+  ];
 
   const handleToggleHandicaps = () => {
     dispatch(toggleMultiple(handicapKeys));
   };
 
   const handleToggleTransport = () => {
-    dispatch(toggleMultiple(transportKeys));
+    //dispatch(toggleMultiple(transportKeys));
   };
 
   const handleToggle = (key) => {
-    dispatch(toggleHandicap(key));
+    if (transportKeys.includes(key)) {
+      dispatch(setTransport(key));
+    } else {
+      dispatch(toggleHandicap(key));
+    }
   };
 
   //  ---------- RECUPERATION BOOLEAN DU REDUCER ----------------
@@ -104,14 +112,16 @@ const FilterBottomSheet = forwardRef(({ handleSheetFilters }, ref) => {
             accessibilityLabel="Trajet a pied"
             accessibilityRole="button"
             style={styles.checkBoxItem}
-            onPress={() => handleToggle("pied")}
+            onPress={() => handleToggle("walking")}
           >
             <MaterialIcons
               name={
-                accessibility.pied ? "check-box" : "check-box-outline-blank"
+                transport === "walking"
+                  ? "check-box"
+                  : "check-box-outline-blank"
               }
               size={24}
-              color={accessibility.pied ? "#007AFF" : "#aaa"}
+              color={transport === "walking" ? "#007AFF" : "#aaa"}
             />
             <Text style={styles.textCheckbox}>A pied</Text>
           </TouchableOpacity>
@@ -138,14 +148,16 @@ const FilterBottomSheet = forwardRef(({ handleSheetFilters }, ref) => {
             accessibilityLabel="Trajet en vélo"
             accessibilityRole="button"
             style={styles.checkBoxItem}
-            onPress={() => handleToggle("velo")}
+            onPress={() => handleToggle("bicycling")}
           >
             <MaterialIcons
               name={
-                accessibility.velo ? "check-box" : "check-box-outline-blank"
+                transport === "bicycling"
+                  ? "check-box"
+                  : "check-box-outline-blank"
               }
               size={24}
-              color={accessibility.velo ? "#007AFF" : "#aaa"}
+              color={transport === "bicycling" ? "#007AFF" : "#aaa"}
             />
             <Text style={styles.textCheckbox}>Vélo</Text>
           </TouchableOpacity>
@@ -174,14 +186,16 @@ const FilterBottomSheet = forwardRef(({ handleSheetFilters }, ref) => {
             accessibilityLabel="Trajet en moto"
             accessibilityRole="button"
             style={styles.checkBoxItem}
-            onPress={() => handleToggle("moto")}
+            onPress={() => handleToggle("two_wheeler")}
           >
             <MaterialIcons
               name={
-                accessibility.moto ? "check-box" : "check-box-outline-blank"
+                transport === "two_wheeler"
+                  ? "check-box"
+                  : "check-box-outline-blank"
               }
               size={24}
-              color={accessibility.moto ? "#007AFF" : "#aaa"}
+              color={transport === "two_wheeler" ? "#007AFF" : "#aaa"}
             />
             <Text style={styles.textCheckbox}>Moto</Text>
           </TouchableOpacity>
@@ -210,14 +224,16 @@ const FilterBottomSheet = forwardRef(({ handleSheetFilters }, ref) => {
             accessibilityLabel="Trajet en voiture"
             accessibilityRole="button"
             style={styles.checkBoxItem}
-            onPress={() => handleToggle("voiture")}
+            onPress={() => handleToggle("driving")}
           >
             <MaterialIcons
               name={
-                accessibility.voiture ? "check-box" : "check-box-outline-blank"
+                transport === "driving"
+                  ? "check-box"
+                  : "check-box-outline-blank"
               }
               size={24}
-              color={accessibility.voiture ? "#007AFF" : "#aaa"}
+              color={transport === "driving" ? "#007AFF" : "#aaa"}
             />
             <Text style={styles.textCheckbox}>Voiture</Text>
           </TouchableOpacity>
@@ -243,12 +259,16 @@ const FilterBottomSheet = forwardRef(({ handleSheetFilters }, ref) => {
             accessibilityLabel="Trajet en bus"
             accessibilityRole="button"
             style={styles.checkBoxItem}
-            onPress={() => handleToggle("bus")}
+            onPress={() => handleToggle("transit")}
           >
             <MaterialIcons
-              name={accessibility.bus ? "check-box" : "check-box-outline-blank"}
+              name={
+                transport === "transit"
+                  ? "check-box"
+                  : "check-box-outline-blank"
+              }
               size={24}
-              color={accessibility.bus ? "#007AFF" : "#aaa"}
+              color={transport === "transit" ? "#007AFF" : "#aaa"}
             />
             <Text style={styles.textCheckbox}>Bus</Text>
           </TouchableOpacity>

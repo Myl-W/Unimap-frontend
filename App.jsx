@@ -21,7 +21,7 @@ import CompteScreen from "./screens/CompteScreen";
 import FavorisScreen from "./screens/FavorisScreen";
 import ParametreScreen from "./screens/ParametreScreen";
 import AddSignalement from "./screens/AddSignalement";
-import CameraScreen from './screens/CameraScreen';
+import CameraScreen from "./screens/CameraScreen";
 
 // ----------------------  REDUCERS  + LOCALSTORAGE  ---------------------
 import { Provider } from "react-redux";
@@ -116,10 +116,11 @@ export default function App() {
   }
 
   return (
-    <BottomSheetModalProvider>
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <StatusBar barStyle="dark-content" />
-        <Provider store={store}>
+    <Provider store={store}>
+      <BottomSheetModalProvider>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <StatusBar barStyle="dark-content" />
+
           <PersistGate persistor={persistor}>
             <NavigationContainer>
               <Stack.Navigator
@@ -158,10 +159,7 @@ export default function App() {
                     headerBackTitle: "",
                   }}
                 />
-                <Stack.Screen 
-                  name="Camera" 
-                  component={CameraScreen} 
-                />
+                <Stack.Screen name="Camera" component={CameraScreen} />
                 <Stack.Screen
                   name="Login"
                   component={LoginScreen}
@@ -181,9 +179,9 @@ export default function App() {
               </Stack.Navigator>
             </NavigationContainer>
           </PersistGate>
-        </Provider>
-      </GestureHandlerRootView>
-    </BottomSheetModalProvider>
+        </GestureHandlerRootView>
+      </BottomSheetModalProvider>
+    </Provider>
   );
 }
 

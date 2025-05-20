@@ -5,13 +5,8 @@ const initialState = {
     latitude: 0,
     longitude: 0,
   },
-  mode: {
-    pied: false,
-    voiture: false,
-    moto: false,
-    velo: false,
-    bus: false,
-  },
+  coords: { routeCoords: [] },
+  selectedTransport: null,
 };
 
 export const tripSlice = createSlice({
@@ -20,19 +15,19 @@ export const tripSlice = createSlice({
   reducers: {
     userLoc: (state, action) => {
       state.value = action.payload;
-      console.log(action.payload);
     },
-    toggleMode: (state, action) => {
-      const keys = action.payload;
-      const shouldEnable = keys.some((key) => !state[key]);
-      keys.forEach((key) => {
-        if (key in state) {
-          state[key] = shouldEnable;
-        }
-      });
+    setRouteCoords: (state, action) => {
+      state.coords = { routeCoords: action.payload };
+    },
+    setTransport: (state, action) => {
+      state.selectedTransport = action.payload;
+    },
+    resetTransport: (state) => {
+      state.selectedTransport = null;
     },
   },
 });
 
-export const { userLoc } = tripSlice.actions;
+export const { userLoc, setRouteCoords, setTransport, resetTransport } =
+  tripSlice.actions;
 export default tripSlice.reducer;
