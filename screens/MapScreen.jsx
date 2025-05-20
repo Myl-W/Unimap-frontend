@@ -7,9 +7,9 @@ import * as Location from "expo-location";
 import { useNavigation } from "@react-navigation/native";
 
 //  --------------  Import des BottomSheets -----------------
-import SearchBottomSheet from "./bottomSheet/SearchBottomSheet";
-import FilterBottomSheet from "./bottomSheet/FilterBottomSheet";
-import SignalBottomSheet from "./bottomSheet/SignalBottomSheet";
+import SearchBottomSheet from "../components/bottomSheet/SearchBottomSheet";
+import FilterBottomSheet from "../components/bottomSheet/FilterBottomSheet";
+import SignalBottomSheet from "../components/bottomSheet/SignalBottomSheet";
 
 //  ----------  Import des icones FontAwesome ---------------
 import FontAwesome from "react-native-vector-icons/FontAwesome";

@@ -3,10 +3,24 @@ import { TouchableOpacity, View, StyleSheet, TextInput } from "react-native";
 import Text from "../../assets/fonts/CustomText";
 import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
 import { MaterialIcons, FontAwesome } from "@expo/vector-icons";
+import Constants from "expo-constants";
 
 const SearchBottomSheet = forwardRef(({ handleSheetSearch }, ref) => {
+  const google = Constants.expoConfig?.extra?.API_GOOGLE;
   const [search, setSearch] = useState("");
   const snapPoints = ["50%", "75%"];
+
+  const searchGoogle = () => {
+    fetch(
+      `https://maps.googleapis.com/maps/api/directions/json?origin=Disneyland&destination=Universal+Studios+Hollywood&key=${google}`
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+
+        res.json(data);
+      });
+  };
 
   return (
     <BottomSheetModal
@@ -31,7 +45,7 @@ const SearchBottomSheet = forwardRef(({ handleSheetSearch }, ref) => {
         </View>
 
         <View style={styles.searchInputContainer}>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={searchGoogle}>
             <FontAwesome name="search" size={24} color="black" />
           </TouchableOpacity>
 
