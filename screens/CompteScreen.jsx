@@ -292,7 +292,6 @@ const styles = StyleSheet.create({
     color: "black",
   },
   footer: {
-    marginTop: 70,
     width: "100%",
     alignItems: "center",
     backgroundColor: "#DFF0FF",

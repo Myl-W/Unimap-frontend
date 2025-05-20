@@ -2,11 +2,12 @@ import "react-native-reanimated";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { useRef, useMemo, useState, useEffect, useCallback } from "react";
 import { View, StyleSheet, TouchableOpacity, Image } from "react-native";
-import MapView, { Marker } from "react-native-maps";
+import MapView, { Marker, Polyline } from "react-native-maps";
+//import polyline from "@mapbox/polyline";
 import * as Location from "expo-location";
 import { useNavigation } from "@react-navigation/native";
-import { useDispatch } from "react-redux";
-import { userLoc } from "../reducers/trips";
+import { useDispatch, useSelector } from "react-redux";
+import { setRouteCoords, userLoc } from "../reducers/trips";
 
 //  --------------  Import des BottomSheets -----------------
 import SearchBottomSheet from "../components/bottomSheet/SearchBottomSheet";
@@ -23,11 +24,14 @@ export default function MapScreen() {
   const signalSheetRef = useRef(null);
 
   const [currentPosition, setCurrentPosition] = useState(null);
+  const route = useSelector((state) => state.trips.coords.routeCoords);
+
   const navigation = useNavigation();
 
   const handleSheetFilters = useCallback((index) => {}, []);
   const handleSheetSearch = useCallback((index) => {}, []);
   const handleSheetSignal = useCallback((index) => {}, []);
+  const [coordinates, setCoordinates] = useState([]);
 
   // -------- Navigation dans le header ---------------
   useEffect(() => {
@@ -76,8 +80,8 @@ export default function MapScreen() {
         style={styles.map}
         showsUserLocation
         initialRegion={{
-          latitude: currentPosition?.latitude || 48.8566,
-          longitude: currentPosition?.longitude || 2.3522,
+          latitude: currentPosition?.latitude,
+          longitude: currentPosition?.longitude,
           latitudeDelta: 0.5,
           longitudeDelta: 0.5,
         }}
@@ -85,10 +89,16 @@ export default function MapScreen() {
         {/* {currentPosition && (
           <Marker
             coordinate={currentPosition}
+             latitude: currentPosition?.latitude || 48.8566,
+          longitude: currentPosition?.longitude || 2.3522,
             title="Ma position"
             pinColor="#fecb2d"
           />
         )} */}
+        {route && route.length > 0 && (
+          <Polyline coordinates={route} strokeWidth={4} strokeColor="blue" />
+        )}
+
         <View style={styles.buttonFiltre}>
           <TouchableOpacity
             onPress={() => filterSheetRef.current?.present()}
