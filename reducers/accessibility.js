@@ -45,6 +45,15 @@ const accessibilitySlice = createSlice({
         }
       });
     },
+    toggleMultipleTransport: (state, action) => {
+      const keys = action.payload;
+      const shouldEnable = keys.some((key) => !state[key]);
+      keys.forEach((key) => {
+        if (key in state) {
+          state[key] = shouldEnable;
+        }
+      });
+    },
   },
 });
 
@@ -53,5 +62,6 @@ export const {
   resetAccessibility,
   setMultipleHandicaps,
   toggleMultiple,
+  toggleMultipleTransport,
 } = accessibilitySlice.actions;
 export default accessibilitySlice.reducer;
