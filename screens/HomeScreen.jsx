@@ -42,7 +42,14 @@ export default function HomeScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <MapView mapType="normal" style={StyleSheet.absoluteFillObject} />
+      <MapView
+        mapType="normal"
+        style={StyleSheet.absoluteFillObject}
+        scrollEnabled={false} //scrollEnabled={false} : Empêche le déplacement de la carte
+        zoomEnabled={false} //zoomEnabled={false} : Désactive le zoom (pincement)
+        rotateEnabled={false} //rotateEnabled={false} : Empêche la rotation
+        pitchEnabled={false} //pitchEnabled={false} : Empêche l'inclinaison de la carte
+      />
 
       <KeyboardAvoidingView
         style={styles.logContent}
@@ -66,7 +73,7 @@ export default function HomeScreen({ navigation }) {
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate("Map")}>
           <Text style={styles.textInscription}>
-          Continuer en tant qu'invitée
+            Continuer en tant qu'invitée
           </Text>
         </TouchableOpacity>
       </KeyboardAvoidingView>
