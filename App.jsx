@@ -55,7 +55,7 @@ const DrawerNavigator = ({ screenReaderEnabled }) => {
     <Drawer.Navigator
       screenOptions={{
         drawerStyle: { width: "45%" },
-        drawerPosition: "right",
+        drawerPosition: "left",
         headerStyle: {
           backgroundColor: "#DFF0FF",
         },
@@ -147,7 +147,7 @@ export default function App() {
                   component={ParametreScreen}
                   options={{
                     title: "Paramètres",
-                    headerBackTitle: "",
+                    headerBackTitle: "Mon compte",
                   }}
                 />
                 <Stack.Screen

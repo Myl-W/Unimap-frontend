@@ -1,4 +1,4 @@
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { resetUser } from "../reducers/user";
@@ -11,9 +11,14 @@ import {
 } from "react-native";
 import Text from "../assets/fonts/CustomText";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
+import * as ImagePicker from 'expo-image-picker';
+import { useState } from 'react';
+import { Image } from 'react-native';
 
 export default function ParametreScreen({ navigation }) {
   const dispatch = useDispatch();
+  const userInfo = useSelector((state) => state.user.value.profile);
+  const [profileImage, setProfileImage] = useState(null);
 
   // ------------ Ouverture de l'alerte pour la confirmation de la déconnection -----------------
   const handleLogout = () => {
@@ -46,8 +51,113 @@ export default function ParametreScreen({ navigation }) {
     }
   };
 
+  
+
+  // ------ Fonction pour ouvrir la galerie ------
+  const pickImage = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      alert('Permission refusée pour accéder à la galerie !');
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setProfileImage(result.assets[0].uri);
+      // Ici, vous pourriez aussi uploader l'image vers votre backend
+    }
+  };
+
+  // ------ Fonction pour ouvrir l'appareil photo ------
+  const takePhoto = async () => {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    if (status !== 'granted') {
+      alert('Permission refusée pour utiliser la caméra !');
+      return;
+    }
+
+    const result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setProfileImage(result.assets[0].uri);
+    }
+  };
+
+  // ------ Fonction pour supprimer la photo de profil ------
+const deleteProfileImage = async () => {
+  Alert.alert(
+    "Supprimer la photo de profil",
+    "Êtes-vous sûr de vouloir supprimer votre photo de profil ?",
+    [
+      {
+        text: "Annuler",
+        style: "cancel"
+      },
+      {
+        text: "Supprimer",
+        style: "destructive",
+        onPress: async () => {
+          try {
+            setProfileImage(null);
+            await AsyncStorage.removeItem('profileImage');
+            // Ici vous pourriez aussi appeler votre API pour supprimer l'image côté serveur
+            Alert.alert("Succès", "Photo de profil supprimée");
+          } catch (error) {
+            console.error("Erreur lors de la suppression:", error);
+            Alert.alert("Erreur", "La suppression a échoué");
+          }
+        }
+      }
+    ]
+  );
+};
+
+  // ------ Menu déroulant pour choisir la source ------
+  const showImagePickerOptions = () => {
+  const options = [
+    {
+      text: 'Prendre une photo',
+      onPress: takePhoto,
+    },
+    {
+      text: 'Choisir depuis la galerie',
+      onPress: pickImage,
+    },
+  ];
+
+  // Ajoutez l'option de suppression seulement si une image existe
+  if (profileImage) {
+    options.push({
+      text: 'Supprimer la photo',
+      style: 'destructive',
+      onPress: deleteProfileImage,
+    });
+  }
+
+  options.push({
+    text: 'Annuler',
+    style: 'cancel',
+  });
+
+  Alert.alert(
+    'Changer la photo de profil',
+    'Choisissez une option',
+    options,
+    { cancelable: true }
+  );
+};
+
   return (
-    <>
       <KeyboardAvoidingView
         style={styles.logContent}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -58,6 +168,7 @@ export default function ParametreScreen({ navigation }) {
               style={styles.optionAvatar}
               accessibilityLabel="Modifier son avatar"
               accessibilityRole="button"
+              onPress={showImagePickerOptions}
             >
               <View style={styles.optionButtonContent}>
                 <View>
@@ -67,6 +178,13 @@ export default function ParametreScreen({ navigation }) {
             </TouchableOpacity>
           </View>
           <View style={styles.avatarContour}>
+            {profileImage ? (
+            <Image
+              source={{ uri: profileImage }}
+              style={styles.avatar}
+              accessibilityLabel="Photo de profil"
+            />
+            ) : (
             <View style={styles.avatar}>
               <FontAwesome
                 name="user"
@@ -74,9 +192,10 @@ export default function ParametreScreen({ navigation }) {
                 color="black"
                 style={styles.icon}
                 accessibilityLabel="Avatar"
-                accessibilityRole="Image"
+                accessibilityRole="image"
               />
             </View>
+            )}
           </View>
 
           <View style={styles.body}>
@@ -111,7 +230,7 @@ export default function ParametreScreen({ navigation }) {
             <View style={styles.optionButtonContent}>
               <View>
                 <Text style={styles.optionButtonText}>Adresse e-mail</Text>
-                <Text style={styles.optionButtonText2}>john.doe@gmail.com</Text>
+                <Text style={styles.optionButtonText2}>{userInfo.email}</Text>
               </View>
               <View>
                 <FontAwesome name="chevron-right" size={28} color="black" />
@@ -186,7 +305,6 @@ export default function ParametreScreen({ navigation }) {
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
-    </>
   );
 }
 
@@ -201,6 +319,24 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 2,
     marginLeft: 30,
+  },
+  avatarTouchable: {
+    width: 150,
+    height: 150,
+    borderRadius: 75,
+    overflow: 'hidden',
+  },
+  avatarImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+  },
+  avatarPlaceholder: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#f0f0f0',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   logContent: {
     flex: 1,

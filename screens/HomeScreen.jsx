@@ -44,7 +44,7 @@ export default function HomeScreen({ navigation }) {
     <View style={styles.container}>
       <MapView
         mapType="normal"
-        style={StyleSheet.absoluteFillObject}
+        style={StyleSheet.absoluteFillObject} //etendre la vue sur toute la surface disponible de son parent
         scrollEnabled={false} //scrollEnabled={false} : Empêche le déplacement de la carte
         zoomEnabled={false} //zoomEnabled={false} : Désactive le zoom (pincement)
         rotateEnabled={false} //rotateEnabled={false} : Empêche la rotation
