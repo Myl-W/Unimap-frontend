@@ -21,25 +21,31 @@ export default function LoginScreen({ navigation }) {
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
 
+  // -------- Récuperation des infos utilisateur depuis le reducer ------------
   const userInfo = useSelector((state) => state.user.value.profile);
 
+  //  -------- Fonction pour la connexion utilisateur ------------
   const handleLogin = () => {
     fetch(`${backUrl}/login`, {
+      //  ------  fetch vers la route /login du backend ------------
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        email: email.trim().toLowerCase(),
+        //  ------- Envoi email et password dans le body de la requete  --------
+
+        email: email.trim().toLowerCase(), // -----  Format sans espaces et en minuscule ------
         password: password.trim(),
       }),
     })
       .then((response) => response.json())
       .then(async (data) => {
-        dispatch(userInfos(data));
+        dispatch(userInfos(data)); //  ------  Dispatch des infos reçu vers le reducer -------
 
         if (data.result && data.token) {
+          //  ------  Si il y a data et token -------
           try {
-            await AsyncStorage.setItem("userToken", data.token);
-            navigation.navigate("Map");
+            await AsyncStorage.setItem("userToken", data.token); //  ------Enregistrement du token -----------
+            navigation.navigate("Map"); //  ----- Navigation vers MapScreen ----------
           } catch (error) {
             console.error("Erreur en sauvegardant le token:", error);
             alert("Erreur lors de la sauvegarde du token.");
@@ -48,6 +54,7 @@ export default function LoginScreen({ navigation }) {
       });
   };
 
+  //  ------- Retour vers RegisterScreen  ----------
   const pageRegister = () => {
     navigation.navigate("Register");
   };

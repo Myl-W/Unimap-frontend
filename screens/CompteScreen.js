@@ -17,11 +17,15 @@ import { userInfos } from "../reducers/user";
 
 export default function CompteScreen({ navigation }) {
   const dispatch = useDispatch();
+
+  // -------- Récuperation des infos utilisateur depuis le reducer ------------
   const userInfo = useSelector((state) => state.user.value.profile);
 
+  //  ------  Formattage de la date pour afficher la date de naissance  --------
   const dateObj = new Date(userInfo.birthdate);
   const formattedDate = dateObj.toLocaleDateString("fr-FR");
 
+  //  --------- Calcul de l'age en fonction de la birthdate et de la date du jour -----------
   const today = new Date();
   let age = today.getFullYear() - dateObj.getFullYear();
   const monthDiff = today.getMonth() - dateObj.getMonth();
