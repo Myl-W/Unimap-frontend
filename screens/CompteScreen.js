@@ -6,12 +6,35 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
 import Text from "../assets/fonts/CustomText";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import ParametreScreen from "./ParametreScreen";
-import { Component } from "react";
+import { Component, useEffect } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Constants from "expo-constants";
+import { userInfos } from "../reducers/user";
 
 export default function CompteScreen({ navigation }) {
+  const dispatch = useDispatch();
+
+  // -------- Récuperation des infos utilisateur depuis le reducer ------------
+  const userInfo = useSelector((state) => state.user.value.profile);
+
+  //  ------  Formattage de la date pour afficher la date de naissance  --------
+  const dateObj = new Date(userInfo.birthdate);
+  const formattedDate = dateObj.toLocaleDateString("fr-FR");
+
+  //  --------- Calcul de l'age en fonction de la birthdate et de la date du jour -----------
+  const today = new Date();
+  let age = today.getFullYear() - dateObj.getFullYear();
+  const monthDiff = today.getMonth() - dateObj.getMonth();
+  const dayDiff = today.getDate() - dateObj.getDate();
+
+  if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+    age--;
+  }
+
   return (
     <View style={styles.container}>
       <KeyboardAvoidingView
@@ -53,7 +76,7 @@ export default function CompteScreen({ navigation }) {
               >
                 Prénom:{" "}
               </Text>
-              John
+              {userInfo.firstname}
             </Text>
             <Text style={styles.bodyText}>
               <Text
@@ -63,7 +86,7 @@ export default function CompteScreen({ navigation }) {
               >
                 Nom:{" "}
               </Text>
-              Doe
+              {userInfo.lastname}
             </Text>
             <Text style={styles.bodyText}>
               <Text
@@ -71,9 +94,9 @@ export default function CompteScreen({ navigation }) {
                 accessibilityLabel="Age"
                 accessibilityRole="text"
               >
-                Âge:{" "}
+                Age:{" "}
               </Text>
-              22 ans
+              {`${age} ans`}
             </Text>
             <View style={styles.bodyTextColumn}>
               <Text
@@ -83,7 +106,7 @@ export default function CompteScreen({ navigation }) {
               >
                 Date de naissance:
               </Text>
-              <Text style={styles.bodyText}>01/01/2003</Text>
+              <Text style={styles.bodyText}>{formattedDate}</Text>
             </View>
             <View style={styles.bodyTextColumn}>
               <Text
@@ -93,7 +116,7 @@ export default function CompteScreen({ navigation }) {
               >
                 Email:
               </Text>
-              <Text style={styles.bodyText}>john.doe@gmail.com</Text>
+              <Text style={styles.bodyText}>{userInfo.email}</Text>
             </View>
             <View style={styles.bodyTextColumn}>
               <Text

@@ -50,19 +50,22 @@ export default function RegisterScreen({ navigation }) {
   const handleToggle = (key) => {
     dispatch(toggleHandicap(key));
   };
-  console.log("BACK_URL:", backUrl);
+
+  //  -------- Fonction pour l'enregistrement de l'utilisateur ------------
   const handleRegister = () => {
     const selectedHandicaps = Object.keys(accessibility).filter(
       (key) => accessibility[key]
     );
 
     fetch(`${backUrl}/register`, {
+      //  ------  fetch vers la route /register du backend ------------
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
+        //  ------- Envoi des infos utilisateur dans le body de la requete  --------
         lastname: lastname,
         firstname: firstname,
-        email: email.trim().toLowerCase(),
+        email: email.trim().toLowerCase(), // -----  Format sans espaces et en minuscule ------
         password: password.trim(),
         birthdate: date,
         disability: selectedHandicaps,
@@ -70,11 +73,11 @@ export default function RegisterScreen({ navigation }) {
     })
       .then((response) => response.json())
       .then(async (data) => {
-        console.log(data);
         if (data.result && data.token) {
+          //  ------  Si il y a data et token -------{
           try {
-            await AsyncStorage.setItem("token", data.token);
-            navigation.navigate("Map");
+            await AsyncStorage.setItem("token", data.token); // -----  Enregistrement du token  ----------
+            navigation.navigate("Map"); //  ----- Navigation vers MapScreen ----------
           } catch (error) {
             console.error("Erreur en sauvegardant le token:", error);
             alert("Erreur lors de la sauvegarde du token.");

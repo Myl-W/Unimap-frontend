@@ -29,12 +29,15 @@ export default function ParametreScreen({ navigation }) {
     );
   };
 
-  // -----  Si confirmer, dispatch dans le reducer, suppression du token dans asyncStorage, retour a la page login  -----
+  // -----  Si confirmer  -------------
   const logoutAsync = async () => {
     try {
-      await AsyncStorage.removeItem("userToken");
-      dispatch(resetUser());
+      await AsyncStorage.removeItem("userToken"); // -----  suppression du token  ----------
+
+      dispatch(resetUser()); //  dispatch dans le reducer  ----------
+
       navigation.reset({
+        // -----  retour a la page login  -----------
         index: 0,
         routes: [{ name: "Login" }],
       });
