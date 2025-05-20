@@ -14,15 +14,14 @@ import {
 } from "react-native";
 import Text from "../assets/fonts/CustomText";
 import { userInfos } from "../reducers/user";
+import Popup from "../components/modals/popup";
 
 export default function LoginScreen({ navigation }) {
   const backUrl = Constants.expoConfig?.extra?.BACK_URL;
   const dispatch = useDispatch();
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
-
-  // -------- Récuperation des infos utilisateur depuis le reducer ------------
-  const userInfo = useSelector((state) => state.user.value.profile);
+  const [showModal, setShowModal] = useState(false);
 
   //  -------- Fonction pour la connexion utilisateur ------------
   const handleLogin = () => {
@@ -54,6 +53,14 @@ export default function LoginScreen({ navigation }) {
       });
   };
 
+  // ------ Fonction pour afficher / fermer la modal ------
+  const handlePressModal = () => {
+    setShowModal(true);
+  };
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
+
   //  ------- Retour vers RegisterScreen  ----------
   const pageRegister = () => {
     navigation.navigate("Register");
@@ -65,6 +72,7 @@ export default function LoginScreen({ navigation }) {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.keyboardAvoid}
       >
+        {/* ---------- Informations de connexion -------- */}
         <ScrollView contentContainerStyle={styles.scrollContent}>
           <Text style={styles.textInfos}>Informations de connexion</Text>
           <TextInput
@@ -92,29 +100,41 @@ export default function LoginScreen({ navigation }) {
           <View style={styles.line} />
 
           <Text style={styles.textOu}>Ou</Text>
+
+          {/* ---------- Connexion avec Google / Facebook / Apple ----------- */}
           <View style={styles.imageContent}>
-            <TouchableOpacity onPress={handleLogin} activeOpacity={0.8}>
+            <TouchableOpacity onPress={handlePressModal} activeOpacity={0.8}>
               <Image
                 style={styles.image}
                 source={require("../assets/google.png")}
               />
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={handleLogin} activeOpacity={0.8}>
+            {/* --------- Modal -------- */}
+            <Popup visible={showModal} onClose={handleCloseModal} />
+
+            <TouchableOpacity onPress={handlePressModal} activeOpacity={0.8}>
               <Image
                 style={styles.image}
                 source={require("../assets/facebook.png")}
               />
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={handleLogin} activeOpacity={0.8}>
+            {/* --------- Modal -------- */}
+            <Popup visible={showModal} onClose={handleCloseModal} />
+
+            <TouchableOpacity onPress={handlePressModal} activeOpacity={0.8}>
               <Image
                 style={styles.image}
                 source={require("../assets/apple.png")}
               />
             </TouchableOpacity>
+
+            {/* --------- Modal -------- */}
+            <Popup visible={showModal} onClose={handleCloseModal} />
           </View>
 
+          {/* ------------- Renvoi vers RegisterScreen ------------- */}
           <Text style={styles.textRegister}>Vous n'avez pas de compte?</Text>
           <TouchableOpacity onPress={pageRegister} activeOpacity={0.8}>
             <Text style={styles.register}>Inscrivez-vous</Text>
