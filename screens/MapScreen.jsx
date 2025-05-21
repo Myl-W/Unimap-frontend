@@ -22,6 +22,7 @@ export default function MapScreen() {
   const searchSheetRef = useRef(null);
   const filterSheetRef = useRef(null);
   const signalSheetRef = useRef(null);
+  const mapRef = useRef(null);
 
   const [currentPosition, setCurrentPosition] = useState(null);
   const route = useSelector((state) => state.trips.coords.routeCoords);
@@ -67,34 +68,40 @@ export default function MapScreen() {
     })();
   }, []);
 
+  //useEffect(() => {
+  //  if (currentPosition) {
+  //    dispatch(userLoc(currentPosition));
+  //  }
+  //}, [currentPosition]);
+
   useEffect(() => {
-    if (currentPosition) {
-      dispatch(userLoc(currentPosition));
+    if (currentPosition && mapRef.current) {
+      mapRef.current.animateToRegion(
+        {
+          latitude: currentPosition.latitude,
+          longitude: currentPosition.longitude,
+          latitudeDelta: 0.05,
+          longitudeDelta: 0.05,
+        },
+        1000
+      );
     }
   }, [currentPosition]);
 
   return (
     <View style={styles.container}>
       <MapView
+        ref={mapRef}
         mapType="normal"
         style={styles.map}
         showsUserLocation
         initialRegion={{
-          latitude: currentPosition?.latitude,
-          longitude: currentPosition?.longitude,
-          latitudeDelta: 0.5,
-          longitudeDelta: 0.5,
+          latitude: 48.8566,
+          longitude: 2.3522,
+          latitudeDelta: 0.05,
+          longitudeDelta: 0.05,
         }}
       >
-        {/* {currentPosition && (
-          <Marker
-            coordinate={currentPosition}
-             latitude: currentPosition?.latitude || 48.8566,
-          longitude: currentPosition?.longitude || 2.3522,
-            title="Ma position"
-            pinColor="#fecb2d"
-          />
-        )} */}
         {route && route.length > 0 && (
           <Polyline coordinates={route} strokeWidth={4} strokeColor="blue" />
         )}

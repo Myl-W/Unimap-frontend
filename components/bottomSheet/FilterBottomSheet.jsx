@@ -37,7 +37,7 @@ const FilterBottomSheet = forwardRef(({ handleSheetFilters }, ref) => {
   };
 
   const handleToggleTransport = () => {
-    //dispatch(toggleMultiple(transportKeys));
+    dispatch(resetTransport(null));
   };
 
   const handleToggle = (key) => {

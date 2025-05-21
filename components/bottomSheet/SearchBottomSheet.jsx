@@ -17,24 +17,31 @@ const SearchBottomSheet = forwardRef(({ handleSheetSearch }, ref) => {
   const [search, setSearch] = useState("");
   const snapPoints = ["50%", "75%"];
 
+  //  -------- Fonction pour rechercher un itinéraire via l'API Google Directions ------------
   const searchGoogle = () => {
     fetch(
       `https://maps.googleapis.com/maps/api/directions/json?origin=${loc.latitude},${loc.longitude}&destination=${search}&mode=${transport}&key=${google}`
     )
       .then((response) => response.json())
       .then((data) => {
+        //  ------------  Récupération de la polyline encodée représentant le tracé complet de la route  ------------------
         const encodedPolyline = data.routes[0].overview_polyline.points;
+        //  ----------- Décodage de la polyline en tableau de points [latitude, longitude] --------------
         const decodedPoints = polyline.decode(encodedPolyline);
+        //  ----------- Transformation des points en objets {latitude, longitude} compatibles avec la carte  -------------
         const coords = decodedPoints.map((point) => ({
           latitude: point[0],
           longitude: point[1],
         }));
-
+        //  ----------- Mise à jour du réducer avec les coordonnées de la route -------------
         dispatch(setRouteCoords(coords));
+        //  ----------- Fermeture de la bottomSheet -------------
         ref?.current?.close();
       });
   };
 
+  // Dès que la valeur de 'transport' change, on lance la fonction de recherche Google
+  // uniquement si le champ 'search' n'est pas vide (après suppression des espaces).
   useEffect(() => {
     if (search.trim() !== "") {
       searchGoogle();
