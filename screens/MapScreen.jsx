@@ -25,7 +25,7 @@ export default function MapScreen() {
   const mapRef = useRef(null);
 
   const [currentPosition, setCurrentPosition] = useState(null);
-  const route = useSelector((state) => state.trips.coords.routeCoords);
+  const route = useSelector((state) => state.trips.coords?.routeCoords);
 
   const navigation = useNavigation();
 
