@@ -19,6 +19,7 @@ export default function CameraScreen() {
   const [flash, setFlash] = useState("off");
 
   const BACK_URL = Constants.expoConfig?.extra?.BACK_URL;
+  const navigation = useNavigation();
 
   // ------ Effect hook to check permissions for camera access -------
   useEffect(() => {
@@ -85,7 +86,7 @@ export default function CameraScreen() {
       .then((data) => {
         console.log(data);
         photo && dispatch(addPhoto(data.url));
-        navigation.goBack();
+        navigation.navigate("Map");
       });
   };
 
