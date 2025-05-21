@@ -45,7 +45,7 @@ const TripBottomSheet = ({ isRouteActive, onStopTrip }) => {
         </View>
       </BottomSheetView>
       <View style={styles.buttonRow}>
-        <View style={styles.stopTrip}>
+        <View style={styles.stopTrip} >
           <TouchableOpacity style={styles.stopButton} onPress={onStopTrip}>
             <Text style={styles.stopButtonText}>Arrêt</Text>
           </TouchableOpacity>
