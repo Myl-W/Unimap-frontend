@@ -40,11 +40,14 @@ const FilterBottomSheet = forwardRef(({ handleSheetFilters }, ref) => {
     dispatch(resetTransport(null));
   };
 
-  const handleToggle = (key) => {
+  const handleCheckHandicap = (key) => {
+    if (handicapKeys.includes(key)) {
+      dispatch(toggleHandicap(key));
+    }
+  };
+  const handleCheckTransport = (key) => {
     if (transportKeys.includes(key)) {
       dispatch(setTransport(key));
-    } else {
-      dispatch(toggleHandicap(key));
     }
   };
 
@@ -97,7 +100,7 @@ const FilterBottomSheet = forwardRef(({ handleSheetFilters }, ref) => {
             accessibilityLabel="Personne a mobilité"
             accessibilityRole="button"
             style={styles.checkBoxItem}
-            onPress={() => handleToggle("fauteuil")}
+            onPress={() => handleCheckHandicap("fauteuil")}
           >
             <MaterialIcons
               name={
@@ -112,7 +115,7 @@ const FilterBottomSheet = forwardRef(({ handleSheetFilters }, ref) => {
             accessibilityLabel="Trajet a pied"
             accessibilityRole="button"
             style={styles.checkBoxItem}
-            onPress={() => handleToggle("walking")}
+            onPress={() => handleCheckTransport("walking")}
           >
             <MaterialIcons
               name={
@@ -132,7 +135,7 @@ const FilterBottomSheet = forwardRef(({ handleSheetFilters }, ref) => {
             accessibilityLabel="Aveugle"
             accessibilityRole="button"
             style={styles.checkBoxItem}
-            onPress={() => handleToggle("aveugle")}
+            onPress={() => handleCheckHandicap("aveugle")}
           >
             <MaterialIcons
               name={
@@ -148,7 +151,7 @@ const FilterBottomSheet = forwardRef(({ handleSheetFilters }, ref) => {
             accessibilityLabel="Trajet en vélo"
             accessibilityRole="button"
             style={styles.checkBoxItem}
-            onPress={() => handleToggle("bicycling")}
+            onPress={() => handleCheckTransport("bicycling")}
           >
             <MaterialIcons
               name={
@@ -168,7 +171,7 @@ const FilterBottomSheet = forwardRef(({ handleSheetFilters }, ref) => {
             accessibilityLabel="malvoyant"
             accessibilityRole="button"
             style={styles.checkBoxItem}
-            onPress={() => handleToggle("malvoyant")}
+            onPress={() => handleCheckHandicap("malvoyant")}
           >
             <MaterialIcons
               name={
@@ -186,7 +189,7 @@ const FilterBottomSheet = forwardRef(({ handleSheetFilters }, ref) => {
             accessibilityLabel="Trajet en moto"
             accessibilityRole="button"
             style={styles.checkBoxItem}
-            onPress={() => handleToggle("two_wheeler")}
+            onPress={() => handleCheckTransport("two_wheeler")}
           >
             <MaterialIcons
               name={
@@ -206,7 +209,7 @@ const FilterBottomSheet = forwardRef(({ handleSheetFilters }, ref) => {
             accessibilityLabel="Malentendant"
             accessibilityRole="button"
             style={styles.checkBoxItem}
-            onPress={() => handleToggle("malentendant")}
+            onPress={() => handleCheckHandicap("malentendant")}
           >
             <MaterialIcons
               name={
@@ -224,7 +227,7 @@ const FilterBottomSheet = forwardRef(({ handleSheetFilters }, ref) => {
             accessibilityLabel="Trajet en voiture"
             accessibilityRole="button"
             style={styles.checkBoxItem}
-            onPress={() => handleToggle("driving")}
+            onPress={() => handleCheckTransport("driving")}
           >
             <MaterialIcons
               name={
@@ -243,7 +246,7 @@ const FilterBottomSheet = forwardRef(({ handleSheetFilters }, ref) => {
           <TouchableOpacity
             accessibilityRole="button"
             style={styles.checkBoxItem}
-            onPress={() => handleToggle("sourd")}
+            onPress={() => handleCheckHandicap("sourd")}
             accessibilityLabel="Activer mode sourd"
           >
             <MaterialIcons
@@ -259,7 +262,7 @@ const FilterBottomSheet = forwardRef(({ handleSheetFilters }, ref) => {
             accessibilityLabel="Trajet en bus"
             accessibilityRole="button"
             style={styles.checkBoxItem}
-            onPress={() => handleToggle("transit")}
+            onPress={() => handleCheckTransport("transit")}
           >
             <MaterialIcons
               name={
@@ -279,7 +282,7 @@ const FilterBottomSheet = forwardRef(({ handleSheetFilters }, ref) => {
             accessibilityLabel="Autisme"
             accessibilityRole="button"
             style={styles.checkBoxItem}
-            onPress={() => handleToggle("autisme")}
+            onPress={() => handleCheckHandicap("autisme")}
           >
             <MaterialIcons
               name={

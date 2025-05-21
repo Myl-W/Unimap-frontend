@@ -1,5 +1,11 @@
 import React, { forwardRef, useState, useEffect } from "react";
-import { TouchableOpacity, View, StyleSheet, TextInput } from "react-native";
+import {
+  TouchableOpacity,
+  View,
+  StyleSheet,
+  TextInput,
+  ScrollView,
+} from "react-native";
 import Text from "../../assets/fonts/CustomText";
 import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
 import { MaterialIcons, FontAwesome } from "@expo/vector-icons";
@@ -7,7 +13,12 @@ import { MaterialIcons, FontAwesome } from "@expo/vector-icons";
 import { useSelector, useDispatch } from "react-redux";
 import polyline from "@mapbox/polyline";
 
-import { setRouteCoords, setTripInfos } from "../../reducers/trips";
+import {
+  setRouteCoords,
+  setTripInfos,
+  recentSearch,
+  suppRecentSearch,
+} from "../../reducers/trips";
 
 const SearchBottomSheet = forwardRef(({ handleSheetSearch }, ref) => {
   const transport = useSelector((state) => state.trips.selectedTransport);
@@ -16,6 +27,7 @@ const SearchBottomSheet = forwardRef(({ handleSheetSearch }, ref) => {
   const google = process.env.EXPO_PUBLIC_API_GOOGLE;
   const [search, setSearch] = useState("");
   const snapPoints = ["50%", "75%"];
+  const lastSearch = useSelector((state) => state.trips?.recentSearch);
 
   //  -------- Fonction pour rechercher un itinéraire via l'API Google Directions ------------
   const searchGoogle = () => {
@@ -24,12 +36,18 @@ const SearchBottomSheet = forwardRef(({ handleSheetSearch }, ref) => {
     )
       .then((response) => response.json())
       .then((data) => {
-        console.log(data)
-        //  ------------  Récupération de la polyline encodée représentant le tracé complet de la route  ------------------
+        console.log(data);
+        // ------------- Adresse réelle de départ obtenue depuis l'API Google --------------
+        const arrival = data.routes[0].legs[0].end_address;
+        // ------------- Enregistrement dans l'historique des recherches -------------------
+        const searchRecent = {
+          arrival: arrival,
+        };
+        dispatch(recentSearch(searchRecent));
+
+        // ------------- Récupération et décodage de la route -------------------
         const encodedPolyline = data.routes[0].overview_polyline.points;
-        //  ----------- Décodage de la polyline en tableau de points [latitude, longitude] --------------
         const decodedPoints = polyline.decode(encodedPolyline);
-        //  ----------- Transformation des points en objets {latitude, longitude} compatibles avec la carte  -------------
         const coords = decodedPoints.map((point) => ({
           latitude: point[0],
           longitude: point[1],
@@ -38,7 +56,7 @@ const SearchBottomSheet = forwardRef(({ handleSheetSearch }, ref) => {
         const tripTime = {
           duration: data.routes[0].legs[0].duration.text,
           distance: data.routes[0].legs[0].distance.text,
-        }
+        };
         //  ----------- Mise à jour du réducer de la distance du trajet en heure/minutes et en km -------------
         dispatch(setTripInfos(tripTime));
         //  ----------- Mise à jour du réducer avec les coordonnées de la route -------------
@@ -46,8 +64,11 @@ const SearchBottomSheet = forwardRef(({ handleSheetSearch }, ref) => {
         ref?.current?.close();
         // Si le parent a donné une fonction onTripReady, on l’exécute pour lui dire que le trajet est prêt (pour ouvrir la bottom sheet du trajet)
         if (props.onTripReady) props.onTripReady();
-        //  ----------- Fermeture de la bottomSheet -------------
-        
+
+        // ------------- Fermeture de la bottomSheet --------------------------
+      })
+      .catch((error) => {
+        console.error("Erreur lors de la récupération de la route :", error);
       });
   };
 
@@ -58,6 +79,31 @@ const SearchBottomSheet = forwardRef(({ handleSheetSearch }, ref) => {
       searchGoogle();
     }
   }, [transport]);
+
+  // fonction pour mapper le tableau afin d'afficher les elements dans le bottomSheet
+  const renderRecentSearch = () => {
+    return lastSearch?.map((item, index) => (
+      <View key={index} style={styles.historyAdress}>
+        <View style={styles.historyLign}>
+          <FontAwesome name="clock-o" size={24} color="black" />
+          <FontAwesome name="heart" size={24} color="black" />
+        </View>
+        <View>
+          <Text style={styles.addressHistory}>{item.arrival}</Text>
+        </View>
+        <FontAwesome
+          name="trash"
+          size={24}
+          color="black"
+          style={styles.iconDelete}
+        />
+      </View>
+    ));
+  };
+
+  const suppRecent = () => {
+    dispatch(suppRecentSearch());
+  };
 
   return (
     <BottomSheetModal
@@ -94,21 +140,21 @@ const SearchBottomSheet = forwardRef(({ handleSheetSearch }, ref) => {
             onFocus={() => {
               ref.current?.present();
               ref.current?.snapToIndex(2);
+              setSearch("");
             }}
           />
 
-          <TouchableOpacity>
+          <TouchableOpacity onPress={suppRecent}>
             <FontAwesome name="microphone" size={24} color="black" />
           </TouchableOpacity>
         </View>
 
-        <View style={styles.addressHistory}>
-          <Text style={styles.historyTitle}>Adresses consultées :</Text>
-          <Text style={styles.historyAdress}>Adresse </Text>
-          <Text style={styles.historyAdress}>Adresse </Text>
-          <Text style={styles.historyAdress}>Adresse </Text>
-          <Text style={styles.historyAdress}>Adresse </Text>
-        </View>
+        <ScrollView style={styles.addressHistoryContent}>
+          <View style={styles.scrollContent}>
+            <Text style={styles.historyTitle}>Adresses consultées :</Text>
+            {renderRecentSearch()}
+          </View>
+        </ScrollView>
       </BottomSheetView>
     </BottomSheetModal>
   );
@@ -157,21 +203,42 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  addressHistory: {
+  addressHistoryContent: {
     marginTop: 8,
-    alignItems: "center",
+    width: "100%",
+    maxHeight: 500,
   },
+
   historyTitle: {
     fontWeight: "bold",
+    fontSize: 18,
     marginBottom: 10,
   },
   historyAdress: {
-    fontSize: 16,
+    fontSize: 18,
     padding: 10,
     margin: 5,
     borderWidth: 1,
     borderRadius: 10,
-    width: "90%",
+    position: "relative",
+    width: "100%",
+  },
+  historyLign: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  iconDelete: {
+    position: "absolute",
+    bottom: 10,
+    right: 10,
+  },
+  addressHistory: {
+    fontSize: 20,
+    width: "100%",
+  },
+  scrollContent: {
+    alignItems: "center",
+    width: "100%",
   },
 });
 
