@@ -68,23 +68,20 @@ export default function MapScreen() {
     })();
   }, []);
 
-  //useEffect(() => {
-  //  if (currentPosition) {
-  //    dispatch(userLoc(currentPosition));
-  //  }
-  //}, [currentPosition]);
-
   useEffect(() => {
-    if (currentPosition && mapRef.current) {
-      mapRef.current.animateToRegion(
-        {
-          latitude: currentPosition.latitude,
-          longitude: currentPosition.longitude,
-          latitudeDelta: 0.05,
-          longitudeDelta: 0.05,
-        },
-        1000
-      );
+    if (currentPosition) {
+      dispatch(userLoc(currentPosition));
+      if (mapRef.current) {
+        mapRef.current.animateToRegion(
+          {
+            latitude: currentPosition.latitude,
+            longitude: currentPosition.longitude,
+            latitudeDelta: 0.05,
+            longitudeDelta: 0.05,
+          },
+          1000
+        );
+      }
     }
   }, [currentPosition]);
 

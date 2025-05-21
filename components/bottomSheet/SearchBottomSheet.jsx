@@ -40,7 +40,7 @@ const SearchBottomSheet = forwardRef(({ handleSheetSearch }, ref) => {
       });
   };
 
-  // Dès que la valeur de 'transport' change, on lance la fonction de recherche Google
+  // Si une des valeurs change, on lance la fonction de recherche Google
   // uniquement si le champ 'search' n'est pas vide (après suppression des espaces).
   useEffect(() => {
     if (search.trim() !== "") {
