@@ -44,6 +44,7 @@ const SearchBottomSheet = forwardRef(({ handleSheetSearch }, ref) => {
         //  ----------- Mise à jour du réducer avec les coordonnées de la route -------------
         dispatch(setRouteCoords(coords));
         ref?.current?.close();
+        // Si le parent a donné une fonction onTripReady, on l’exécute pour lui dire que le trajet est prêt (pour ouvrir la bottom sheet du trajet)
         if (props.onTripReady) props.onTripReady();
         //  ----------- Fermeture de la bottomSheet -------------
         
