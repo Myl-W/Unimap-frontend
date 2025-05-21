@@ -100,7 +100,7 @@ export default function MapScreen() {
         }}
       >
         {route && route.length > 0 && (
-          <Polyline coordinates={route} strokeWidth={4} strokeColor="blue" />
+          <Polyline coordinates={route} strokeWidth={6} strokeColor="blue" />
         )}
 
         <View style={styles.buttonFiltre}>
