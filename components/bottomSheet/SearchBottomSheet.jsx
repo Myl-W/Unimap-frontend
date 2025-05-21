@@ -86,23 +86,29 @@ const SearchBottomSheet = forwardRef(({ handleSheetSearch }, ref) => {
       <View key={index} style={styles.historyAdress}>
         <View style={styles.historyLign}>
           <FontAwesome name="clock-o" size={24} color="black" />
-          <FontAwesome name="heart" size={24} color="black" />
+          <TouchableOpacity>
+            <FontAwesome name="heart" size={24} color="black" />
+          </TouchableOpacity>
         </View>
         <View>
           <Text style={styles.addressHistory}>{item.arrival}</Text>
         </View>
-        <FontAwesome
-          name="trash"
-          size={24}
-          color="black"
-          style={styles.iconDelete}
-        />
+        <TouchableOpacity onPress={() => handleDelete(index)}>
+          <FontAwesome
+            name="trash"
+            size={24}
+            color="black"
+            style={styles.iconDelete}
+          />
+        </TouchableOpacity>
       </View>
     ));
   };
 
-  const suppRecent = () => {
-    dispatch(suppRecentSearch());
+  const handleDelete = (index) => {
+    const updatedSearch = [...lastSearch];
+    updatedSearch.splice(index, 1);
+    dispatch(suppRecentSearch(updatedSearch));
   };
 
   return (
@@ -144,7 +150,7 @@ const SearchBottomSheet = forwardRef(({ handleSheetSearch }, ref) => {
             }}
           />
 
-          <TouchableOpacity onPress={suppRecent}>
+          <TouchableOpacity>
             <FontAwesome name="microphone" size={24} color="black" />
           </TouchableOpacity>
         </View>
@@ -222,6 +228,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     position: "relative",
     width: "100%",
+    minHeight: 110,
+    justifyContent: "space-between",
   },
   historyLign: {
     flexDirection: "row",
@@ -229,8 +237,8 @@ const styles = StyleSheet.create({
   },
   iconDelete: {
     position: "absolute",
-    bottom: 10,
-    right: 10,
+    bottom: 2,
+    right: 2,
   },
   addressHistory: {
     fontSize: 20,

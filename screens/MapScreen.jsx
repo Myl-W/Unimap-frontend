@@ -222,7 +222,7 @@ const styles = StyleSheet.create({
   buttonFiltre: {
     position: "absolute",
     top: 20,
-    right: 20,
+    left: 20,
     width: 50,
     height: 30,
     backgroundColor: "#DFF0FF",
