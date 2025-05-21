@@ -7,7 +7,7 @@ import { MaterialIcons, FontAwesome } from "@expo/vector-icons";
 import { useSelector, useDispatch } from "react-redux";
 import polyline from "@mapbox/polyline";
 
-import { setRouteCoords } from "../../reducers/trips";
+import { setRouteCoords, setTripInfos } from "../../reducers/trips";
 
 const SearchBottomSheet = forwardRef(({ handleSheetSearch }, ref) => {
   const transport = useSelector((state) => state.trips.selectedTransport);
@@ -24,6 +24,7 @@ const SearchBottomSheet = forwardRef(({ handleSheetSearch }, ref) => {
     )
       .then((response) => response.json())
       .then((data) => {
+        console.log(data)
         //  ------------  Récupération de la polyline encodée représentant le tracé complet de la route  ------------------
         const encodedPolyline = data.routes[0].overview_polyline.points;
         //  ----------- Décodage de la polyline en tableau de points [latitude, longitude] --------------
@@ -33,10 +34,19 @@ const SearchBottomSheet = forwardRef(({ handleSheetSearch }, ref) => {
           latitude: point[0],
           longitude: point[1],
         }));
+        //  ----------- Affiche la durée du trajet et le nombre de km  -------------
+        const tripTime = {
+          duration: data.routes[0].legs[0].duration.text,
+          distance: data.routes[0].legs[0].distance.text,
+        }
+        //  ----------- Mise à jour du réducer de la distance du trajet en heure/minutes et en km -------------
+        dispatch(setTripInfos(tripTime));
         //  ----------- Mise à jour du réducer avec les coordonnées de la route -------------
         dispatch(setRouteCoords(coords));
-        //  ----------- Fermeture de la bottomSheet -------------
         ref?.current?.close();
+        if (props.onTripReady) props.onTripReady();
+        //  ----------- Fermeture de la bottomSheet -------------
+        
       });
   };
 

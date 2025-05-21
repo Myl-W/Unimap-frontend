@@ -1,18 +1,25 @@
 import "react-native-reanimated";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { useRef, useMemo, useState, useEffect, useCallback } from "react";
-import { View, StyleSheet, TouchableOpacity, Image } from "react-native";
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  Button,
+} from "react-native";
 import MapView, { Marker, Polyline } from "react-native-maps";
 //import polyline from "@mapbox/polyline";
 import * as Location from "expo-location";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
-import { setRouteCoords, userLoc } from "../reducers/trips";
+import { setRouteCoords, userLoc, resetRouteCoords } from "../reducers/trips";
 
 //  --------------  Import des BottomSheets -----------------
 import SearchBottomSheet from "../components/bottomSheet/SearchBottomSheet";
 import FilterBottomSheet from "../components/bottomSheet/FilterBottomSheet";
 import SignalBottomSheet from "../components/bottomSheet/SignalBottomSheet";
+import TripBottomSheet from "../components/bottomSheet/TripBottomSheet";
 
 //  ----------  Import des icones FontAwesome ---------------
 import FontAwesome from "react-native-vector-icons/FontAwesome";
@@ -32,6 +39,7 @@ export default function MapScreen() {
   const handleSheetFilters = useCallback((index) => {}, []);
   const handleSheetSearch = useCallback((index) => {}, []);
   const handleSheetSignal = useCallback((index) => {}, []);
+  const handleTripReady = () => setIsTripReady(true);
   const [coordinates, setCoordinates] = useState([]);
 
   // -------- Navigation dans le header ---------------
@@ -85,6 +93,11 @@ export default function MapScreen() {
     }
   }, [currentPosition]);
 
+  // -------------  Stop le trajet en cours -------------
+  const handleStopTrip = () => {
+    dispatch(resetRouteCoords());
+  };
+
   return (
     <View style={styles.container}>
       <MapView
@@ -100,7 +113,7 @@ export default function MapScreen() {
         }}
       >
         {route && route.length > 0 && (
-          <Polyline coordinates={route} strokeWidth={4} strokeColor="blue" />
+          <Polyline coordinates={route} strokeWidth={8} strokeColor="blue" />
         )}
 
         <View style={styles.buttonFiltre}>
@@ -109,7 +122,7 @@ export default function MapScreen() {
             accessibilityLabel="Sélectionner des filtres"
             accessibilityRole="button"
           >
-            <FontAwesome name="filter" size={24} color="black" />
+            <FontAwesome name="sliders" size={24} color="black" />
           </TouchableOpacity>
         </View>
         <View style={styles.buttonSignalement}>
@@ -133,6 +146,7 @@ export default function MapScreen() {
         <SearchBottomSheet
           ref={searchSheetRef}
           handleSheetSearch={handleSheetSearch}
+          onTripReady={handleTripReady}
         />
 
         {/*BottomSheet pour les filtres*/}
@@ -145,6 +159,11 @@ export default function MapScreen() {
         <SignalBottomSheet
           ref={signalSheetRef}
           handleSheetSearch={handleSheetSignal}
+        />
+        {/*BottomSheet pour le trajet*/}
+        <TripBottomSheet
+          isRouteActive={route && route.length > 0}
+          onStopTrip={handleStopTrip}
         />
       </BottomSheetModalProvider>
     </View>
