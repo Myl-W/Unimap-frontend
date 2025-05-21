@@ -39,7 +39,6 @@ export default function MapScreen() {
   const handleSheetFilters = useCallback((index) => {}, []);
   const handleSheetSearch = useCallback((index) => {}, []);
   const handleSheetSignal = useCallback((index) => {}, []);
-  const handleTripReady = () => setIsTripReady(true);
   const [coordinates, setCoordinates] = useState([]);
 
   // -------- Navigation dans le header ---------------
@@ -146,7 +145,6 @@ export default function MapScreen() {
         <SearchBottomSheet
           ref={searchSheetRef}
           handleSheetSearch={handleSheetSearch}
-          onTripReady={handleTripReady}
         />
 
         {/*BottomSheet pour les filtres*/}
