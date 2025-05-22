@@ -21,7 +21,7 @@ function parseDurationToMinutes(durationStr) {
   return total;
 }
 
-// Formate la durée du trajet :
+// --------------- Formate la durée du trajet : ----------------
 // - Affiche "X min" si moins d'une heure
 // - Affiche "H:MMh" si une heure ou plus (ex : "1:05h")
 function formatDuration(durationStr) {
@@ -52,23 +52,28 @@ const TripBottomSheet = ({ isRouteActive, onStopTrip }) => {
   const navigation = useNavigation();
   const snapPoints = useMemo(() => ["15%", "70%"], []); // Definie la taille d'ouverture du BottomSheet
   const tripinfos = useSelector((state) => state.trips.value.tripInfos);
+  console.log("TripBottomSheet tripInfos", tripinfos);
+  
 
-  // Calcul de l'heure d'arrivée
-  let arrivalTimeStr = "";
+  // ------------- Calcul de l'heure d'arrivée ------------
+  let arrivalTimeStr = "";  // Variable qui contiendra l'heure d'arrivée formatée
   // Si tripinfos existe et contient une durée, on calcule l'heure d'arrivée
   if (tripinfos && tripinfos.duration) {
-    const now = new Date();
+    // Récupère la date et l'heure actuelles
+    const now = new Date(); 
     // On convertit la durée en minutes
     const durationMinutes = parseDurationToMinutes(tripinfos.duration);
     // On ajoute la durée au temps actuel pour obtenir l'heure d'arrivée
-    // On utilise getTime() pour obtenir le temps en millisecondes
+    // getTime() renvoie le temps en millisecondes 
+    // On multiplie la durée en minutes par 60000 pour la convertir en millisecondes
     const arrival = new Date(now.getTime() + durationMinutes * 60000);
-    // On formate l'heure d'arrivée au format "HH:MM"
+    // Récupère les heures d'arrivée
     // On utilise padStart pour s'assurer que les heures et minutes sont toujours sur 2 chiffres
     const hours = arrival.getHours().toString().padStart(2, "0");
-    // On formate les minutes
+    // Récupère les minutes d'arrivée
     // On utilise padStart pour s'assurer que les heures et minutes sont toujours sur 2 chiffres
     const minutes = arrival.getMinutes().toString().padStart(2, "0");
+    // Formate l'heure d'arrivée sous forme "HH:MM"
     arrivalTimeStr = `${hours}:${minutes}`;
   }
 
@@ -96,6 +101,7 @@ const TripBottomSheet = ({ isRouteActive, onStopTrip }) => {
       bottomSheetRef.current?.dismiss();
     }
   }, [isRouteActive]);
+
 
   return (
     <BottomSheetModal

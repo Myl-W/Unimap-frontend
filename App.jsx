@@ -37,7 +37,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import LoginScreen from "./screens/LoginScreen";
 import RegisterScreen from "./screens/RegisterScreen";
 
-const persistConfig = { key: "unimap+", storage: AsyncStorage };
+const persistConfig = { key: "unimap+", storage: AsyncStorage, whitelist: ["user"] };
 
 const store = configureStore({
   reducer: persistReducer(persistConfig, reducers),
