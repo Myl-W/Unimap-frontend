@@ -1,5 +1,5 @@
 import { forwardRef } from "react";
-import { TouchableOpacity, View, StyleSheet } from "react-native";
+import { TouchableOpacity, View, StyleSheet, Text } from "react-native";
 import {
   BottomSheetModal,
   BottomSheetView,
@@ -7,7 +7,6 @@ import {
 } from "@gorhom/bottom-sheet";
 import { MaterialIcons, FontAwesome } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
-import Text from "../../assets/fonts/CustomText";
 import { toggleHandicap, toggleMultiple } from "../../reducers/accessibility";
 import { setTransport, resetTransport } from "../../reducers/trips";
 

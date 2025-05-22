@@ -17,10 +17,8 @@ import {
   StyleSheet,
   View,
   TouchableOpacity,
+  Text,
 } from "react-native";
-
-// Texte personnalisé avec la police custom
-import Text from "../assets/fonts/CustomText";
 
 // Icônes FontAwesome
 import FontAwesome from "react-native-vector-icons/FontAwesome";
