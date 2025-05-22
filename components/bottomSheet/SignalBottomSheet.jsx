@@ -1,12 +1,11 @@
-import React, { forwardRef, useState } from "react";
-import { TouchableOpacity, View, StyleSheet, Image } from "react-native";
+import { forwardRef } from "react";
+import { TouchableOpacity, View, StyleSheet } from "react-native";
 import {
   BottomSheetModal,
   BottomSheetView,
   BottomSheetBackdrop,
 } from "@gorhom/bottom-sheet";
 import { useNavigation } from "@react-navigation/native";
-import Text from "../../assets/fonts/CustomText";
 
 import { useDispatch, useSelector } from "react-redux";
 import { toggleSignalement } from "../../reducers/signalement";
@@ -18,8 +17,7 @@ import {
 const SignalBottomSheet = forwardRef(({ handleSheetSignal }, ref) => {
   const navigation = useNavigation();
 
-  const snapPoints = ["50%", "75%"];
-  const signalement = useSelector((state) => state.signalement);
+  const snapPoints = ["50%", "75%"]; // Definie la taille d'ouverture du BottomSheet
 
   const dispatch = useDispatch();
 
@@ -47,9 +45,10 @@ const SignalBottomSheet = forwardRef(({ handleSheetSignal }, ref) => {
       enableDismissOnClose={true}
       backdropComponent={(backdropProps) => (
         <BottomSheetBackdrop
-          {...backdropProps}
-          appearsOnIndex={0}
-          disappearsOnIndex={-1}
+          {...backdropProps} // Permet de faire apparaitre le fond sombre
+          appearsOnIndex={0} // Rend le fond sombre visible
+          disappearsOnIndex={-1} // Rend le fond sombre invisible
+          opacity={0.3} // Opacité du fond sombre
           pressBehavior="close"
         />
       )}

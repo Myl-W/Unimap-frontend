@@ -1,4 +1,4 @@
-import React, { forwardRef, useState, useEffect } from "react";
+import { forwardRef, useState, useEffect } from "react";
 import {
   TouchableOpacity,
   View,
@@ -12,7 +12,7 @@ import {
   BottomSheetView,
   BottomSheetBackdrop,
 } from "@gorhom/bottom-sheet";
-import { MaterialIcons, FontAwesome } from "@expo/vector-icons";
+import { FontAwesome } from "@expo/vector-icons";
 //import Constants from "expo-constants";
 import { useSelector, useDispatch } from "react-redux";
 import polyline from "@mapbox/polyline";
@@ -31,7 +31,7 @@ const SearchBottomSheet = forwardRef(
     const loc = useSelector((state) => state.trips.value);
     const google = process.env.EXPO_PUBLIC_API_GOOGLE;
     const [search, setSearch] = useState("");
-    const snapPoints = ["50%", "75%"];
+    const snapPoints = ["50%", "75%"]; // Definie la taille d'ouverture du BottomSheet
     const lastSearch = useSelector((state) => state.trips?.recentSearch);
 
     //  -------- Fonction pour rechercher un itinéraire via l'API Google Directions ------------
@@ -124,9 +124,10 @@ const SearchBottomSheet = forwardRef(
         enableDismissOnClose={true}
         backdropComponent={(backdropProps) => (
           <BottomSheetBackdrop
-            {...backdropProps}
-            appearsOnIndex={0}
-            disappearsOnIndex={-1}
+            {...backdropProps} // Permet de faire apparaitre le fond sombre
+            appearsOnIndex={0} // Rend le fond sombre visible
+            disappearsOnIndex={-1} // Rend le fond sombre invisible
+            opacity={0.3} // Opacité du fond sombre
             pressBehavior="close"
           />
         )}

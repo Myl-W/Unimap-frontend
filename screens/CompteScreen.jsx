@@ -4,16 +4,10 @@ import {
   StyleSheet,
   View,
   TouchableOpacity,
-  ScrollView,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import Text from "../assets/fonts/CustomText";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import ParametreScreen from "./ParametreScreen";
-import { Component, useEffect } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import Constants from "expo-constants";
-import { userInfos } from "../reducers/user";
 
 export default function CompteScreen({ navigation }) {
   const dispatch = useDispatch();

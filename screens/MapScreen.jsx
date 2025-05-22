@@ -1,19 +1,13 @@
 import "react-native-reanimated";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
-import { useRef, useMemo, useState, useEffect, useCallback } from "react";
-import {
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  Image,
-  Button,
-} from "react-native";
-import MapView, { Marker, Polyline } from "react-native-maps";
+import { useRef, useState, useEffect, useCallback } from "react";
+import { View, StyleSheet, TouchableOpacity, Image } from "react-native";
+import MapView, { Polyline } from "react-native-maps";
 //import polyline from "@mapbox/polyline";
 import * as Location from "expo-location";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
-import { setRouteCoords, userLoc, resetRouteCoords } from "../reducers/trips";
+import { userLoc, resetRouteCoords } from "../reducers/trips";
 
 //  --------------  Import des BottomSheets -----------------
 import SearchBottomSheet from "../components/bottomSheet/SearchBottomSheet";
@@ -140,7 +134,7 @@ export default function MapScreen() {
         </View>
       </MapView>
 
-      <BottomSheetModalProvider enablePanDownToClose={true}>
+      <BottomSheetModalProvider>
         {/*BottomSheet pour la recherche*/}
         <SearchBottomSheet
           ref={searchSheetRef}

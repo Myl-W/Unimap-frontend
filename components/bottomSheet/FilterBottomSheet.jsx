@@ -1,4 +1,4 @@
-import React, { forwardRef, useState } from "react";
+import { forwardRef } from "react";
 import { TouchableOpacity, View, StyleSheet } from "react-native";
 import {
   BottomSheetModal,
@@ -14,7 +14,7 @@ import { setTransport, resetTransport } from "../../reducers/trips";
 const FilterBottomSheet = forwardRef(({ handleSheetFilters }, ref) => {
   const transport = useSelector((state) => state.trips.selectedTransport);
 
-  const snapPoints = ["50%", "75%"];
+  const snapPoints = ["50%", "75%"]; // Definie la taille d'ouverture du BottomSheet
 
   const dispatch = useDispatch();
 
@@ -69,9 +69,10 @@ const FilterBottomSheet = forwardRef(({ handleSheetFilters }, ref) => {
       enableDismissOnClose={true}
       backdropComponent={(backdropProps) => (
         <BottomSheetBackdrop
-          {...backdropProps}
-          appearsOnIndex={0}
-          disappearsOnIndex={-1}
+          {...backdropProps} // Permet de faire apparaitre le fond sombre
+          appearsOnIndex={0} // Rend le fond sombre visible
+          disappearsOnIndex={-1} // Rend le fond sombre invisible
+          opacity={0.3} // Opacité du fond sombre
           pressBehavior="close"
         />
       )}

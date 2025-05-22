@@ -1,12 +1,12 @@
-import React, { useRef, useEffect } from "react";
+import { useRef, useEffect, useMemo } from "react";
 import { View, StyleSheet, TouchableOpacity } from "react-native";
 import Text from "../../assets/fonts/CustomText";
 import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
 const TripBottomSheet = ({ isRouteActive, onStopTrip }) => {
   const bottomSheetRef = useRef(null);
-  const snapPoints = ["20%", "70%"];
+  const snapPoints = useMemo(() => ["20%", "70%"], []); // Definie la taille d'ouverture du BottomSheet
   const tripinfos = useSelector((state) => state.trips.value.tripInfos);
 
   // Fonction pour fermer la bottom sheet (continuer le trajet)
@@ -27,19 +27,7 @@ const TripBottomSheet = ({ isRouteActive, onStopTrip }) => {
   }, [isRouteActive]);
 
   return (
-    <BottomSheetModal
-      ref={bottomSheetRef}
-      snapPoints={snapPoints}
-      enableDismissOnClose={true}
-      backdropComponent={(backdropProps) => (
-        <BottomSheetBackdrop
-          {...backdropProps}
-          appearsOnIndex={0}
-          disappearsOnIndex={-1}
-          pressBehavior="close"
-        />
-      )}
-    >
+    <BottomSheetModal ref={bottomSheetRef} snapPoints={snapPoints}>
       <BottomSheetView style={styles.content}>
         <View style={styles.header}>
           {tripinfos ? (
