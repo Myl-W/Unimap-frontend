@@ -27,7 +27,12 @@ const TripBottomSheet = ({ isRouteActive, onStopTrip }) => {
   }, [isRouteActive]);
 
   return (
-    <BottomSheetModal ref={bottomSheetRef} snapPoints={snapPoints}>
+    <BottomSheetModal
+      ref={bottomSheetRef}
+      snapPoints={snapPoints}
+      enablePanDownToClose={false} // Désactive le glissement vers le bas pour fermer la bottom sheet
+      index={0} // Définit l'index de la bottom sheet à 0 (20%)
+    >
       <BottomSheetView style={styles.content}>
         <View style={styles.header}>
           {tripinfos ? (

@@ -11,6 +11,7 @@ import Text from "../../assets/fonts/CustomText";
 import { toggleHandicap, toggleMultiple } from "../../reducers/accessibility";
 import { setTransport, resetTransport } from "../../reducers/trips";
 
+// forwardRef permet de passer une référence à un composant enfant
 const FilterBottomSheet = forwardRef(({ handleSheetFilters }, ref) => {
   const transport = useSelector((state) => state.trips.selectedTransport);
 

@@ -14,6 +14,7 @@ import {
   signalButtonStyles,
 } from "./signalButton/SignalButton";
 
+// forwardRef permet de passer une référence à un composant enfant
 const SignalBottomSheet = forwardRef(({ handleSheetSignal }, ref) => {
   const navigation = useNavigation();
 

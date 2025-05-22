@@ -1,9 +1,8 @@
 import "react-native-reanimated";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
-import { useRef, useState, useEffect, useCallback } from "react";
+import { useRef, useState, useEffect } from "react";
 import { View, StyleSheet, TouchableOpacity, Image } from "react-native";
 import MapView, { Polyline } from "react-native-maps";
-//import polyline from "@mapbox/polyline";
 import * as Location from "expo-location";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
@@ -20,20 +19,20 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 
 export default function MapScreen() {
   const dispatch = useDispatch();
+
+  // --------------  References pour les BottomSheets ----------------
+  //  Ces references permettent de manipuler les BottomSheets
   const searchSheetRef = useRef(null);
   const filterSheetRef = useRef(null);
   const signalSheetRef = useRef(null);
+  //  Reference pour la carte
+  //  Elle permet de manipuler la carte (ex: centrer sur la position actuelle)
   const mapRef = useRef(null);
 
   const [currentPosition, setCurrentPosition] = useState(null);
   const route = useSelector((state) => state.trips.coords?.routeCoords);
 
   const navigation = useNavigation();
-
-  const handleSheetFilters = useCallback((index) => {}, []);
-  const handleSheetSearch = useCallback((index) => {}, []);
-  const handleSheetSignal = useCallback((index) => {}, []);
-  const [coordinates, setCoordinates] = useState([]);
 
   // -------- Navigation dans le header ---------------
   useEffect(() => {
@@ -136,22 +135,13 @@ export default function MapScreen() {
 
       <BottomSheetModalProvider>
         {/*BottomSheet pour la recherche*/}
-        <SearchBottomSheet
-          ref={searchSheetRef}
-          handleSheetSearch={handleSheetSearch}
-        />
+        <SearchBottomSheet ref={searchSheetRef} />
 
         {/*BottomSheet pour les filtres*/}
-        <FilterBottomSheet
-          ref={filterSheetRef}
-          handleSheetFilters={handleSheetFilters}
-        />
+        <FilterBottomSheet ref={filterSheetRef} />
 
         {/*BottomSheet pour le signalement*/}
-        <SignalBottomSheet
-          ref={signalSheetRef}
-          handleSheetSearch={handleSheetSignal}
-        />
+        <SignalBottomSheet ref={signalSheetRef} />
         {/*BottomSheet pour le trajet*/}
         <TripBottomSheet
           isRouteActive={route && route.length > 0}
