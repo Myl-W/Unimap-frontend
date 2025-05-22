@@ -40,7 +40,7 @@ const SearchBottomSheet = forwardRef(({ handleSheetSearch }, ref) => {
     )
       .then((response) => response.json())
       .then((data) => {
-        // ------------- Adresse réelle de départ obtenue depuis l'API Google --------------
+        // ------------- Adresse réelle d'arriver obtenue depuis l'API Google --------------
         const arrival = data.routes[0].legs[0].end_address;
         // ------------- Enregistrement dans l'historique des recherches -------------------
         const searchRecent = {
@@ -48,9 +48,12 @@ const SearchBottomSheet = forwardRef(({ handleSheetSearch }, ref) => {
         };
         dispatch(recentSearch(searchRecent));
 
-        // ------------- Récupération et décodage de la route -------------------
+        // ------------- Récupération de la polyline  -------------------
         const encodedPolyline = data.routes[0].overview_polyline.points;
+        // ------------- Décodage de la polyligne -------------------
         const decodedPoints = polyline.decode(encodedPolyline);
+        // ------------- Conversion des points décodés en coordonnées latitude/longitude ------
+        // ------------- et stockage dans un tableau d'objets -------------------
         const coords = decodedPoints.map((point) => ({
           latitude: point[0],
           longitude: point[1],
@@ -73,7 +76,7 @@ const SearchBottomSheet = forwardRef(({ handleSheetSearch }, ref) => {
       });
   };
 
-  // Si une des valeurs change, on lance la fonction de recherche Google
+  // Si la valeur transport change, on lance la fonction de recherche Google
   // uniquement si le champ 'search' n'est pas vide (après suppression des espaces).
   useEffect(() => {
     if (search.trim() !== "") {
