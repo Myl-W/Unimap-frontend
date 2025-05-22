@@ -1,16 +1,21 @@
-import React, { forwardRef, useState } from "react";
+import { forwardRef } from "react";
 import { TouchableOpacity, View, StyleSheet } from "react-native";
-import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
+import {
+  BottomSheetModal,
+  BottomSheetView,
+  BottomSheetBackdrop,
+} from "@gorhom/bottom-sheet";
 import { MaterialIcons, FontAwesome } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
 import Text from "../../assets/fonts/CustomText";
 import { toggleHandicap, toggleMultiple } from "../../reducers/accessibility";
 import { setTransport, resetTransport } from "../../reducers/trips";
 
+// forwardRef permet de passer une référence à un composant enfant
 const FilterBottomSheet = forwardRef(({ handleSheetFilters }, ref) => {
   const transport = useSelector((state) => state.trips.selectedTransport);
 
-  const snapPoints = ["50%", "75%"];
+  const snapPoints = ["50%", "75%"]; // Definie la taille d'ouverture du BottomSheet
 
   const dispatch = useDispatch();
 
@@ -62,6 +67,16 @@ const FilterBottomSheet = forwardRef(({ handleSheetFilters }, ref) => {
       ref={ref}
       onChange={handleSheetFilters}
       snapPoints={snapPoints}
+      enableDismissOnClose={true}
+      backdropComponent={(backdropProps) => (
+        <BottomSheetBackdrop
+          {...backdropProps} // Permet de faire apparaitre le fond sombre
+          appearsOnIndex={0} // Rend le fond sombre visible
+          disappearsOnIndex={-1} // Rend le fond sombre invisible
+          opacity={0.3} // Opacité du fond sombre
+          pressBehavior="close"
+        />
+      )}
     >
       <BottomSheetView
         style={styles.contentContainer}

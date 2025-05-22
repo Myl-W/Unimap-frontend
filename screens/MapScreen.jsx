@@ -1,19 +1,12 @@
 import "react-native-reanimated";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
-import { useRef, useMemo, useState, useEffect, useCallback } from "react";
-import {
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  Image,
-  Button,
-} from "react-native";
-import MapView, { Marker, Polyline } from "react-native-maps";
-//import polyline from "@mapbox/polyline";
+import { useRef, useState, useEffect } from "react";
+import { View, StyleSheet, TouchableOpacity, Image } from "react-native";
+import MapView, { Polyline } from "react-native-maps";
 import * as Location from "expo-location";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
-import { setRouteCoords, userLoc, resetRouteCoords } from "../reducers/trips";
+import { userLoc, resetRouteCoords } from "../reducers/trips";
 
 //  --------------  Import des BottomSheets -----------------
 import SearchBottomSheet from "../components/bottomSheet/SearchBottomSheet";
@@ -26,21 +19,20 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 
 export default function MapScreen() {
   const dispatch = useDispatch();
+
+  // --------------  References pour les BottomSheets ----------------
+  //  Ces references permettent de manipuler les BottomSheets
   const searchSheetRef = useRef(null);
   const filterSheetRef = useRef(null);
   const signalSheetRef = useRef(null);
+  //  Reference pour la carte
+  //  Elle permet de manipuler la carte (ex: centrer sur la position actuelle)
   const mapRef = useRef(null);
 
   const [currentPosition, setCurrentPosition] = useState(null);
   const route = useSelector((state) => state.trips.coords?.routeCoords);
 
   const navigation = useNavigation();
-
-  const handleSheetFilters = useCallback((index) => {}, []);
-  const handleSheetSearch = useCallback((index) => {}, []);
-  const handleSheetSignal = useCallback((index) => {}, []);
-  const handleTripReady = () => setIsTripReady(true);
-  const [coordinates, setCoordinates] = useState([]);
 
   // -------- Navigation dans le header ---------------
   useEffect(() => {
@@ -143,17 +135,10 @@ export default function MapScreen() {
 
       <BottomSheetModalProvider>
         {/*BottomSheet pour la recherche*/}
-        <SearchBottomSheet
-          ref={searchSheetRef}
-          handleSheetSearch={handleSheetSearch}
-          onTripReady={handleTripReady}
-        />
+        <SearchBottomSheet ref={searchSheetRef} />
 
         {/*BottomSheet pour les filtres*/}
-        <FilterBottomSheet
-          ref={filterSheetRef}
-          handleSheetFilters={handleSheetFilters}
-        />
+        <FilterBottomSheet ref={filterSheetRef} />
 
         {/*BottomSheet pour le signalement*/}
         <SignalBottomSheet
@@ -223,14 +208,23 @@ const styles = StyleSheet.create({
   buttonFiltre: {
     position: "absolute",
     top: 20,
-    right: 20,
-    width: 50,
+    left: 20,
+    width: 60,
     height: 30,
     backgroundColor: "#DFF0FF",
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 20,
     borderWidth: 1,
+
+    // -----  shadow iOS  -----
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5,
+    shadowRadius: 4.84,
+
+    // -----  shadow Android  -----
+    elevation: 5,
   },
 
   //  -------- CheckBox des filtres -----------

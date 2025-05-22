@@ -1,4 +1,4 @@
-import React, { forwardRef, useState, useEffect } from "react";
+import { forwardRef, useState, useEffect } from "react";
 import {
   TouchableOpacity,
   View,
@@ -7,9 +7,12 @@ import {
   ScrollView,
 } from "react-native";
 import Text from "../../assets/fonts/CustomText";
-import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
-import { MaterialIcons, FontAwesome } from "@expo/vector-icons";
-//import Constants from "expo-constants";
+import {
+  BottomSheetModal,
+  BottomSheetView,
+  BottomSheetBackdrop,
+} from "@gorhom/bottom-sheet";
+import { FontAwesome } from "@expo/vector-icons";
 import { useSelector, useDispatch } from "react-redux";
 import polyline from "@mapbox/polyline";
 
@@ -20,13 +23,14 @@ import {
   suppRecentSearch,
 } from "../../reducers/trips";
 
+// forwardRef permet de passer une référence à un composant enfant
 const SearchBottomSheet = forwardRef(({ handleSheetSearch }, ref) => {
   const transport = useSelector((state) => state.trips.selectedTransport);
   const dispatch = useDispatch();
   const loc = useSelector((state) => state.trips.value);
   const google = process.env.EXPO_PUBLIC_API_GOOGLE;
   const [search, setSearch] = useState("");
-  const snapPoints = ["50%", "75%"];
+  const snapPoints = ["50%", "75%"]; // Definie la taille d'ouverture du BottomSheet
   const lastSearch = useSelector((state) => state.trips?.recentSearch);
 
   //  -------- Fonction pour rechercher un itinéraire via l'API Google Directions ------------
@@ -62,8 +66,6 @@ const SearchBottomSheet = forwardRef(({ handleSheetSearch }, ref) => {
         //  ----------- Mise à jour du réducer avec les coordonnées de la route -------------
         dispatch(setRouteCoords(coords));
         ref?.current?.close();
-        // Si le parent a donné une fonction onTripReady, on l’exécute pour lui dire que le trajet est prêt (pour ouvrir la bottom sheet du trajet)
-        if (props.onTripReady) props.onTripReady();
 
         // ------------- Fermeture de la bottomSheet --------------------------
       })
@@ -86,23 +88,52 @@ const SearchBottomSheet = forwardRef(({ handleSheetSearch }, ref) => {
       <View key={index} style={styles.historyAdress}>
         <View style={styles.historyLign}>
           <FontAwesome name="clock-o" size={24} color="black" />
-          <FontAwesome name="heart" size={24} color="black" />
+          <TouchableOpacity onPress={() => addFavorites(index)}>
+            <FontAwesome name="heart" size={22} color="black" />
+          </TouchableOpacity>
         </View>
         <View>
           <Text style={styles.addressHistory}>{item.arrival}</Text>
         </View>
-        <FontAwesome
-          name="trash"
-          size={24}
-          color="black"
-          style={styles.iconDelete}
-        />
+        <TouchableOpacity onPress={() => handleDelete(index)}>
+          <FontAwesome
+            name="trash"
+            size={24}
+            color="black"
+            style={styles.iconDelete}
+          />
+        </TouchableOpacity>
       </View>
     ));
   };
 
-  const suppRecent = () => {
-    dispatch(suppRecentSearch());
+  // Fonction pour ajouter une adresse aux favoris
+  const addFavorites = (index) => {
+    fetch(`${backUrl}/addFavorites`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ lastname, firstname }),
+    })
+      .then((response) => response.json())
+      .then(async (data) => {
+        if (data.result && data.token) {
+          // Enregistrement du token ou toute autre logique
+          console.log("Favori ajouté avec succès !");
+        } else {
+          console.warn("Échec de l'ajout aux favoris.");
+        }
+      })
+      .catch((error) => {
+        console.error("Erreur lors de l'ajout aux favoris:", error);
+      });
+  };
+
+  const handleDelete = (index) => {
+    const updatedSearch = [...lastSearch];
+    // Supprime l'élément à l'index spécifié
+    updatedSearch.splice(index, 1);
+    // Met à jour le store Redux avec le tableau modifié
+    dispatch(suppRecentSearch(updatedSearch));
   };
 
   return (
@@ -110,6 +141,16 @@ const SearchBottomSheet = forwardRef(({ handleSheetSearch }, ref) => {
       ref={ref}
       onChange={handleSheetSearch}
       snapPoints={snapPoints}
+      enableDismissOnClose={true}
+      backdropComponent={(backdropProps) => (
+        <BottomSheetBackdrop
+          {...backdropProps} // Permet de faire apparaitre le fond sombre
+          appearsOnIndex={0} // Rend le fond sombre visible
+          disappearsOnIndex={-1} // Rend le fond sombre invisible
+          opacity={0.3} // Opacité du fond sombre
+          pressBehavior="close"
+        />
+      )}
     >
       <BottomSheetView style={styles.contentContainer}>
         <View style={styles.buttonRow}>
@@ -144,7 +185,7 @@ const SearchBottomSheet = forwardRef(({ handleSheetSearch }, ref) => {
             }}
           />
 
-          <TouchableOpacity onPress={suppRecent}>
+          <TouchableOpacity>
             <FontAwesome name="microphone" size={24} color="black" />
           </TouchableOpacity>
         </View>
@@ -222,6 +263,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     position: "relative",
     width: "100%",
+    minHeight: 110,
+    justifyContent: "space-between",
   },
   historyLign: {
     flexDirection: "row",
@@ -229,8 +272,8 @@ const styles = StyleSheet.create({
   },
   iconDelete: {
     position: "absolute",
-    bottom: 10,
-    right: 10,
+    bottom: 2,
+    right: 2,
   },
   addressHistory: {
     fontSize: 20,

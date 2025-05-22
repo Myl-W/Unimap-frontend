@@ -36,8 +36,8 @@ export const tripSlice = createSlice({
     resetTripInfos: (state) => {
       state.value.tripInfos = null;
     },
-    suppRecentSearch: (state) => {
-      state.recentSearch = null;
+    suppRecentSearch: (state, action) => {
+      state.recentSearch = action.payload;
     },
     recentSearch: (state, action) => {
       // Vérifie si recentSearch n'est pas un tableau (ex : s'il est null ou undefined)
