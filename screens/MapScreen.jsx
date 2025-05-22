@@ -159,6 +159,7 @@ export default function MapScreen() {
         <SignalBottomSheet
           ref={signalSheetRef}
           handleSheetSearch={handleSheetSignal}
+          id={1}
         />
         {/*BottomSheet pour le trajet*/}
         <TripBottomSheet
