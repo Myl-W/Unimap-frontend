@@ -18,25 +18,28 @@ import { toggleHandicap } from "../reducers/accessibility";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
 export default function RegisterScreen({ navigation }) {
-  const backUrl = Constants.expoConfig?.extra?.BACK_URL;
+  const backUrl = Constants.expoConfig?.extra?.BACK_URL; // URL backend récupérée depuis les variables d'environnement
   const dispatch = useDispatch();
 
+  // États pour stocker les informations saisies par l'utilisateur
   const [firstname, setFirstname] = useState("");
   const [lastname, setLastname] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [date, setDate] = useState(new Date());
-  const [show, setShow] = useState(false);
+  const [date, setDate] = useState(new Date()); // Date de naissance par défaut = aujourd’hui
+  const [show, setShow] = useState(false); // Contrôle d'affichage du date picker
 
+  // Fonction appelée lorsqu'une nouvelle date est sélectionnée
   const onChange = (event, selectedDate) => {
-    setShow(Platform.OS === "ios");
+    setShow(Platform.OS === "ios"); // Gère la fermeture du date picker sur Android
     if (selectedDate) {
       setDate(selectedDate);
     }
   };
 
-  const accessibility = useSelector((state) => state.accessibility);
+  const accessibility = useSelector((state) => state.accessibility); // Accès à l’état global redux lié aux handicaps
 
+  // Liste des handicaps proposés
   const handicapKeys = [
     "sourd",
     "aveugle",
@@ -47,26 +50,27 @@ export default function RegisterScreen({ navigation }) {
     "autisme",
   ];
 
+  // Fonction pour activer/désactiver un handicap donné
   const handleToggle = (key) => {
-    dispatch(toggleHandicap(key));
+    dispatch(toggleHandicap(key)); // Envoie une action redux pour modifier l’état
   };
 
-  //  -------- Fonction pour l'enregistrement de l'utilisateur ------------
+  // Fonction principale appelée lors du clic sur "S'inscrire"
   const handleRegister = () => {
+    // Récupère la liste des handicaps sélectionnés (ceux ayant la valeur true)
     const selectedHandicaps = Object.keys(accessibility).filter(
       (key) => accessibility[key]
     );
 
+    // Requête HTTP POST vers le backend pour enregistrer l'utilisateur
     fetch(`${backUrl}/register`, {
-      //  ------  fetch vers la route /register du backend ------------
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        //  ------- Envoi des infos utilisateur dans le body de la requete  --------
         lastname: lastname,
         firstname: firstname,
-        email: email.trim().toLowerCase(), // -----  Format sans espaces et en minuscule ------
-        password: password.trim(),
+        email: email.trim().toLowerCase(), // Normalise l'email
+        password: password.trim(), // Supprime les espaces inutiles
         birthdate: date,
         disability: selectedHandicaps,
       }),
@@ -74,10 +78,11 @@ export default function RegisterScreen({ navigation }) {
       .then((response) => response.json())
       .then(async (data) => {
         if (data.result && data.token) {
-          //  ------  Si il y a data et token -------{
           try {
-            await AsyncStorage.setItem("token", data.token); // -----  Enregistrement du token  ----------
-            navigation.navigate("Map"); //  ----- Navigation vers MapScreen ----------
+            // Sauvegarde du token en local (stockage persistant)
+            await AsyncStorage.setItem("token", data.token);
+            // Navigation vers la page de carte après inscription
+            navigation.navigate("Map");
           } catch (error) {
             console.error("Erreur en sauvegardant le token:", error);
             alert("Erreur lors de la sauvegarde du token.");
@@ -95,10 +100,11 @@ export default function RegisterScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        behavior={Platform.OS === "ios" ? "padding" : "height"} // Pour éviter que le clavier recouvre les champs sur iOS
         style={styles.keyboardAvoid}
       >
         <ScrollView contentContainerStyle={styles.scrollContent}>
+          {/* Champs de saisie pour les infos personnelles */}
           <TextInput
             placeholder="nom"
             onChangeText={setLastname}
@@ -125,6 +131,8 @@ export default function RegisterScreen({ navigation }) {
             keyboardType="email-address"
             style={styles.input}
           />
+
+          {/* Sélection de la date de naissance */}
           <View style={styles.inputDate}>
             <Text style={styles.titleDate}>Date de naissance</Text>
             <DateTimePicker
@@ -134,10 +142,12 @@ export default function RegisterScreen({ navigation }) {
               display="default"
               onChange={onChange}
               onPress={() => setShow(true)}
-              maximumDate={new Date()}
+              maximumDate={new Date()} // Empêche de choisir une date future
               locale="fr-FR"
             />
           </View>
+
+          {/* Section pour la sélection des handicaps */}
           <View style={styles.checkboxContainer}>
             <Text style={styles.subtitle}>Sélectionnez votre handicap</Text>
             <View style={styles.checkBoxGrid}>
@@ -165,6 +175,8 @@ export default function RegisterScreen({ navigation }) {
               ))}
             </View>
           </View>
+
+          {/* Bouton principal d'inscription */}
           <TouchableOpacity
             onPress={handleRegister}
             style={styles.button}
@@ -173,9 +185,12 @@ export default function RegisterScreen({ navigation }) {
             <Text style={styles.textButton}>S'inscrire</Text>
           </TouchableOpacity>
 
+          {/* Ligne de séparation */}
           <View style={styles.line} />
 
           <Text style={styles.textOu}>Ou</Text>
+
+          {/* Boutons d'inscription avec réseaux sociaux (non fonctionnels ici) */}
           <View style={styles.imageContent}>
             <TouchableOpacity onPress={handleRegister} activeOpacity={0.8}>
               <Image

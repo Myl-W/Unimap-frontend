@@ -10,31 +10,34 @@ import Text from "../assets/fonts/CustomText";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 
 export default function CompteScreen({ navigation }) {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch(); // Hook pour dispatcher des actions Redux
 
-  // -------- Récuperation des infos utilisateur depuis le reducer ------------
+  // -------- Récupération des informations de l'utilisateur depuis le reducer Redux ------------
   const userInfo = useSelector((state) => state.user.value.profile);
 
-  //  ------  Formattage de la date pour afficher la date de naissance  --------
+  // ------ Formattage de la date de naissance (au format français) ------
   const dateObj = new Date(userInfo.birthdate);
   const formattedDate = dateObj.toLocaleDateString("fr-FR");
 
-  //  --------- Calcul de l'age en fonction de la birthdate et de la date du jour -----------
-  const today = new Date();
-  let age = today.getFullYear() - dateObj.getFullYear();
-  const monthDiff = today.getMonth() - dateObj.getMonth();
-  const dayDiff = today.getDate() - dateObj.getDate();
+  // --------- Calcul de l'âge de l'utilisateur à partir de sa date de naissance ---------
+  const today = new Date(); // Date actuelle
+  let age = today.getFullYear() - dateObj.getFullYear(); // Différence en années
+  const monthDiff = today.getMonth() - dateObj.getMonth(); // Différence en mois
+  const dayDiff = today.getDate() - dateObj.getDate(); // Différence en jours
 
+  // Si l'anniversaire n'est pas encore passé cette année, on retire 1 an
   if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
     age--;
   }
 
   return (
     <View style={styles.container}>
+      {/* Permet d'éviter que le clavier ne cache les éléments sur iOS/Android */}
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         <View style={styles.scrollContent}>
+          {/* Titre de la section des points */}
           <Text
             style={styles.title}
             accessibilityLabel="Nombre de points"
@@ -43,13 +46,16 @@ export default function CompteScreen({ navigation }) {
             Points
           </Text>
 
+          {/* Section avatar + points */}
           <View style={styles.avatarContainer}>
             <View style={styles.point}>
               <View style={styles.pointContent}>
-                <Text style={styles.number}>#9999</Text>
+                <Text style={styles.number}>#9999</Text>{" "}
+                {/* Numéro de l'utilisateur (fictif ici) */}
               </View>
             </View>
             <View style={styles.avatar}>
+              {/* Icône de l'utilisateur */}
               <FontAwesome
                 name="user"
                 size={150}
@@ -61,6 +67,7 @@ export default function CompteScreen({ navigation }) {
             </View>
           </View>
 
+          {/* Affichage des informations personnelles de l'utilisateur */}
           <View style={styles.bodyContainer}>
             <Text style={styles.bodyText}>
               <Text
@@ -72,6 +79,7 @@ export default function CompteScreen({ navigation }) {
               </Text>
               {userInfo.firstname}
             </Text>
+
             <Text style={styles.bodyText}>
               <Text
                 style={styles.bold}
@@ -82,6 +90,7 @@ export default function CompteScreen({ navigation }) {
               </Text>
               {userInfo.lastname}
             </Text>
+
             <Text style={styles.bodyText}>
               <Text
                 style={styles.bold}
@@ -92,6 +101,7 @@ export default function CompteScreen({ navigation }) {
               </Text>
               {`${age} ans`}
             </Text>
+
             <View style={styles.bodyTextColumn}>
               <Text
                 style={styles.bold}
@@ -102,6 +112,7 @@ export default function CompteScreen({ navigation }) {
               </Text>
               <Text style={styles.bodyText}>{formattedDate}</Text>
             </View>
+
             <View style={styles.bodyTextColumn}>
               <Text
                 style={styles.bold}
@@ -112,18 +123,9 @@ export default function CompteScreen({ navigation }) {
               </Text>
               <Text style={styles.bodyText}>{userInfo.email}</Text>
             </View>
-            {/* <View style={styles.bodyTextColumn}>
-              <Text
-                style={styles.bold}
-                accessibilityLabel="Téléphone"
-                accessibilityRole="text"
-              >
-                Téléphone:
-              </Text>
-              <Text style={styles.bodyText}>06.99.99.99.99</Text>
-            </View> */}
           </View>
 
+          {/* Bouton Adresse Domicile / Travail */}
           <View style={styles.buttonRow}>
             <TouchableOpacity
               style={styles.optionButton}
@@ -131,6 +133,7 @@ export default function CompteScreen({ navigation }) {
               accessibilityRole="button"
             >
               <View style={styles.iconTextRow}>
+                {/* Icône domicile */}
                 <FontAwesome
                   name="home"
                   size={24}
@@ -141,6 +144,7 @@ export default function CompteScreen({ navigation }) {
 
                 <Text style={styles.optionButtonText}> / </Text>
 
+                {/* Icône travail */}
                 <FontAwesome
                   name="briefcase"
                   size={24}
@@ -152,12 +156,13 @@ export default function CompteScreen({ navigation }) {
             </TouchableOpacity>
           </View>
 
+          {/* Bouton pour accéder aux paramètres */}
           <View style={styles.footer}>
             <TouchableOpacity
               accessibilityLabel="Aller aux paramètres"
               accessibilityRole="button"
               style={styles.optionButton}
-              onPress={() => navigation.navigate("Parametre")}
+              onPress={() => navigation.navigate("Parametre")} // Navigation vers l'écran Parametre
             >
               <Text style={styles.optionButtonText}>
                 <FontAwesome
@@ -167,7 +172,7 @@ export default function CompteScreen({ navigation }) {
                   accessibilityLabel="Parametre"
                   accessibilityRole="image"
                 />{" "}
-                Paramètres
+                <Text style={styles.optionButtonText}>Paramètres</Text>
               </Text>
             </TouchableOpacity>
           </View>
