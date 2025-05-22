@@ -1,77 +1,103 @@
+//* ----------Import des librairies-----------------------
+
+// Import de la librairie nécessaire pour les animations avec Reanimated
 import "react-native-reanimated";
+
+// Fournit un contexte pour afficher des BottomSheets (panneaux glissants)
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
+
+// Hooks de React pour gérer l’état, les effets et les références
 import { useRef, useState, useEffect } from "react";
+
+// Composants de base React Native
 import { View, StyleSheet, TouchableOpacity, Image } from "react-native";
+
+// Carte interactive avec possibilité de tracer des lignes (routes)
 import MapView, { Polyline } from "react-native-maps";
+
+// Librairie Expo pour accéder à la géolocalisation
 import * as Location from "expo-location";
+
+// Hook pour interagir avec la navigation
 import { useNavigation } from "@react-navigation/native";
+
+// Hooks pour accéder à Redux (store global)
 import { useDispatch, useSelector } from "react-redux";
+
+// Actions Redux : enregistrer la position utilisateur et réinitialiser le trajet
 import { userLoc, resetRouteCoords } from "../reducers/trips";
 
-//  --------------  Import des BottomSheets -----------------
+//* Import des composants BottomSheet personnalisés
 import SearchBottomSheet from "../components/bottomSheet/SearchBottomSheet";
 import FilterBottomSheet from "../components/bottomSheet/FilterBottomSheet";
 import SignalBottomSheet from "../components/bottomSheet/SignalBottomSheet";
 import TripBottomSheet from "../components/bottomSheet/TripBottomSheet";
 
-//  ----------  Import des icones FontAwesome ---------------
+//* Import des icônes FontAwesome
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 
+//* Déclaration du composant principal de l'écran de carte
 export default function MapScreen() {
+  // Permet de déclencher des actions Redux
   const dispatch = useDispatch();
 
-  // --------------  References pour les BottomSheets ----------------
-  //  Ces references permettent de manipuler les BottomSheets
+  // Références vers les différents BottomSheets (permet d’ouvrir/fermer ces panneaux)
   const searchSheetRef = useRef(null);
   const filterSheetRef = useRef(null);
   const signalSheetRef = useRef(null);
-  //  Reference pour la carte
-  //  Elle permet de manipuler la carte (ex: centrer sur la position actuelle)
+
+  // Référence vers la carte, utilisée pour manipuler l'affichage (zoom, centrage, etc.)
   const mapRef = useRef(null);
 
+  // État local pour stocker la position actuelle de l’utilisateur
   const [currentPosition, setCurrentPosition] = useState(null);
+
+  // Récupération du trajet en cours depuis Redux
   const route = useSelector((state) => state.trips.coords?.routeCoords);
 
+  // Hook de navigation
   const navigation = useNavigation();
 
-  // -------- Navigation dans le header ---------------
+  //* Configuration des boutons dans le header (barre du haut)
   useEffect(() => {
     navigation.setOptions({
+      // Bouton de recherche à droite
       headerRight: () => (
-        //  ----------  Bouton rechercher ---------------
         <TouchableOpacity
-          onPress={() => searchSheetRef.current?.present()}
+          onPress={() => searchSheetRef.current?.present()} // Ouvre la BottomSheet de recherche
           style={{ marginRight: 15 }}
         >
           <FontAwesome name="search" size={24} color="black" />
         </TouchableOpacity>
       ),
+      // Bouton menu (drawer) à gauche
       headerLeft: () => (
-        // -------- Bouton menu drawer  --------------
         <TouchableOpacity
-          onPress={() => navigation.openDrawer()}
+          onPress={() => navigation.openDrawer()} // Ouvre le menu latéral
           style={{ marginLeft: 15 }}
         >
           <FontAwesome name="bars" size={24} color="black" />
         </TouchableOpacity>
       ),
     });
-  }, [navigation]);
+  }, [navigation]); // Dépendance : navigation
 
-  // -------------  Permission de la geolocalisation  --------------
+  //* Demande de permission et récupération de la position de l’utilisateur
   useEffect(() => {
     (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") return;
-      let location = await Location.getCurrentPositionAsync({});
-      setCurrentPosition(location.coords);
+      let { status } = await Location.requestForegroundPermissionsAsync(); // Demande la permission
+      if (status !== "granted") return; // Si refusée, on sort
+      let location = await Location.getCurrentPositionAsync({}); // Récupère la position
+      setCurrentPosition(location.coords); // Met à jour l’état
     })();
-  }, []);
+  }, []); // Exécuté une seule fois au montage
 
+  //* Mise à jour de la carte et du store Redux lorsque la position change
   useEffect(() => {
     if (currentPosition) {
-      dispatch(userLoc(currentPosition));
+      dispatch(userLoc(currentPosition)); // Envoie la position à Redux
       if (mapRef.current) {
+        // Centre la carte sur la nouvelle position avec animation
         mapRef.current.animateToRegion(
           {
             latitude: currentPosition.latitude,
@@ -79,35 +105,40 @@ export default function MapScreen() {
             latitudeDelta: 0.05,
             longitudeDelta: 0.05,
           },
-          1000
+          1000 // Durée de l’animation en ms
         );
       }
     }
-  }, [currentPosition]);
+  }, [currentPosition]); // Exécuté à chaque changement de position
 
-  // -------------  Stop le trajet en cours -------------
+  //* Fonction appelée pour stopper un trajet (reset du store Redux)
   const handleStopTrip = () => {
     dispatch(resetRouteCoords());
   };
 
+  //* ----------- Rendu du composant principal -----------
   return (
     <View style={styles.container}>
+      {/* Affichage de la carte */}
       <MapView
         ref={mapRef}
         mapType="normal"
         style={styles.map}
-        showsUserLocation
+        showsUserLocation // Affiche la position de l’utilisateur sur la carte
         initialRegion={{
+          // Région initiale affichée (Paris par défaut)
           latitude: 48.8566,
           longitude: 2.3522,
           latitudeDelta: 0.05,
           longitudeDelta: 0.05,
         }}
       >
+        {/* Si un trajet est en cours, on trace une ligne */}
         {route && route.length > 0 && (
           <Polyline coordinates={route} strokeWidth={8} strokeColor="blue" />
         )}
 
+        {/* Bouton d’accès aux filtres */}
         <View style={styles.buttonFiltre}>
           <TouchableOpacity
             onPress={() => filterSheetRef.current?.present()}
@@ -117,6 +148,8 @@ export default function MapScreen() {
             <FontAwesome name="sliders" size={24} color="black" />
           </TouchableOpacity>
         </View>
+
+        {/* Bouton pour effectuer un signalement */}
         <View style={styles.buttonSignalement}>
           <TouchableOpacity
             onPress={() => signalSheetRef.current?.present()}
@@ -133,16 +166,18 @@ export default function MapScreen() {
         </View>
       </MapView>
 
+      {/* Fournisseur de contexte pour les BottomSheets */}
       <BottomSheetModalProvider>
-        {/*BottomSheet pour la recherche*/}
+        {/* BottomSheet de recherche */}
         <SearchBottomSheet ref={searchSheetRef} />
 
-        {/*BottomSheet pour les filtres*/}
+        {/* BottomSheet des filtres */}
         <FilterBottomSheet ref={filterSheetRef} />
 
-        {/*BottomSheet pour le signalement*/}
+        {/* BottomSheet de signalement */}
         <SignalBottomSheet ref={signalSheetRef} />
-        {/*BottomSheet pour le trajet*/}
+
+        {/* BottomSheet du trajet (affiche bouton stop si un trajet est actif) */}
         <TripBottomSheet
           isRouteActive={route && route.length > 0}
           onStopTrip={handleStopTrip}

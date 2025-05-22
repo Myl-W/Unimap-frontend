@@ -10,71 +10,85 @@ import Constants from "expo-constants";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function CameraScreen() {
+  // Vérifie si l'écran est actuellement visible
   const isFocused = useIsFocused();
-  console.log("Navigation is active");
-  const dispatch = useDispatch();
-  const cameraRef = useRef(null);
-  const [hasPermission, setHasPermission] = useState(null);
-  const [facing, setFacing] = useState("back");
-  const [flash, setFlash] = useState("off");
 
-  const BACK_URL = Constants.expoConfig?.extra?.BACK_URL;
+  // Permet de naviguer entre les écrans
   const navigation = useNavigation();
 
-  // ------ Effect hook to check permissions for camera access -------
+  // Accès au dispatch Redux
+  const dispatch = useDispatch();
+
+  // Référence à la caméra pour interagir avec elle (ex: prendre une photo)
+  const cameraRef = useRef(null);
+
+  // État pour savoir si l'utilisateur a donné la permission à la caméra
+  const [hasPermission, setHasPermission] = useState(null);
+
+  // Caméra utilisée (frontale ou arrière)
+  const [facing, setFacing] = useState("back");
+
+  // Flash activé ou non
+  const [flash, setFlash] = useState("off");
+
+  // Adresse backend récupérée depuis les variables d’environnement (app.json)
+  const BACK_URL = Constants.expoConfig?.extra?.BACK_URL;
+
+  // -------- Demande de permission à la caméra lors du premier rendu --------
   useEffect(() => {
     (async () => {
       const { status } = await Camera.requestCameraPermissionsAsync();
-      setHasPermission(status === "granted");
-      console.log("status", status);
+      setHasPermission(status === "granted"); // Met à jour si la permission est accordée
     })();
   }, []);
 
-  // ------- Background color when the camera is not focused or permission is not granted -------
+  // -------- Affichage noir si caméra non disponible ou si l'écran n'est pas actif --------
   if (!isFocused || !hasPermission) {
     return <View style={{ flex: 1, backgroundColor: "black" }} />;
   }
-  console.log("hasPermission", hasPermission);
 
-  // --------- Functions to toggle camera facing and flash status ----------
+  // -------- Inverse le type de caméra (avant ↔ arrière) --------
   const toggleCameraFacing = () => {
     setFacing((prev) => (prev === "back" ? "front" : "back"));
   };
 
+  // -------- Active/désactive le flash --------
   const toggleFlash = () => {
     setFlash((prev) => (prev === "off" ? "on" : "off"));
   };
 
-  // ------------- Function to get the token from AsyncStorage -------------
+  // -------- Récupère le token utilisateur stocké localement --------
   const getToken = async () => {
     try {
       const token = await AsyncStorage.getItem("userToken");
       return token;
     } catch (error) {
-      console.error("Error retrieving token:", error);
+      console.error("Erreur lors de la récupération du token :", error);
     }
   };
 
-  // ------- Function to take a picture and save it to the reducer store --------
+  // -------- Fonction pour prendre une photo, l'envoyer à l’API et la stocker --------
   const takePicture = async () => {
+    // Prise de photo avec qualité réduite pour l'upload
     const photo = await cameraRef.current?.takePictureAsync({
       quality: 0.3,
     });
 
     const token = await getToken();
     if (!token) {
-      console.error("No token found");
+      console.error("Aucun token trouvé");
       return;
     }
 
+    // Préparation de la photo à envoyer via une requête POST
     const formData = new FormData();
     formData.append("photoFromFront", {
       uri: photo?.uri,
       name: "photo.jpg",
       type: "image/jpeg",
     });
-    console.log("formData", formData);
 
+    // Envoi de la photo vers l’API
     fetch(`${BACK_URL}/upload`, {
       method: "POST",
       headers: {
@@ -84,8 +98,9 @@ export default function CameraScreen() {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
+        // Stocke l’URL de la photo dans le reducer Redux
         photo && dispatch(addPhoto(data.url));
+        // Redirige l'utilisateur vers l'écran Map
         navigation.navigate("Map");
       });
   };
@@ -97,9 +112,9 @@ export default function CameraScreen() {
       flash={flash}
       ref={cameraRef}
     >
-      {/* --------- Top container with the setting buttons ------------ */}
+      {/* -------- Zone supérieure : paramètres caméra (switch et flash) -------- */}
       <SafeAreaView style={styles.settingContainer}>
-        {/* Caméra front/back */}
+        {/* Bascule entre caméra frontale et arrière */}
         <TouchableOpacity
           style={styles.settingButton}
           onPress={toggleCameraFacing}
@@ -107,19 +122,18 @@ export default function CameraScreen() {
           <FontAwesome name="rotate-right" size={25} color="white" />
         </TouchableOpacity>
 
-        {/* Flash on/off */}
+        {/* Active/désactive le flash */}
         <TouchableOpacity style={styles.settingButton} onPress={toggleFlash}>
           <FontAwesome
             name="flash"
             size={25}
-            color={flash === "on" ? "#e8be4b" : "white"}
+            color={flash === "on" ? "#e8be4b" : "white"} // Change la couleur si le flash est actif
           />
         </TouchableOpacity>
       </SafeAreaView>
 
-      {/* --------- Bottom container with the snap button ------------ */}
+      {/* -------- Zone inférieure : bouton de capture photo -------- */}
       <View style={styles.snapContainer}>
-        {/* -------------------- Take picture -------------------*/}
         <TouchableOpacity style={styles.snapButton} onPress={takePicture}>
           <FontAwesome name="circle-thin" size={95} color="white" />
         </TouchableOpacity>
