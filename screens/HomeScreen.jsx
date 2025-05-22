@@ -1,69 +1,85 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from "react"; // Hooks React pour gérer l'état et les effets de bord
 import {
-  KeyboardAvoidingView,
-  Platform,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-  Image,
-  Alert,
+  KeyboardAvoidingView, // Composant qui ajuste l'affichage lorsque le clavier est visible
+  Platform, // Permet de détecter la plateforme (iOS ou Android)
+  StyleSheet, // Pour styliser les composants avec du CSS-in-JS
+  TouchableOpacity, // Bouton tactile avec retour visuel
+  View, // Conteneur de base pour structurer l'interface
+  Image, // Pour afficher des images
+  Alert, // Module d'affichage de popups d'alerte (non utilisé ici, mais importé)
 } from "react-native";
-import Text from "../assets/fonts/CustomText";
-import { useDispatch } from "react-redux";
-import MapView from "react-native-maps";
-import * as Location from "expo-location";
+import Text from "../assets/fonts/CustomText"; // Composant personnalisé pour du texte avec une police spécifique
+import { useDispatch } from "react-redux"; // Hook Redux pour dispatcher des actions
+import MapView from "react-native-maps"; // Composant de carte interactive
+import * as Location from "expo-location"; // Module Expo pour accéder aux services de géolocalisation
 
 export default function HomeScreen({ navigation }) {
-  const backUrl = process.env.BACK_URL;
-  const dispatch = useDispatch();
-  const [currentPosition, setCurrentPosition] = useState(null);
+  const backUrl = process.env.BACK_URL; // URL backend, récupérée depuis les variables d'environnement
+  const dispatch = useDispatch(); // Initialisation du dispatcher Redux
+  const [currentPosition, setCurrentPosition] = useState(null); // État local pour stocker la position actuelle de l'utilisateur
 
+  // Redirige vers l'écran d'inscription
   const handleRegister = () => {
     navigation.navigate("Register");
   };
 
+  // Redirige vers l'écran de connexion
   const handleLogin = () => {
     navigation.navigate("Login");
   };
 
   useEffect(() => {
+    // Fonction pour gérer les permissions de localisation et suivre la position
     const getLocationPermission = async () => {
+      // Demande d'autorisation pour accéder à la localisation
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status === "granted") {
-        Location.watchPositionAsync({ distanceInterval: 10 }, (location) => {
-          setCurrentPosition(location.coords);
-        });
+        // Si la permission est accordée, on démarre la surveillance de la position
+        Location.watchPositionAsync(
+          { distanceInterval: 10 }, // Rafraîchit la position tous les 10 mètres parcourus
+          (location) => {
+            setCurrentPosition(location.coords); // Stocke les coordonnées dans le state
+          }
+        );
       } else {
-        alert("Permission de localisation refusée");
+        alert("Permission de localisation refusée"); // Alerte si l'utilisateur refuse l'accès
       }
     };
-    getLocationPermission();
-  }, []);
+
+    getLocationPermission(); // Appel de la fonction lors du montage du composant
+  }, []); // Le tableau vide garantit que l'effet ne s'exécute qu'une seule fois (au montage)
 
   return (
     <View style={styles.container}>
       <MapView
-        mapType="normal"
-        style={StyleSheet.absoluteFillObject} //etendre la vue sur toute la surface disponible de son parent
-        scrollEnabled={false} //scrollEnabled={false} : Empêche le déplacement de la carte
-        zoomEnabled={false} //zoomEnabled={false} : Désactive le zoom (pincement)
-        rotateEnabled={false} //rotateEnabled={false} : Empêche la rotation
-        pitchEnabled={false} //pitchEnabled={false} : Empêche l'inclinaison de la carte
+        mapType="normal" // Type de carte affichée (ici carte classique)
+        style={StyleSheet.absoluteFillObject} // Étend la carte sur toute la surface du parent
+        scrollEnabled={false} // Désactive le déplacement manuel de la carte
+        zoomEnabled={false} // Désactive le zoom (par pincement)
+        rotateEnabled={false} // Empêche l'utilisateur de faire pivoter la carte
+        pitchEnabled={false} // Empêche l'inclinaison 3D de la carte
       />
 
       <KeyboardAvoidingView
         style={styles.logContent}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        behavior={Platform.OS === "ios" ? "padding" : "height"} // Ajustement automatique de la vue avec le clavier selon la plateforme
       >
+        {/* Titre principal de l'application */}
         <Text style={styles.title}>Bienvenue sur UniMap+</Text>
+
+        {/* Logo de l'application */}
         <Image style={styles.image} source={require("../assets/logo.png")} />
+
+        {/* Bouton de connexion */}
         <TouchableOpacity
           onPress={handleLogin}
           style={styles.button}
-          activeOpacity={0.8}
+          activeOpacity={0.8} // Réduction de l'opacité lors du clic
         >
           <Text style={styles.textButton}>Se connecter</Text>
         </TouchableOpacity>
+
+        {/* Bouton d'inscription */}
         <TouchableOpacity
           onPress={handleRegister}
           style={styles.button}
@@ -71,6 +87,8 @@ export default function HomeScreen({ navigation }) {
         >
           <Text style={styles.textButton}>S'inscrire</Text>
         </TouchableOpacity>
+
+        {/* Lien pour accéder à la carte sans compte */}
         <TouchableOpacity onPress={() => navigation.navigate("Map")}>
           <Text style={styles.textInscription}>
             Continuer en tant qu'invitée
@@ -83,7 +101,7 @@ export default function HomeScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 1, // Prend tout l'espace disponible
   },
   logContent: {
     position: "absolute",
@@ -100,9 +118,9 @@ const styles = StyleSheet.create({
     fontSize: 34,
     fontWeight: "650",
     color: "black",
-    textShadowColor: "grey",
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
+    textShadowColor: "grey", // Ombre de texte grise
+    textShadowOffset: { width: 1, height: 1 }, // Décalage de l'ombre
+    textShadowRadius: 2, // Flou de l'ombre
     marginTop: 20,
   },
   button: {
@@ -132,6 +150,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     width: 250,
     height: 250,
-    resizeMode: "contain",
+    resizeMode: "contain", // Garde les proportions de l'image
   },
 });

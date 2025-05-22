@@ -1,7 +1,16 @@
+// Import des hooks Redux pour accéder au store et dispatcher des actions
 import { useDispatch, useSelector } from "react-redux";
+
+// Composant natif pour afficher des alertes système
 import { Alert } from "react-native";
+
+// Stockage asynchrone local pour stocker/effacer le token utilisateur
 import AsyncStorage from "@react-native-async-storage/async-storage";
+
+// Action pour réinitialiser les données utilisateur dans le store Redux
 import { resetUser } from "../reducers/user";
+
+// Composants natifs pour la mise en page
 import {
   KeyboardAvoidingView,
   Platform,
@@ -9,24 +18,39 @@ import {
   View,
   TouchableOpacity,
 } from "react-native";
+
+// Texte personnalisé avec la police custom
 import Text from "../assets/fonts/CustomText";
+
+// Icônes FontAwesome
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import * as ImagePicker from 'expo-image-picker';
-import { useState } from 'react';
-import { Image } from 'react-native';
+
+// Import des fonctionnalités de gestion d'image (galerie et appareil photo)
+import * as ImagePicker from "expo-image-picker";
+
+// Hooks React
+import { useState } from "react";
+
+// Composant natif pour afficher des images
+import { Image } from "react-native";
 
 export default function ParametreScreen({ navigation }) {
   const dispatch = useDispatch();
+
+  // Récupération des infos de l'utilisateur dans le store Redux
   const userInfo = useSelector((state) => state.user.value.profile);
+
+  // État local pour stocker l'URI de l'image de profil
   const [profileImage, setProfileImage] = useState(null);
 
-  // ------------ Ouverture de l'alerte pour la confirmation de la déconnection -----------------
+  // ------------------- GESTION DE LA DÉCONNEXION -------------------
+
+  // Affichage d'une alerte pour confirmer la déconnexion
   const handleLogout = () => {
     Alert.alert(
       "Se déconnecter",
       "Êtes-vous sûr de vouloir vous déconnecter ?",
       [
-        // ---------  Bouton de selection ---------------------
         { text: "Annuler", style: "cancel" },
         { text: "Se déconnecter", style: "destructive", onPress: logoutAsync },
       ],
@@ -34,30 +58,27 @@ export default function ParametreScreen({ navigation }) {
     );
   };
 
-  // -----  Si confirmer  -------------
+  // Suppression du token et redirection vers l'écran de login
   const logoutAsync = async () => {
     try {
-      await AsyncStorage.removeItem("userToken"); // -----  suppression du token  ----------
-
-      dispatch(resetUser()); //  dispatch dans le reducer  ----------
-
+      await AsyncStorage.removeItem("userToken"); // Supprime le token stocké localement
+      dispatch(resetUser()); // Réinitialise l'état utilisateur dans Redux
       navigation.reset({
-        // -----  retour a la page login  -----------
         index: 0,
-        routes: [{ name: "Login" }],
+        routes: [{ name: "Login" }], // Redirige vers l'écran Login
       });
     } catch (error) {
       console.error("Erreur lors de la déconnexion :", error);
     }
   };
 
-  
+  // ------------------- GESTION DE LA PHOTO DE PROFIL -------------------
 
-  // ------ Fonction pour ouvrir la galerie ------
+  // Ouvre la galerie d’images du téléphone
   const pickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== 'granted') {
-      alert('Permission refusée pour accéder à la galerie !');
+    if (status !== "granted") {
+      alert("Permission refusée pour accéder à la galerie !");
       return;
     }
 
@@ -70,15 +91,15 @@ export default function ParametreScreen({ navigation }) {
 
     if (!result.canceled) {
       setProfileImage(result.assets[0].uri);
-      // Ici, vous pourriez aussi uploader l'image vers votre backend
+      // Optionnel : Envoyer cette image au serveur pour sauvegarde
     }
   };
 
-  // ------ Fonction pour ouvrir l'appareil photo ------
+  // Lance l'appareil photo pour prendre une nouvelle photo de profil
   const takePhoto = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
-    if (status !== 'granted') {
-      alert('Permission refusée pour utiliser la caméra !');
+    if (status !== "granted") {
+      alert("Permission refusée pour utiliser la caméra !");
       return;
     }
 
@@ -93,98 +114,89 @@ export default function ParametreScreen({ navigation }) {
     }
   };
 
-  // ------ Fonction pour supprimer la photo de profil ------
-const deleteProfileImage = async () => {
-  Alert.alert(
-    "Supprimer la photo de profil",
-    "Êtes-vous sûr de vouloir supprimer votre photo de profil ?",
-    [
-      {
-        text: "Annuler",
-        style: "cancel"
-      },
-      {
-        text: "Supprimer",
-        style: "destructive",
-        onPress: async () => {
-          try {
-            setProfileImage(null);
-            await AsyncStorage.removeItem('profileImage');
-            // Ici vous pourriez aussi appeler votre API pour supprimer l'image côté serveur
-            Alert.alert("Succès", "Photo de profil supprimée");
-          } catch (error) {
-            console.error("Erreur lors de la suppression:", error);
-            Alert.alert("Erreur", "La suppression a échoué");
-          }
-        }
-      }
-    ]
-  );
-};
+  // Supprime la photo de profil (localement et potentiellement côté serveur)
+  const deleteProfileImage = async () => {
+    Alert.alert(
+      "Supprimer la photo de profil",
+      "Êtes-vous sûr de vouloir supprimer votre photo de profil ?",
+      [
+        { text: "Annuler", style: "cancel" },
+        {
+          text: "Supprimer",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              setProfileImage(null); // Supprime l'image du state local
+              await AsyncStorage.removeItem("profileImage"); // Supprime l'image du stockage local
+              // Optionnel : Appeler l’API pour suppression côté serveur
+              Alert.alert("Succès", "Photo de profil supprimée");
+            } catch (error) {
+              console.error("Erreur lors de la suppression:", error);
+              Alert.alert("Erreur", "La suppression a échoué");
+            }
+          },
+        },
+      ]
+    );
+  };
 
-  // ------ Menu déroulant pour choisir la source ------
+  // Affiche un menu avec les options liées à la photo de profil
   const showImagePickerOptions = () => {
-  const options = [
-    {
-      text: 'Prendre une photo',
-      onPress: takePhoto,
-    },
-    {
-      text: 'Choisir depuis la galerie',
-      onPress: pickImage,
-    },
-  ];
+    const options = [
+      { text: "Prendre une photo", onPress: takePhoto },
+      { text: "Choisir depuis la galerie", onPress: pickImage },
+    ];
 
-  // Ajoutez l'option de suppression seulement si une image existe
-  if (profileImage) {
-    options.push({
-      text: 'Supprimer la photo',
-      style: 'destructive',
-      onPress: deleteProfileImage,
-    });
-  }
+    // Affiche l'option de suppression uniquement si une image est définie
+    if (profileImage) {
+      options.push({
+        text: "Supprimer la photo",
+        style: "destructive",
+        onPress: deleteProfileImage,
+      });
+    }
 
-  options.push({
-    text: 'Annuler',
-    style: 'cancel',
-  });
+    options.push({ text: "Annuler", style: "cancel" });
 
-  Alert.alert(
-    'Changer la photo de profil',
-    'Choisissez une option',
-    options,
-    { cancelable: true }
-  );
-};
+    Alert.alert(
+      "Changer la photo de profil",
+      "Choisissez une option",
+      options,
+      { cancelable: true }
+    );
+  };
+
+  // ------------------- RENDU VISUEL -------------------
 
   return (
-      <KeyboardAvoidingView
-        style={styles.logContent}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-      >
-        <View style={styles.container}>
-          <View>
-            <TouchableOpacity
-              style={styles.optionAvatar}
-              accessibilityLabel="Modifier son avatar"
-              accessibilityRole="button"
-              onPress={showImagePickerOptions}
-            >
-              <View style={styles.optionButtonContent}>
-                <View>
-                  <FontAwesome name="pencil" size={28} color="black" />
-                </View>
-              </View>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.avatarContour}>
-            {profileImage ? (
+    <KeyboardAvoidingView
+      style={styles.logContent}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <View style={styles.container}>
+        {/* Bouton pour modifier l’avatar */}
+        <View>
+          <TouchableOpacity
+            style={styles.optionAvatar}
+            accessibilityLabel="Modifier son avatar"
+            accessibilityRole="button"
+            onPress={showImagePickerOptions}
+          >
+            <View style={styles.optionButtonContent}>
+              <FontAwesome name="pencil" size={28} color="black" />
+            </View>
+          </TouchableOpacity>
+        </View>
+
+        {/* Affichage de la photo ou icône par défaut */}
+        <View style={styles.avatarContour}>
+          {profileImage ? (
             <Image
               source={{ uri: profileImage }}
               style={styles.avatar}
               accessibilityLabel="Photo de profil"
             />
-            ) : (
+          ) : (
             <View style={styles.avatar}>
               <FontAwesome
                 name="user"
@@ -195,116 +207,113 @@ const deleteProfileImage = async () => {
                 accessibilityRole="image"
               />
             </View>
-            )}
-          </View>
-
-          <View style={styles.body}>
-            <Text style={styles.optionText}>Informations sur le compte</Text>
-          </View>
-          <TouchableOpacity
-            style={styles.optionButtonDown}
-            accessibilityLabel="Modifier son nom complet"
-            accessibilityRole="button"
-          >
-            <View style={styles.optionButtonContent}>
-              <View>
-                <Text style={styles.optionButtonText}>Nom Complet</Text>
-                <Text style={styles.optionButtonText2}>
-                  Appuyez pour modifier
-                </Text>
-              </View>
-              <View>
-                <FontAwesome name="chevron-right" size={28} color="black" />
-              </View>
-            </View>
-          </TouchableOpacity>
-          <View style={styles.body}>
-            <Text style={styles.optionText}>Informations de connexion</Text>
-          </View>
-
-          <TouchableOpacity
-            style={styles.optionButton}
-            accessibilityLabel="Modifier son mail"
-            accessibilityRole="button"
-          >
-            <View style={styles.optionButtonContent}>
-              <View>
-                <Text style={styles.optionButtonText}>Adresse e-mail</Text>
-                <Text style={styles.optionButtonText2}>{userInfo.email}</Text>
-              </View>
-              <View>
-                <FontAwesome name="chevron-right" size={28} color="black" />
-              </View>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.optionButton}
-            accessibilityLabel="Modifier le nom d'utilisateur"
-            accessibilityRole="button"
-          >
-            <View style={styles.optionButtonContent}>
-              <View>
-                <Text style={styles.optionButtonText}>Nom d'utilisateur</Text>
-                <Text style={styles.optionButtonText2}>
-                  Appuyez pour ajouter
-                </Text>
-              </View>
-              <View>
-                <FontAwesome name="chevron-right" size={28} color="black" />
-              </View>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.optionButtonDown}
-            accessibilityLabel="Modifier le mot de passe"
-            accessibilityRole="button"
-          >
-            <View style={styles.optionButtonContent}>
-              <View>
-                <Text style={styles.optionButtonText}>Mot de passe</Text>
-                <Text style={styles.optionButtonText2}>
-                  Modifier le mot de passe
-                </Text>
-              </View>
-              <View>
-                <FontAwesome name="chevron-right" size={28} color="black" />
-              </View>
-            </View>
-          </TouchableOpacity>
-          <View style={styles.body}>
-            <Text style={styles.optionText}>Avancé</Text>
-          </View>
-
-          <TouchableOpacity
-            style={styles.optionButton}
-            accessibilityLabel="Se déconnecter"
-            accessibilityRole="button"
-            onPress={handleLogout}
-          >
-            <View style={styles.optionButtonContent}>
-              <View>
-                <Text style={styles.optionButtonText}>Se déconnecter</Text>
-              </View>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.optionButtonDown}
-            accessibilityLabel="Supprimer le compte"
-            accessibilityRole="button"
-          >
-            <View style={styles.optionButtonContent}>
-              <View>
-                <Text style={styles.optionButtonDelete}>
-                  Supprimer le compte
-                </Text>
-              </View>
-              <View>
-                <FontAwesome name="chevron-right" size={28} color="black" />
-              </View>
-            </View>
-          </TouchableOpacity>
+          )}
         </View>
-      </KeyboardAvoidingView>
+
+        {/* Infos compte */}
+        <View style={styles.body}>
+          <Text style={styles.optionText}>Informations sur le compte</Text>
+        </View>
+
+        {/* Nom complet */}
+        <TouchableOpacity
+          style={styles.optionButtonDown}
+          accessibilityLabel="Modifier son nom complet"
+          accessibilityRole="button"
+        >
+          <View style={styles.optionButtonContent}>
+            <View>
+              <Text style={styles.optionButtonText}>Nom Complet</Text>
+              <Text style={styles.optionButtonText2}>
+                Appuyez pour modifier
+              </Text>
+            </View>
+            <FontAwesome name="chevron-right" size={28} color="black" />
+          </View>
+        </TouchableOpacity>
+
+        {/* Infos connexion */}
+        <View style={styles.body}>
+          <Text style={styles.optionText}>Informations de connexion</Text>
+        </View>
+
+        {/* Adresse e-mail */}
+        <TouchableOpacity
+          style={styles.optionButton}
+          accessibilityLabel="Modifier son mail"
+          accessibilityRole="button"
+        >
+          <View style={styles.optionButtonContent}>
+            <View>
+              <Text style={styles.optionButtonText}>Adresse e-mail</Text>
+              <Text style={styles.optionButtonText2}>{userInfo.email}</Text>
+            </View>
+            <FontAwesome name="chevron-right" size={28} color="black" />
+          </View>
+        </TouchableOpacity>
+
+        {/* Nom d'utilisateur */}
+        <TouchableOpacity
+          style={styles.optionButton}
+          accessibilityLabel="Modifier le nom d'utilisateur"
+          accessibilityRole="button"
+        >
+          <View style={styles.optionButtonContent}>
+            <View>
+              <Text style={styles.optionButtonText}>Nom d'utilisateur</Text>
+              <Text style={styles.optionButtonText2}>Appuyez pour ajouter</Text>
+            </View>
+            <FontAwesome name="chevron-right" size={28} color="black" />
+          </View>
+        </TouchableOpacity>
+
+        {/* Mot de passe */}
+        <TouchableOpacity
+          style={styles.optionButtonDown}
+          accessibilityLabel="Modifier le mot de passe"
+          accessibilityRole="button"
+        >
+          <View style={styles.optionButtonContent}>
+            <View>
+              <Text style={styles.optionButtonText}>Mot de passe</Text>
+              <Text style={styles.optionButtonText2}>
+                Modifier le mot de passe
+              </Text>
+            </View>
+            <FontAwesome name="chevron-right" size={28} color="black" />
+          </View>
+        </TouchableOpacity>
+
+        {/* Section avancée */}
+        <View style={styles.body}>
+          <Text style={styles.optionText}>Avancé</Text>
+        </View>
+
+        {/* Bouton de déconnexion */}
+        <TouchableOpacity
+          style={styles.optionButton}
+          accessibilityLabel="Se déconnecter"
+          accessibilityRole="button"
+          onPress={handleLogout}
+        >
+          <View style={styles.optionButtonContent}>
+            <Text style={styles.optionButtonText}>Se déconnecter</Text>
+          </View>
+        </TouchableOpacity>
+
+        {/* Suppression de compte */}
+        <TouchableOpacity
+          style={styles.optionButtonDown}
+          accessibilityLabel="Supprimer le compte"
+          accessibilityRole="button"
+        >
+          <View style={styles.optionButtonContent}>
+            <Text style={styles.optionButtonDelete}>Supprimer le compte</Text>
+            <FontAwesome name="chevron-right" size={28} color="black" />
+          </View>
+        </TouchableOpacity>
+      </View>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -324,19 +333,19 @@ const styles = StyleSheet.create({
     width: 150,
     height: 150,
     borderRadius: 75,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   avatarImage: {
-    width: '100%',
-    height: '100%',
-    resizeMode: 'cover',
+    width: "100%",
+    height: "100%",
+    resizeMode: "cover",
   },
   avatarPlaceholder: {
-    width: '100%',
-    height: '100%',
-    backgroundColor: '#f0f0f0',
-    justifyContent: 'center',
-    alignItems: 'center',
+    width: "100%",
+    height: "100%",
+    backgroundColor: "#f0f0f0",
+    justifyContent: "center",
+    alignItems: "center",
   },
   logContent: {
     flex: 1,

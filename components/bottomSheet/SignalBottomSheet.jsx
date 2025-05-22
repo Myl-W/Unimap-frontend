@@ -14,9 +14,9 @@ import {
   signalButtonStyles,
 } from "./signalButton/SignalButton";
 
-// forwardRef permet de passer une référence à un composant enfant
-const SignalBottomSheet = forwardRef(({ handleSheetSignal }, ref) => {
+const SignalBottomSheet = forwardRef(({ handleSheetSignal, id }, ref) => {
   const navigation = useNavigation();
+  console.log('id', id)
 
   const snapPoints = ["50%", "75%"]; // Definie la taille d'ouverture du BottomSheet
 
@@ -35,7 +35,7 @@ const SignalBottomSheet = forwardRef(({ handleSheetSignal }, ref) => {
   const handleToggleSignal = (key) => {
     handleToggle(key);
     ref?.current?.close();
-    navigation.navigate("Signalement");
+    navigation.navigate("Signalement", {id});
   };
 
   return (
