@@ -6,17 +6,17 @@ import { useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
 import { FontAwesome } from "@expo/vector-icons";
 
-// Fonction utilitaire pour convertir "1 h 12 min" ou "15 min" en minutes
+// Sert à convertir une durée écrite en texte (par exemple "1 h 12 min" ou "45 min") en nombre total de minutes (par exemple 72 ou 45).
 function parseDurationToMinutes(durationStr) {
   let total = 0;
-  // Cherche le nombre d’heures dans la chaîne (hMatch).
+  // Cherche le nombre d’heures dans la chaîne grâce à des expressions régulières (hMatch).
   const hMatch = durationStr.match(/(\d+)\s*h/);
-  // Cherche le nombre de minutes dans la chaîne (mMatch).
+  // Cherche le nombre de minutes dans la chaîne grâce à des expressions régulières (mMatch).
   const mMatch = durationStr.match(/(\d+)\s*min/);
   // Si hMatch ou mMatch existent, on les convertit en entiers.
-  // Si hMatch existe, on ajoute le nombre d'heures converti en minutes.
+  // Si elle trouve des heures, elle les convertit en minutes (heures * 60) et les ajoute au total.
   if (hMatch) total += parseInt(hMatch[1], 10) * 60;
-  // Si mMatch existe, on l'ajoute directement.
+  // Si elle trouve des minutes, elle les ajoute directement au total.
   if (mMatch) total += parseInt(mMatch[1], 10);
   return total;
 }
@@ -32,13 +32,17 @@ function formatDuration(durationStr) {
   //Cherche le nombre de minutes dans la chaîne (mMatch).
   const mMatch = durationStr.match(/(\d+)\s*min/);
   // Si hMatch ou mMatch existent, on les convertit en entiers.
+  // hMatch[1] correspond au premier groupe capturé par l’expression régulière, c’est-à-dire le nombre trouvé (exemple : pour "2 h", hMatch[1] vaut "2").
+  // 10 signifie qu’on convertit en base décimale (donc un nombre classique, pas en binaire, octal, etc.).
   if (hMatch) hours = parseInt(hMatch[1], 10);
   if (mMatch) minutes = parseInt(mMatch[1], 10);
-  // Si le nombre d'heures est supérieur à 0, on affiche le format "H:MMh".
-  // Sinon, on affiche le nombre de minutes.
+  // Si le nombre d'heures est égal à 0, on affiche le nombre de minutes. 
+  // Sinon, on affiche le format "H:MMh".
   if (hours === 0) {
     return `${minutes} min`;
   } else {
+  //Convertit les minutes en chaîne de caractères.
+  // 'padStart' -- Ajoute un zéro devant si besoin pour toujours avoir deux chiffres (ex : 5 devient "05").
     return `${hours}:${minutes.toString().padStart(2, "0")}h`;
   }
 }
@@ -83,7 +87,10 @@ const TripBottomSheet = ({ isRouteActive, onStopTrip }) => {
   // cela synchronise l'affichage de la bottom sheet avec l'état du trajet dans l'application.
   useEffect(() => {
     if (isRouteActive) {
+      //.current contient donc l’objet réel du composant BottomSheetModal, ce qui te permet d’appeler ses méthodes (comme .present(), .dismiss(), etc.) depuis ton code.
+      // Permet d'ouvrir la BottomSheet lorsque le trajet est actif sinon la fermer
       bottomSheetRef.current?.present();
+      // Cette ligne demande à la BottomSheet de se positionner à l’index 0 de ses snapPoints
       bottomSheetRef.current?.snapToIndex(0); // 20%
     } else {
       bottomSheetRef.current?.dismiss();
@@ -108,6 +115,7 @@ const TripBottomSheet = ({ isRouteActive, onStopTrip }) => {
     )}
         <View style={styles.header}>
           {tripinfos ? (
+            // '<>' appeler fragments pour encapsuler plusieurs éléments sans ajouter de view ou quelconque autre élément qui pourrait affecter le style
             <>
                 <Text style={styles.arrivalTime}>{arrivalTimeStr}</Text>
                 <View style={styles.tripInfos}>
