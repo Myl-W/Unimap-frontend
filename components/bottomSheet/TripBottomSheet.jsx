@@ -1,6 +1,5 @@
 import { useRef, useEffect, useMemo } from "react";
-import { View, StyleSheet, TouchableOpacity } from "react-native";
-import Text from "../../assets/fonts/CustomText";
+import { View, StyleSheet, TouchableOpacity, Text } from "react-native";
 import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
 import { useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
@@ -112,25 +111,22 @@ const TripBottomSheet = ({ isRouteActive, onStopTrip }) => {
     >
       <BottomSheetView style={styles.content}>
         {tripinfos && (
-      <TouchableOpacity
-        onPress={goToParametre}
-        style={styles.paramIcon}
-      >
-        <FontAwesome name="cog" size={40} color="#222" />
-      </TouchableOpacity>
-    )}
+          <TouchableOpacity onPress={goToParametre} style={styles.paramIcon}>
+            <FontAwesome name="cog" size={40} color="#222" />
+          </TouchableOpacity>
+        )}
         <View style={styles.header}>
           {tripinfos ? (
             // '<>' appeler fragments pour encapsuler plusieurs éléments sans ajouter de view ou quelconque autre élément qui pourrait affecter le style
             <>
-                <Text style={styles.arrivalTime}>{arrivalTimeStr}</Text>
-                <View style={styles.tripInfos}>
-                  <Text style={styles.title}>
-                    {formatDuration(tripinfos.duration)}
-                    <Text style={styles.dot}> • </Text>
-                    {tripinfos.distance}
-                  </Text>
-            </View>
+              <Text style={styles.arrivalTime}>{arrivalTimeStr}</Text>
+              <View style={styles.tripInfos}>
+                <Text style={styles.title}>
+                  {formatDuration(tripinfos.duration)}
+                  <Text style={styles.dot}> • </Text>
+                  {tripinfos.distance}
+                </Text>
+              </View>
             </>
           ) : (
             <Text style={styles.title}>Aucun trajet en cours</Text>
@@ -223,7 +219,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 20,
-    fontWeight: '100'
+    fontWeight: "100",
   },
   dot: {
     fontSize: 20,
@@ -237,20 +233,19 @@ const styles = StyleSheet.create({
     textAlign: "center",
     alignSelf: "center",
   },
-paramIcon: {
-  position: "absolute",
-  top: 16,
-  left: 16,
-  backgroundColor: "#fff",
-  borderRadius: 20,
-  padding: 4,
-  elevation: 3,// Ajoute une ombre portée sur Android
-  shadowColor: "#000",// Couleur de l'ombre (pour iOS)
-  shadowOffset: { width: 0, height: 2 }, // Décalage de l'ombre (pour iOS)
-  shadowOpacity: 0.2,// Opacité de l'ombre (pour iOS)
-  shadowRadius: 2,// Flou de l'ombre (pour iOS)
-},
-
+  paramIcon: {
+    position: "absolute",
+    top: 16,
+    left: 16,
+    backgroundColor: "#fff",
+    borderRadius: 20,
+    padding: 4,
+    elevation: 3, // Ajoute une ombre portée sur Android
+    shadowColor: "#000", // Couleur de l'ombre (pour iOS)
+    shadowOffset: { width: 0, height: 2 }, // Décalage de l'ombre (pour iOS)
+    shadowOpacity: 0.2, // Opacité de l'ombre (pour iOS)
+    shadowRadius: 2, // Flou de l'ombre (pour iOS)
+  },
 });
 
 export default TripBottomSheet;

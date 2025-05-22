@@ -5,8 +5,8 @@ import {
   StyleSheet,
   TextInput,
   ScrollView,
+  Text,
 } from "react-native";
-import Text from "../../assets/fonts/CustomText";
 import {
   BottomSheetModal,
   BottomSheetView,
@@ -40,7 +40,6 @@ const SearchBottomSheet = forwardRef(({ handleSheetSearch }, ref) => {
     )
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
         // ------------- Adresse réelle de départ obtenue depuis l'API Google --------------
         const arrival = data.routes[0].legs[0].end_address;
         // ------------- Enregistrement dans l'historique des recherches -------------------
@@ -117,8 +116,6 @@ const SearchBottomSheet = forwardRef(({ handleSheetSearch }, ref) => {
       .then((response) => response.json())
       .then(async (data) => {
         if (data.result && data.token) {
-          // Enregistrement du token ou toute autre logique
-          console.log("Favori ajouté avec succès !");
         } else {
           console.warn("Échec de l'ajout aux favoris.");
         }
