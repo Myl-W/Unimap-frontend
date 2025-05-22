@@ -30,14 +30,22 @@ const TripBottomSheet = ({ isRouteActive, onStopTrip }) => {
     <BottomSheetModal
       ref={bottomSheetRef}
       snapPoints={snapPoints}
-      enablePanDownToClose={false}
+      enableDismissOnClose={true}
+      backdropComponent={(backdropProps) => (
+        <BottomSheetBackdrop
+          {...backdropProps}
+          appearsOnIndex={0}
+          disappearsOnIndex={-1}
+          pressBehavior="close"
+        />
+      )}
     >
       <BottomSheetView style={styles.content}>
         <View style={styles.header}>
           {tripinfos ? (
             <>
-            <Text style={styles.title}>{tripinfos.duration}</Text>
-            <Text style={styles.title}>{tripinfos.distance}</Text>
+              <Text style={styles.title}>{tripinfos.duration}</Text>
+              <Text style={styles.title}>{tripinfos.distance}</Text>
             </>
           ) : (
             <Text style={styles.title}>Aucun trajet en cours</Text>
@@ -45,7 +53,7 @@ const TripBottomSheet = ({ isRouteActive, onStopTrip }) => {
         </View>
       </BottomSheetView>
       <View style={styles.buttonRow}>
-        <View style={styles.stopTrip} >
+        <View style={styles.stopTrip}>
           <TouchableOpacity style={styles.stopButton} onPress={onStopTrip}>
             <Text style={styles.stopButtonText}>Arrêt</Text>
           </TouchableOpacity>
@@ -112,7 +120,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 30,
     right: 20,
-    width:"60%",
+    width: "60%",
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#27ae60",

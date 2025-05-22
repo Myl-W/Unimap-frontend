@@ -1,6 +1,10 @@
 import React, { forwardRef, useState } from "react";
 import { TouchableOpacity, View, StyleSheet } from "react-native";
-import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
+import {
+  BottomSheetModal,
+  BottomSheetView,
+  BottomSheetBackdrop,
+} from "@gorhom/bottom-sheet";
 import { MaterialIcons, FontAwesome } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
 import Text from "../../assets/fonts/CustomText";
@@ -62,6 +66,15 @@ const FilterBottomSheet = forwardRef(({ handleSheetFilters }, ref) => {
       ref={ref}
       onChange={handleSheetFilters}
       snapPoints={snapPoints}
+      enableDismissOnClose={true}
+      backdropComponent={(backdropProps) => (
+        <BottomSheetBackdrop
+          {...backdropProps}
+          appearsOnIndex={0}
+          disappearsOnIndex={-1}
+          pressBehavior="close"
+        />
+      )}
     >
       <BottomSheetView
         style={styles.contentContainer}

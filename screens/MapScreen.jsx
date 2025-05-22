@@ -140,7 +140,7 @@ export default function MapScreen() {
         </View>
       </MapView>
 
-      <BottomSheetModalProvider>
+      <BottomSheetModalProvider enablePanDownToClose={true}>
         {/*BottomSheet pour la recherche*/}
         <SearchBottomSheet
           ref={searchSheetRef}
@@ -221,13 +221,22 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 20,
     left: 20,
-    width: 50,
+    width: 60,
     height: 30,
     backgroundColor: "#DFF0FF",
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 20,
     borderWidth: 1,
+
+    // -----  shadow iOS  -----
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5,
+    shadowRadius: 4.84,
+
+    // -----  shadow Android  -----
+    elevation: 5,
   },
 
   //  -------- CheckBox des filtres -----------

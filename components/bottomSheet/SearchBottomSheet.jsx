@@ -7,7 +7,11 @@ import {
   ScrollView,
 } from "react-native";
 import Text from "../../assets/fonts/CustomText";
-import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
+import {
+  BottomSheetModal,
+  BottomSheetView,
+  BottomSheetBackdrop,
+} from "@gorhom/bottom-sheet";
 import { MaterialIcons, FontAwesome } from "@expo/vector-icons";
 //import Constants from "expo-constants";
 import { useSelector, useDispatch } from "react-redux";
@@ -117,6 +121,15 @@ const SearchBottomSheet = forwardRef(
         ref={ref}
         onChange={handleSheetSearch}
         snapPoints={snapPoints}
+        enableDismissOnClose={true}
+        backdropComponent={(backdropProps) => (
+          <BottomSheetBackdrop
+            {...backdropProps}
+            appearsOnIndex={0}
+            disappearsOnIndex={-1}
+            pressBehavior="close"
+          />
+        )}
       >
         <BottomSheetView style={styles.contentContainer}>
           <View style={styles.buttonRow}>

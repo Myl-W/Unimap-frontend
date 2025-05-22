@@ -1,6 +1,10 @@
 import React, { forwardRef, useState } from "react";
 import { TouchableOpacity, View, StyleSheet, Image } from "react-native";
-import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
+import {
+  BottomSheetModal,
+  BottomSheetView,
+  BottomSheetBackdrop,
+} from "@gorhom/bottom-sheet";
 import { useNavigation } from "@react-navigation/native";
 import Text from "../../assets/fonts/CustomText";
 
@@ -40,7 +44,15 @@ const SignalBottomSheet = forwardRef(({ handleSheetSignal }, ref) => {
       ref={ref}
       onChange={handleSheetSignal}
       snapPoints={snapPoints}
-      enablePanDownToClose={true}
+      enableDismissOnClose={true}
+      backdropComponent={(backdropProps) => (
+        <BottomSheetBackdrop
+          {...backdropProps}
+          appearsOnIndex={0}
+          disappearsOnIndex={-1}
+          pressBehavior="close"
+        />
+      )}
     >
       <BottomSheetView style={styles.contentContainer}>
         {chunkedIcons.map((row, idx) => (
