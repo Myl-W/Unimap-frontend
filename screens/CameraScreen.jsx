@@ -3,7 +3,7 @@ import { StyleSheet, View, TouchableOpacity, SafeAreaView } from "react-native";
 import { Camera } from "expo-camera";
 import { CameraView } from "expo-camera";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addPhoto } from "../reducers/user";
 import { FontAwesome } from "@expo/vector-icons";
 import Constants from "expo-constants";
@@ -18,6 +18,9 @@ export default function CameraScreen() {
 
   // Accès au dispatch Redux
   const dispatch = useDispatch();
+
+  // Récupère la position de l'utilisateur depuis le store Redux
+  const { latitude, longitude } = useSelector((state) => state.trips.value);
 
   // Référence à la caméra pour interagir avec elle (ex: prendre une photo)
   const cameraRef = useRef(null);
@@ -87,6 +90,9 @@ export default function CameraScreen() {
       name: "photo.jpg",
       type: "image/jpeg",
     });
+    // Ajoute la latitude et la longitude du store Redux
+    formData.append("latitude", latitude);
+    formData.append("longitude", longitude);
 
     // Envoi de la photo vers l’API
     fetch(`${BACK_URL}/upload`, {
