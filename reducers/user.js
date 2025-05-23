@@ -25,7 +25,7 @@ export const userSlice = createSlice({
       state.value.email = action.payload;
     },
     resetUser: (state) => {
-      state.value.profile = {
+      state.profile = {
         userId: "",
         firstname: "",
         lastname: "",
@@ -36,7 +36,7 @@ export const userSlice = createSlice({
       };
     },
     userInfos: (state, action) => {
-      state.value.profile = action.payload;
+      state.profile = action.payload;
     },
     addPhoto: (state, action) => {
       state.value.photo = action.payload;
@@ -52,5 +52,12 @@ export const userSlice = createSlice({
   },
 });
 
-export const { updateEmail, resetUser, userInfos, addPhoto, updateFullName, updateUsername } = userSlice.actions;
+export const {
+  updateEmail,
+  resetUser,
+  userInfos,
+  addPhoto,
+  updateFullName,
+  updateUsername,
+} = userSlice.actions;
 export default userSlice.reducer;

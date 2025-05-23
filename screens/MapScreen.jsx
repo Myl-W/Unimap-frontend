@@ -13,7 +13,7 @@ import { useRef, useState, useEffect } from "react";
 import { View, StyleSheet, TouchableOpacity, Image } from "react-native";
 
 // Carte interactive avec possibilité de tracer des lignes (routes)
-import MapView, { Polyline } from "react-native-maps";
+import MapView, { Polyline, Marker } from "react-native-maps";
 
 // Librairie Expo pour accéder à la géolocalisation
 import * as Location from "expo-location";
@@ -26,6 +26,9 @@ import { useDispatch, useSelector } from "react-redux";
 
 // Actions Redux : enregistrer la position utilisateur et réinitialiser le trajet
 import { userLoc, resetRouteCoords } from "../reducers/trips";
+
+// Import
+import Constants from "expo-constants";
 
 //* Import des composants BottomSheet personnalisés
 import SearchBottomSheet from "../components/bottomSheet/SearchBottomSheet";
@@ -40,6 +43,10 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 export default function MapScreen() {
   // Permet de déclencher des actions Redux
   const dispatch = useDispatch();
+  const token = useSelector((state) => state.user.profile.token); // Récupère le token utilisateur
+
+  // Adresse backend récupérée depuis les variables d’environnement (app.config.json)
+  const BACK_URL = Constants.expoConfig?.extra?.BACK_URL;
 
   // Références vers les différents BottomSheets (permet d’ouvrir/fermer ces panneaux)
   const searchSheetRef = useRef(null);
@@ -66,6 +73,9 @@ export default function MapScreen() {
 
     fetchPlaceId();
   }, []);
+
+  // Etat pour stocker les lieux à afficher sur la carte
+  const [places, setPlaces] = useState([]);
 
   // Récupération du trajet en cours depuis Redux
   const route = useSelector((state) => state.trips.coords?.routeCoords);
@@ -129,6 +139,22 @@ export default function MapScreen() {
     }
   }, [currentPosition]); // Exécuté à chaque changement de position
 
+  // Récupère les lieux à afficher sur la carte
+  useEffect(() => {
+    fetch(`${BACK_URL}/places`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("DATA =>", data);
+        if (data.result && data.places) {
+          setPlaces(data.places); // Stocke les lieux dans l'état
+        }
+      });
+  }, []);
+
   //* Fonction appelée pour stopper un trajet (reset du store Redux)
   const handleStopTrip = () => {
     dispatch(resetRouteCoords());
@@ -151,6 +177,18 @@ export default function MapScreen() {
           longitudeDelta: 0.05,
         }}
       >
+        {/* -------- Affiche un marker pour chaque lieu récupéré --------- il met 5 secondes à s'afficher */}
+        {places.map((place) => (
+          <Marker
+            key={place._id} // Clé unique pour chaque marqueur
+            coordinate={{
+              latitude: place.latitude,
+              longitude: place.longitude,
+            }}
+            title="Lieu"
+          />
+        ))}
+
         {/* Si un trajet est en cours, on trace une ligne */}
         {route && route.length > 0 && (
           <Polyline coordinates={route} strokeWidth={8} strokeColor="blue" />

@@ -30,7 +30,6 @@ import LoginScreen from "./screens/LoginScreen";
 import RegisterScreen from "./screens/RegisterScreen";
 import HomeWorkScreen from "./screens/HomeWorkScreen";
 
-
 const persistConfig = {
   key: "unimap+",
   storage: AsyncStorage,
@@ -44,7 +43,7 @@ const store = configureStore({
 });
 
 const persistor = persistStore(store);
-
+// persistor.purge(); // Vide le stockage persistant
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
 
