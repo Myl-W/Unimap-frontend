@@ -42,6 +42,7 @@ export default function LoginScreen({ navigation }) {
 
         if (data.result && data.token) {
           //  ------  Si il y a data et token -------
+          console.log("Token reçu:", data.token);
           try {
             await AsyncStorage.setItem("userToken", data.token); //  ------Enregistrement du token -----------
             navigation.navigate("Map"); //  ----- Navigation vers MapScreen ----------
