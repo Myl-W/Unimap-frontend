@@ -131,6 +131,7 @@ export default function CompteScreen({ navigation }) {
               style={styles.optionButton}
               accessibilityLabel="Adresse domicile et travail"
               accessibilityRole="button"
+              onPress={() => navigation.navigate("HomeWorkScreen")}
             >
               <View style={styles.iconTextRow}>
                 {/* Icône domicile */}

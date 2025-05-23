@@ -34,7 +34,8 @@ const SignalBottomSheet = forwardRef(({ handleSheetSignal, id }, ref) => {
   const handleToggleSignal = (key) => {
     handleToggle(key);
     ref?.current?.close();
-    navigation.navigate("Signalement", { id });
+    navigation.navigate("Signalement", {id});
+    console.log('id de signalbottomsheet', id)
   };
 
   return (

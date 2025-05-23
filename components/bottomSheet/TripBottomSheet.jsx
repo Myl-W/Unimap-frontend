@@ -49,7 +49,7 @@ function formatDuration(durationStr) {
 const TripBottomSheet = ({ isRouteActive, onStopTrip }) => {
   const bottomSheetRef = useRef(null);
   const navigation = useNavigation();
-  const snapPoints = useMemo(() => ["15%", "70%"], []); // Definie la taille d'ouverture du BottomSheet
+  const snapPoints = useMemo(() => ["15%", "15%"], []); // Definie la taille d'ouverture du BottomSheet
   const tripinfos = useSelector((state) => state.trips.value.tripInfos);
   console.log("TripBottomSheet tripInfos", tripinfos);
   
@@ -134,19 +134,9 @@ const TripBottomSheet = ({ isRouteActive, onStopTrip }) => {
         </View>
       </BottomSheetView>
       <View style={styles.buttonRow}>
-        <View style={styles.stopTrip}>
-          <TouchableOpacity style={styles.stopButton} onPress={onStopTrip}>
+          <TouchableOpacity style={styles.stopTrip} onPress={onStopTrip}>
             <Text style={styles.stopButtonText}>Arrêt</Text>
           </TouchableOpacity>
-        </View>
-        <View style={styles.continueTrip}>
-          <TouchableOpacity
-            style={styles.continueButton}
-            onPress={handleContinue}
-          >
-            <Text style={styles.continueButtonText}>Y aller</Text>
-          </TouchableOpacity>
-        </View>
       </View>
     </BottomSheetModal>
   );
@@ -166,24 +156,20 @@ const styles = StyleSheet.create({
   stopTrip: {
     position: "absolute",
     bottom: 30,
-    left: 20,
-    right: 20,
+    left: 320,
+    right: 0,
+    width: 80,
+    height: 80,
     backgroundColor: "#e74c3c",
     padding: 15,
-    borderRadius: 10,
+    borderRadius: 50,
     justifyContent: "center",
     alignItems: "center",
-    width: "30%",
   },
   title: {
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 20,
-  },
-  stopButton: {
-    backgroundColor: "#e74c3c",
-    padding: 0,
-    borderRadius: 10,
   },
   stopButtonText: {
     color: "#fff",
@@ -235,8 +221,8 @@ const styles = StyleSheet.create({
   },
   paramIcon: {
     position: "absolute",
-    top: 16,
-    left: 16,
+    top: 10,
+    left: 30,
     backgroundColor: "#fff",
     borderRadius: 20,
     padding: 4,
