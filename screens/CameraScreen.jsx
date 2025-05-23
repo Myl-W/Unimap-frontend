@@ -18,6 +18,7 @@ export default function CameraScreen() {
 
   // Accès au dispatch Redux
   const dispatch = useDispatch();
+  const token = useSelector((state) => state.user.profile.token); // Récupère le token utilisateur
 
   // Récupère la position de l'utilisateur depuis le store Redux
   const { latitude, longitude } = useSelector((state) => state.trips.value);
@@ -34,7 +35,7 @@ export default function CameraScreen() {
   // Flash activé ou non
   const [flash, setFlash] = useState("off");
 
-  // Adresse backend récupérée depuis les variables d’environnement (app.json)
+  // Adresse backend récupérée depuis les variables d’environnement (app.config.json)
   const BACK_URL = Constants.expoConfig?.extra?.BACK_URL;
 
   // -------- Demande de permission à la caméra lors du premier rendu --------
@@ -60,28 +61,12 @@ export default function CameraScreen() {
     setFlash((prev) => (prev === "off" ? "on" : "off"));
   };
 
-  // -------- Récupère le token utilisateur stocké localement --------
-  const getToken = async () => {
-    try {
-      const token = await AsyncStorage.getItem("userToken");
-      return token;
-    } catch (error) {
-      console.error("Erreur lors de la récupération du token :", error);
-    }
-  };
-
   // -------- Fonction pour prendre une photo, l'envoyer à l’API et la stocker --------
   const takePicture = async () => {
     // Prise de photo avec qualité réduite pour l'upload
     const photo = await cameraRef.current?.takePictureAsync({
       quality: 0.3,
     });
-
-    const token = await getToken();
-    if (!token) {
-      console.error("Aucun token trouvé");
-      return;
-    }
 
     // Préparation de la photo à envoyer via une requête POST
     const formData = new FormData();
