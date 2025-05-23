@@ -35,7 +35,6 @@ import SearchBottomSheet from "../components/bottomSheet/SearchBottomSheet";
 import FilterBottomSheet from "../components/bottomSheet/FilterBottomSheet";
 import SignalBottomSheet from "../components/bottomSheet/SignalBottomSheet";
 import TripBottomSheet from "../components/bottomSheet/TripBottomSheet";
-import Constants from "expo-constants";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 //* Import des icônes FontAwesome
 import FontAwesome from "react-native-vector-icons/FontAwesome";

@@ -11,19 +11,20 @@ import {
 } from "react-native";
 
 // Import du hook Redux pour accéder au store global
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 
 // Import des hooks React
 import { useEffect, useState } from "react";
 
 // Import des constantes de l’environnement (via app.json ou app.config.js)
 import Constants from "expo-constants";
+import { addPhoto } from "../reducers/user";
 
 // Déclaration du composant AddSignalement
 export default function AddSignalement({ navigation, route }) {
   // État local pour le nouveau commentaire saisi par l'utilisateur
   const [newComment, setNewComment] = useState("");
-
+  const dispatch = useDispatch();
   // État local pour stocker les commentaires (même si ici ils ne sont pas affichés)
   const [comments, setComments] = useState([]);
   const { placeId } = route.params || {};
@@ -55,7 +56,7 @@ export default function AddSignalement({ navigation, route }) {
       console.log('data',data)
       console.log('photoUri',photoUri)
       if (data.result) {
-        photo && dispatch(addPhoto(data.url));
+        data.picture && dispatch(addPhoto(data.picture));
         setNewComment('');
         alert('Comment added successfully!');
         navigation.navigate('Map'); // Naviguer vers l'écran Map après avoir ajouté le commentaire
