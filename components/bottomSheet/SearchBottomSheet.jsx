@@ -41,13 +41,11 @@ const SearchBottomSheet = forwardRef(({ handleSheetSearch }, ref) => {
 
   //  -------- Fonction pour rechercher un itinéraire via l'API Google Directions ------------
   const searchGoogle = (destination) => {
-    console.log("destination", destination);
     fetch(//"encodeURIComponent(destination)" encode l'adresse pour qu'elle soit compatible avec une URL (remplace les espaces, virgules, etc.)
       `https://maps.googleapis.com/maps/api/directions/json?origin=${loc.latitude},${loc.longitude}&destination=${destination}&mode=${transport}&key=${google}`
     )
       .then((response) => response.json())
       .then((data) => {
-        console.log("data", data);
         // ------------- Adresse réelle d'arriver obtenue depuis l'API Google --------------
         const arrival = data.routes[0].legs[0].end_address;
         // ------------- Enregistrement dans l'historique des recherches -------------------
@@ -88,7 +86,7 @@ const SearchBottomSheet = forwardRef(({ handleSheetSearch }, ref) => {
   // uniquement si le champ 'search' n'est pas vide (après suppression des espaces).
   useEffect(() => {
     if (search.trim() !== "") {
-      searchGoogle();
+      searchGoogle(search);
     }
   }, [transport]);
 

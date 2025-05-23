@@ -103,7 +103,6 @@ export default function MapScreen() {
 
   // Récupération du trajet en cours depuis Redux
   const route = useSelector((state) => state.trips.coords?.routeCoords);
-  console.log("mapScreenRoute", route);
   // Hook de navigation
   const navigation = useNavigation();
 
