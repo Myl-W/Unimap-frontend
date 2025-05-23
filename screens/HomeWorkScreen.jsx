@@ -1,4 +1,3 @@
-import React from "react";
 import {
   View,
   Text,
@@ -10,18 +9,22 @@ import {
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { useSelector, useDispatch } from "react-redux";
 import { setHomeAddress, setWorkAddress } from "../reducers/trips";
+import React, { useState } from "react";
 
-export default function HomeWorkScreen({ navigation }) {
+export default function HomeWorkScreen() {
   const dispatch = useDispatch();
   const homeAddress = useSelector((state) => state.trips.homeAddress);
   const workAddress = useSelector((state) => state.trips.workAddress);
-  const [modalVisible, setModalVisible] = React.useState(false);
-  const [modalType, setModalType] = React.useState(null); // "home" ou "work"
-  const [addressInput, setAddressInput] = React.useState("");
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalType, setModalType] = useState(null); // "home" ou "work"
+  const [addressInput, setAddressInput] = useState("");
 
   const handleSetHome = () => {
+    // Indique que la modal sert à éditer l'adresse "domicile"
     setModalType("home");
+    // Pré-remplit le champ de saisie avec l'adresse domicile existante (ou vide si aucune)
     setAddressInput(homeAddress || "");
+      // Affiche la modal à l'écran
     setModalVisible(true);
   };
 
@@ -30,13 +33,13 @@ export default function HomeWorkScreen({ navigation }) {
     setAddressInput(workAddress || "");
     setModalVisible(true);
   };
-
+    // Fonction pour valider l'adresse saisie
   const handleValidate = () => {
     if (modalType === "home") dispatch(setHomeAddress(addressInput));
     if (modalType === "work") dispatch(setWorkAddress(addressInput));
     setModalVisible(false);
   };
-
+    // Fonction pour supprimer l'adresse
   const handleDelete = () => {
     if (modalType === "home") dispatch(setHomeAddress(null));
     if (modalType === "work") dispatch(setWorkAddress(null));
@@ -49,9 +52,13 @@ export default function HomeWorkScreen({ navigation }) {
 
       {/* Modal for address input */}
       <Modal
+        // Affiche la modal si modalVisible est true
         visible={modalVisible}
+        // Animation d'ouverture de la modal
         animationType="slide"
+        // Rend le fond de la modal transparent pour voir l'écran derrière
         transparent
+        // Ferme la modal quand l'utilisateur appuie sur "Annuler"
         onRequestClose={() => setModalVisible(false)}
       >
         <View
@@ -66,14 +73,16 @@ export default function HomeWorkScreen({ navigation }) {
             style={{
               backgroundColor: "#fff",
               borderRadius: 16,
-              padding: 24,
+              padding: 24,// Espace intérieur
               width: "80%",
               alignItems: "center",
             }}
-          >
+          > 
+            {/* Titre de la modal, change selon le type */}
             <Text style={{ fontSize: 18, marginBottom: 12 }}>
               {modalType === "home" ? "Adresse domicile" : "Adresse travail"}
             </Text>
+            {/* Champ de saisie pour l'adresse */}
             <TextInput
               style={{
                 borderWidth: 1,
@@ -84,9 +93,11 @@ export default function HomeWorkScreen({ navigation }) {
                 marginBottom: 16,
               }}
               placeholder="Tapez votre adresse..."
-              value={addressInput}
-              onChangeText={setAddressInput}
+              placeholderTextColor={"#aaa"}
+              value={addressInput}// Valeur du champ
+              onChangeText={setAddressInput}// Met à jour l'état à chaque frappe
             />
+            {/* Bouton Valider, désactivé si le champ est vide */}
             <TouchableOpacity
               style={{
                 backgroundColor: "#3498db",
@@ -96,10 +107,13 @@ export default function HomeWorkScreen({ navigation }) {
                 alignItems: "center",
               }}
               onPress={handleValidate}
+              // Désactive le bouton si le champ est vide ou ne contient que des espaces
               disabled={!addressInput.trim()}
             >
               <Text style={{ color: "#fff", fontWeight: "bold" }}>Valider</Text>
-            </TouchableOpacity>
+            </TouchableOpacity>   
+
+            {/* Bouton Supprimer l'adresse, affiché seulement si une adresse existe */}
             {((modalType === "home" && homeAddress) ||
               (modalType === "work" && workAddress)) && (
               <TouchableOpacity
@@ -119,6 +133,7 @@ export default function HomeWorkScreen({ navigation }) {
               </TouchableOpacity>
             )}
 
+            {/* Bouton Annuler pour fermer la modal */}
             <TouchableOpacity
               style={{
                 marginTop: 10,
@@ -193,16 +208,23 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 16,
     marginBottom: 24,
-    elevation: 2,
   },
-  addressBlock: { flex: 1, marginLeft: 16 },
-  label: { fontSize: 18, fontWeight: "bold", marginBottom: 4 },
-  address: { fontSize: 16, color: "#222" },
-  noAddress: { fontSize: 16, color: "#aaa" },
+  addressBlock: { 
+    flex: 1, marginLeft: 16
+},
+  label: { 
+    fontSize: 18, fontWeight: "bold", marginBottom: 4
+},
+  address: {
+     fontSize: 16, color: "#222" 
+},
+  noAddress: { 
+    fontSize: 16, color: "#aaa" 
+},
   editBtn: {
     backgroundColor: "#3498db",
     borderRadius: 20,
     padding: 10,
     marginLeft: 8,
-  },
+},
 });
