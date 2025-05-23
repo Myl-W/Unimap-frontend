@@ -51,6 +51,21 @@ export default function MapScreen() {
 
   // État local pour stocker la position actuelle de l’utilisateur
   const [currentPosition, setCurrentPosition] = useState(null);
+   // État local pour stocker l'id place de l’utilisateur
+  const [placeId, setPlaceId] = useState(null);
+
+  useEffect(() => {
+    const fetchPlaceId = async () => {
+      const response = await fetch(`${backUrl}/places`); 
+      const data = await response.json();
+      if (data.result && data.places.length > 0) {
+        setPlaceId(data.places[0]._id); // ou .at(-1) pour le dernier
+        console.log("✅ Place ID récupéré :", data.places[0]._id);
+      }
+    };
+
+    fetchPlaceId();
+  }, []);
 
   // Récupération du trajet en cours depuis Redux
   const route = useSelector((state) => state.trips.coords?.routeCoords);
@@ -175,7 +190,7 @@ export default function MapScreen() {
         <FilterBottomSheet ref={filterSheetRef} />
 
         {/* BottomSheet de signalement */}
-        <SignalBottomSheet ref={signalSheetRef} id={1} />
+        <SignalBottomSheet ref={signalSheetRef} id={placeId} />
 
         {/* BottomSheet du trajet (affiche bouton stop si un trajet est actif) */}
         <TripBottomSheet

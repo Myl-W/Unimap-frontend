@@ -16,7 +16,6 @@ import {
 
 const SignalBottomSheet = forwardRef(({ handleSheetSignal, id }, ref) => {
   const navigation = useNavigation();
-  console.log('id', id)
 
   const snapPoints = ["50%", "75%"]; // Definie la taille d'ouverture du BottomSheet
 
@@ -36,6 +35,7 @@ const SignalBottomSheet = forwardRef(({ handleSheetSignal, id }, ref) => {
     handleToggle(key);
     ref?.current?.close();
     navigation.navigate("Signalement", {id});
+    console.log('id de signalbottomsheet', id)
   };
 
   return (
