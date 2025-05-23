@@ -32,7 +32,8 @@ import SearchBottomSheet from "../components/bottomSheet/SearchBottomSheet";
 import FilterBottomSheet from "../components/bottomSheet/FilterBottomSheet";
 import SignalBottomSheet from "../components/bottomSheet/SignalBottomSheet";
 import TripBottomSheet from "../components/bottomSheet/TripBottomSheet";
-
+import Constants from "expo-constants";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 //* Import des icônes FontAwesome
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 
@@ -40,6 +41,7 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 export default function MapScreen() {
   // Permet de déclencher des actions Redux
   const dispatch = useDispatch();
+  const backUrl = Constants.expoConfig?.extra?.BACK_URL;
 
   // Références vers les différents BottomSheets (permet d’ouvrir/fermer ces panneaux)
   const searchSheetRef = useRef(null);
@@ -54,18 +56,51 @@ export default function MapScreen() {
    // État local pour stocker l'id place de l’utilisateur
   const [placeId, setPlaceId] = useState(null);
 
+  // -------- Récupère le token utilisateur stocké localement --------
+  const getToken = async () => {
+    
+    try {
+      const token = await AsyncStorage.getItem("userToken");
+      return token;
+    } catch (error) {
+      console.error("Erreur lors de la récupération du token :", error);
+    }
+  };
+
+
   useEffect(() => {
-    const fetchPlaceId = async () => {
-      const response = await fetch(`${backUrl}/places`); 
+    // const fetchPlaceId = async () => {
+    //   const response = await fetch(`${backUrl}/places`); 
+    //   console.log('response', response)
+    //   const data = await response.json();
+    //   if (data.result && data.places.length > 0) {
+    //     setPlaceId(data.places[0]._id); // ou .at(-1) pour le dernier
+    //     console.log("✅ Place ID récupéré :", data.places[0]._id);
+    //   }
+    // };
+
+    fetchPlaceId();
+  }, []);
+
+  const fetchPlaceId = async () => {
+     const token = await getToken();
+      if (!token) {
+        console.error("Aucun token trouvé");
+        return;
+      }
+      const response = await fetch(`${backUrl}/places`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       const data = await response.json();
+      console.log('data', data)
       if (data.result && data.places.length > 0) {
         setPlaceId(data.places[0]._id); // ou .at(-1) pour le dernier
         console.log("✅ Place ID récupéré :", data.places[0]._id);
       }
     };
-
-    fetchPlaceId();
-  }, []);
 
   // Récupération du trajet en cours depuis Redux
   const route = useSelector((state) => state.trips.coords?.routeCoords);
@@ -190,7 +225,7 @@ console.log('mapScreenRoute', route);
         <FilterBottomSheet ref={filterSheetRef} />
 
         {/* BottomSheet de signalement */}
-        <SignalBottomSheet ref={signalSheetRef} id={placeId} />
+        <SignalBottomSheet ref={signalSheetRef} placeId={placeId} />
 
         {/* BottomSheet du trajet (affiche bouton stop si un trajet est actif) */}
         <TripBottomSheet

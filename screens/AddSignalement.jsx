@@ -4,6 +4,7 @@ import {
   StyleSheet,
   View,
   Text,
+  TextInput
 } from "react-native";
 import React from "react";
 import { TouchableOpacity, Image } from "react-native";
@@ -15,10 +16,42 @@ export default function AddSignalement({ navigation, route }) {
   
   const [newComment, setNewComment] = useState('');
   const [comments, setComments] = useState([]);
-  const placeId = route.params?.id;
+  const { placeId } = route.params || {};
   console.log('placeId',placeId)
   const backUrl = Constants.expoConfig?.extra?.BACK_URL;
   const photoUri = useSelector((state) => state.user.value.photo);
+
+   const handleAddComment = async () => {
+    if (!newComment.trim() || !placeId) return;
+  
+    try {
+      const response = await fetch(`${backUrl}/comments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          picture: photoUri,
+          comment: newComment,
+          placeId: placeId,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const data = await response.json();
+      console.log('data',data)
+      console.log('photoUri',photoUri)
+      if (data.result) {
+        photo && dispatch(addPhoto(data.url));
+        setNewComment('');
+        alert('Comment added successfully!');
+        navigation.navigate('Map'); // Naviguer vers l'écran Map après avoir ajouté le commentaire
+      }
+    } catch (error) {
+      console.error('Error adding comment:', error);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -35,50 +68,14 @@ export default function AddSignalement({ navigation, route }) {
           )}
 
            <TextInput
-              placeholder="Ajouter un commentaire"
-              value={newComment}
-              onChangeText={setNewComment}
-              style={{
-                borderColor: '#ccc',
-                borderWidth: 1,
-                borderRadius: 5,
-                marginTop: 10,
-                padding: 8,
-                backgroundColor: 'white',
-                width: '70%',
-              }}
+            placeholder="Ajouter un commentaire"
+            value={newComment}
+            onChangeText={setNewComment}
+            style={styles.commentInput}
           />
-          <TouchableOpacity
-            onPress={async () => {
-              if (!newComment.trim()) return;
-
-              const response = await fetch(`${backUrl}/comments`, {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({
-                                  picture: photoUri,
-                                  comment: newComment,
-                                  placeId: placeId
-                                }),
-                              });
-
-              const data = await response.json();
-              if (data.result) {
-                setComments(prev => [...prev, data.comment]); // Mise à jour immédiate
-                setNewComment('');
-              }
-            }}
-            style={{
-              backgroundColor: '#4CAF50',
-              padding: 10,
-              marginTop: 10,
-              borderRadius: 5,
-              alignItems: 'center'
-            }}
-          >
-            <Text style={{ color: 'white', fontWeight: 'bold' }}>Ajouter un commentaire</Text>
+          <TouchableOpacity onPress={handleAddComment} style={styles.addCommentButton}>
+            <Text style={styles.addCommentText}>Ajouter un commentaire</Text>
           </TouchableOpacity>
-
       </KeyboardAvoidingView>
     </View>
   );
@@ -119,5 +116,25 @@ const styles = StyleSheet.create({
     height: 300,
     resizeMode: "cover",
     borderRadius: 10,
+  },
+  commentInput: {
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 5,
+    marginTop: 10,
+    padding: 8,
+    backgroundColor: 'white',
+    width: '70%',
+  },
+  addCommentButton: {
+    backgroundColor: '#4CAF50',
+    padding: 10,
+    marginTop: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  addCommentText: {
+    color: 'white',
+    fontWeight: 'bold',
   },
 });

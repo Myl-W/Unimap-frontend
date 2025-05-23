@@ -103,12 +103,12 @@ export default function CameraScreen() {
       body: formData,
     })
       .then((response) => response.json())
-      .then((data) => {
-        // Stocke l’URL de la photo dans le reducer Redux
+      if (data.result) {
         photo && dispatch(addPhoto(data.url));
-        // Redirige l'utilisateur vers l'écran Map
-        navigation.navigate("Map");
-      });
+        navigation.navigate("AddSignalement", { placeId: data.place._id });
+      } else {
+        console.error("Erreur lors de l'upload de la photo");
+      }
   };
 
   return (

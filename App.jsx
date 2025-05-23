@@ -42,6 +42,12 @@ const persistor = persistStore(store);
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
 
+// const handleClearUser = () => {
+//   persistor.purge(); // Vide le stockage persistant
+// };
+
+// handleClearUser()
+
 const DrawerNavigator = ({ screenReaderEnabled }) => {
   return (
     <Drawer.Navigator
