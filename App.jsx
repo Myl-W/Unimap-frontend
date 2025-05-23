@@ -28,8 +28,13 @@ const reducers = combineReducers({ user, accessibility, signalement, trips });
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import LoginScreen from "./screens/LoginScreen";
 import RegisterScreen from "./screens/RegisterScreen";
+import HomeWorkScreen from "./screens/HomeWorkScreen";
 
-const persistConfig = { key: "unimap+", storage: AsyncStorage, whitelist: ["user"] };
+const persistConfig = {
+  key: "unimap+",
+  storage: AsyncStorage,
+  whitelist: ["user"],
+};
 
 const store = configureStore({
   reducer: persistReducer(persistConfig, reducers),
@@ -38,15 +43,9 @@ const store = configureStore({
 });
 
 const persistor = persistStore(store);
-
+// persistor.purge(); // Vide le stockage persistant
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
-
-// const handleClearUser = () => {
-//   persistor.purge(); // Vide le stockage persistant
-// };
-
-// handleClearUser()
 
 const DrawerNavigator = ({ screenReaderEnabled }) => {
   return (
@@ -162,6 +161,14 @@ export default function App() {
                   options={{
                     title: "Créer un compte",
                     headerBackTitle: "",
+                  }}
+                />
+                <Stack.Screen
+                  name="HomeWorkScreen"
+                  component={HomeWorkScreen}
+                  options={{
+                    title: "Domicile & Travail",
+                    headerBackTitle: "Mon compte",
                   }}
                 />
               </Stack.Navigator>

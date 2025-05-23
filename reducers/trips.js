@@ -9,6 +9,8 @@ const initialState = {
   coords: { routeCoords: [] },
   selectedTransport: null,
   recentSearch: [],
+  homeAddress: null,
+  workAddress: null,
 };
 
 export const tripSlice = createSlice({
@@ -59,6 +61,12 @@ export const tripSlice = createSlice({
         state.recentSearch.push(action.payload);
       }
     },
+    setHomeAddress: (state, action) => {
+      state.homeAddress = action.payload;
+    },
+    setWorkAddress: (state, action) => {
+      state.workAddress = action.payload;
+    },
   },
 });
 
@@ -72,5 +80,7 @@ export const {
   resetTripInfos,
   recentSearch,
   suppRecentSearch,
+  setHomeAddress,
+  setWorkAddress,
 } = tripSlice.actions;
 export default tripSlice.reducer;

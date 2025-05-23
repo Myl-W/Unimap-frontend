@@ -13,7 +13,7 @@ import { useRef, useState, useEffect } from "react";
 import { View, StyleSheet, TouchableOpacity, Image } from "react-native";
 
 // Carte interactive avec possibilité de tracer des lignes (routes)
-import MapView, { Polyline } from "react-native-maps";
+import MapView, { Polyline, Marker } from "react-native-maps";
 
 // Librairie Expo pour accéder à la géolocalisation
 import * as Location from "expo-location";
@@ -26,6 +26,9 @@ import { useDispatch, useSelector } from "react-redux";
 
 // Actions Redux : enregistrer la position utilisateur et réinitialiser le trajet
 import { userLoc, resetRouteCoords } from "../reducers/trips";
+
+// Import
+import Constants from "expo-constants";
 
 //* Import des composants BottomSheet personnalisés
 import SearchBottomSheet from "../components/bottomSheet/SearchBottomSheet";
@@ -41,7 +44,10 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 export default function MapScreen() {
   // Permet de déclencher des actions Redux
   const dispatch = useDispatch();
-  const backUrl = Constants.expoConfig?.extra?.BACK_URL;
+  const token = useSelector((state) => state.user.profile.token); // Récupère le token utilisateur
+
+  // Adresse backend récupérée depuis les variables d’environnement (app.config.json)
+  const BACK_URL = Constants.expoConfig?.extra?.BACK_URL;
 
   // Références vers les différents BottomSheets (permet d’ouvrir/fermer ces panneaux)
   const searchSheetRef = useRef(null);
@@ -69,26 +75,13 @@ export default function MapScreen() {
 
 
   useEffect(() => {
-    // const fetchPlaceId = async () => {
-    //   const response = await fetch(`${backUrl}/places`); 
-    //   console.log('response', response)
-    //   const data = await response.json();
-    //   if (data.result && data.places.length > 0) {
-    //     setPlaceId(data.places[0]._id); // ou .at(-1) pour le dernier
-    //     console.log("✅ Place ID récupéré :", data.places[0]._id);
-    //   }
-    // };
-
-    fetchPlaceId();
-  }, []);
-
-  const fetchPlaceId = async () => {
+     const fetchPlaceId = async () => {
      const token = await getToken();
       if (!token) {
         console.error("Aucun token trouvé");
         return;
       }
-      const response = await fetch(`${backUrl}/places`, {
+      const response = await fetch(`${BACK_URL}/places`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -102,11 +95,21 @@ export default function MapScreen() {
       }
     };
 
+    fetchPlaceId();
+  }, []);
+
+
+  // Etat pour stocker les lieux à afficher sur la carte
+  const [places, setPlaces] = useState([]);
+
   // Récupération du trajet en cours depuis Redux
   const route = useSelector((state) => state.trips.coords?.routeCoords);
-console.log('mapScreenRoute', route);
+  console.log("mapScreenRoute", route);
   // Hook de navigation
   const navigation = useNavigation();
+
+  const tripActive = route && route.length > 0; // Vérifie si un trajet est actif
+  const bottomSheetHeight = 120 // Hauteur de la BottomSheet du trajet
 
   //* Configuration des boutons dans le header (barre du haut)
   useEffect(() => {
@@ -161,6 +164,22 @@ console.log('mapScreenRoute', route);
     }
   }, [currentPosition]); // Exécuté à chaque changement de position
 
+  // Récupère les lieux à afficher sur la carte
+  useEffect(() => {
+    fetch(`${BACK_URL}/places`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("DATA =>", data);
+        if (data.result && data.places) {
+          setPlaces(data.places); // Stocke les lieux dans l'état
+        }
+      });
+  }, []);
+
   //* Fonction appelée pour stopper un trajet (reset du store Redux)
   const handleStopTrip = () => {
     dispatch(resetRouteCoords());
@@ -183,6 +202,18 @@ console.log('mapScreenRoute', route);
           longitudeDelta: 0.05,
         }}
       >
+        {/* -------- Affiche un marker pour chaque lieu récupéré --------- il met 5 secondes à s'afficher */}
+        {places.map((place) => (
+          <Marker
+            key={place._id} // Clé unique pour chaque marqueur
+            coordinate={{
+              latitude: place.latitude,
+              longitude: place.longitude,
+            }}
+            title="Lieu"
+          />
+        ))}
+
         {/* Si un trajet est en cours, on trace une ligne */}
         {route && route.length > 0 && (
           <Polyline coordinates={route} strokeWidth={8} strokeColor="blue" />
@@ -191,6 +222,7 @@ console.log('mapScreenRoute', route);
         {/* Bouton d’accès aux filtres */}
         <View>
           <TouchableOpacity
+            style={styles.buttonFiltre}
             onPress={() => filterSheetRef.current?.present()}
             accessibilityLabel="Sélectionner des filtres"
             accessibilityRole="button"
@@ -200,7 +232,11 @@ console.log('mapScreenRoute', route);
         </View>
 
         {/* Bouton pour effectuer un signalement */}
-        <View style={styles.buttonSignalement}>
+        <View style={[
+            styles.buttonSignalement,
+            // 10px au-dessus de la feuille, sinon 30px du bas
+            { bottom: tripActive ? bottomSheetHeight + 20 : 30 }, 
+          ]}>
           <TouchableOpacity
             onPress={() => signalSheetRef.current?.present()}
             accessibilityLabel="Effectuer un signalement"

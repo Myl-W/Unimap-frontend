@@ -1,31 +1,43 @@
+// Import des composants React Native nécessaires à l'interface utilisateur
 import {
-  KeyboardAvoidingView,
-  Platform,
-  StyleSheet,
-  View,
-  Text,
-  TextInput
+  KeyboardAvoidingView, // Évite que le clavier masque les champs de texte
+  Platform, // Pour adapter le comportement selon iOS ou Android
+  StyleSheet, // Pour créer des styles en JS
+  View, // Conteneur de base
+  Text, // Affichage de texte
+  TextInput, // Champ de saisie
+  TouchableOpacity, // Bouton pressable
+  Image, // Affichage d’image
 } from "react-native";
-import React from "react";
-import { TouchableOpacity, Image } from "react-native";
+
+// Import du hook Redux pour accéder au store global
 import { useSelector } from "react-redux";
+
+// Import des hooks React
 import { useEffect, useState } from "react";
+
+// Import des constantes de l’environnement (via app.json ou app.config.js)
 import Constants from "expo-constants";
 
+// Déclaration du composant AddSignalement
 export default function AddSignalement({ navigation, route }) {
-  
-  const [newComment, setNewComment] = useState('');
+  // État local pour le nouveau commentaire saisi par l'utilisateur
+  const [newComment, setNewComment] = useState("");
+
+  // État local pour stocker les commentaires (même si ici ils ne sont pas affichés)
   const [comments, setComments] = useState([]);
   const { placeId } = route.params || {};
   console.log('placeId',placeId)
-  const backUrl = Constants.expoConfig?.extra?.BACK_URL;
+  const BACK_URL = Constants.expoConfig?.extra?.BACK_URL;
+
+  // Récupération de l'URI de la photo depuis le store Redux (stockée après prise de photo)
   const photoUri = useSelector((state) => state.user.value.photo);
 
    const handleAddComment = async () => {
     if (!newComment.trim() || !placeId) return;
   
     try {
-      const response = await fetch(`${backUrl}/comments`, {
+      const response = await fetch(`${BACK_URL}/comments`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -53,19 +65,27 @@ export default function AddSignalement({ navigation, route }) {
     }
   };
 
+  // Rendu JSX du composant
   return (
+    // Conteneur principal avec un fond blanc
     <View style={styles.container}>
+      {/* Permet d'éviter que le clavier masque les éléments sur l'écran */}
       <KeyboardAvoidingView
         style={styles.logContent}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        behavior={Platform.OS === "ios" ? "padding" : "height"} // iOS utilise "padding", Android "height"
       >
-        <TouchableOpacity onPress={() => navigation.navigate("Camera")} style={styles.takePhotoButton}>
-          <Text style={styles.takePhotoText} >📸 Prendre une photo</Text>
+        {/* Bouton pour aller à l'écran "Camera" afin de prendre une photo */}
+        <TouchableOpacity
+          onPress={() => navigation.navigate("Camera")}
+          style={styles.takePhotoButton}
+        >
+          <Text style={styles.takePhotoText}>📸 Prendre une photo</Text>
         </TouchableOpacity>
 
-          {photoUri && (
-            <Image source={{ uri: photoUri }} style={styles.photoDisplayed} />
-          )}
+        {/* Si une photo a été prise, elle est affichée ici */}
+        {photoUri && (
+          <Image source={{ uri: photoUri }} style={styles.photoDisplayed} />
+        )}
 
            <TextInput
             placeholder="Ajouter un commentaire"
@@ -81,15 +101,16 @@ export default function AddSignalement({ navigation, route }) {
   );
 }
 
+// Définition des styles utilisés plus haut dans le composant
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 1, // Prend tout l’espace disponible
     backgroundColor: "white",
   },
   logContent: {
     backgroundColor: "white",
     flex: 1,
-    alignItems: "center",
+    alignItems: "center", // Centre horizontalement les enfants
     paddingTop: 50,
   },
   takePhotoButton: {
@@ -98,11 +119,12 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 20,
     marginBottom: 30,
+    // Ombre (effet visuel uniquement visible sur iOS/Android avec elevation)
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
-    elevation: 3,
+    elevation: 3, // Ombre sur Android
   },
 
   takePhotoText: {
@@ -114,7 +136,7 @@ const styles = StyleSheet.create({
   photoDisplayed: {
     width: 300,
     height: 300,
-    resizeMode: "cover",
+    resizeMode: "cover", // Recouvre entièrement l’espace sans déformer
     borderRadius: 10,
   },
   commentInput: {
