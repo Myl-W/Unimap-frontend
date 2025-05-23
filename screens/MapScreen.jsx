@@ -58,6 +58,9 @@ console.log('mapScreenRoute', route);
   // Hook de navigation
   const navigation = useNavigation();
 
+  const tripActive = route && route.length > 0; // Vérifie si un trajet est actif
+  const bottomSheetHeight = 120 // Hauteur de la BottomSheet du trajet
+
   //* Configuration des boutons dans le header (barre du haut)
   useEffect(() => {
     navigation.setOptions({
@@ -141,6 +144,7 @@ console.log('mapScreenRoute', route);
         {/* Bouton d’accès aux filtres */}
         <View>
           <TouchableOpacity
+            style={styles.buttonFiltre}
             onPress={() => filterSheetRef.current?.present()}
             accessibilityLabel="Sélectionner des filtres"
             accessibilityRole="button"
@@ -150,7 +154,11 @@ console.log('mapScreenRoute', route);
         </View>
 
         {/* Bouton pour effectuer un signalement */}
-        <View style={styles.buttonSignalement}>
+        <View style={[
+            styles.buttonSignalement,
+            // 10px au-dessus de la feuille, sinon 30px du bas
+            { bottom: tripActive ? bottomSheetHeight + 20 : 30 }, 
+          ]}>
           <TouchableOpacity
             onPress={() => signalSheetRef.current?.present()}
             accessibilityLabel="Effectuer un signalement"

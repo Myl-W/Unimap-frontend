@@ -28,8 +28,14 @@ const reducers = combineReducers({ user, accessibility, signalement, trips });
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import LoginScreen from "./screens/LoginScreen";
 import RegisterScreen from "./screens/RegisterScreen";
+import HomeWorkScreen from "./screens/HomeWorkScreen";
 
-const persistConfig = { key: "unimap+", storage: AsyncStorage, whitelist: ["user"] };
+
+const persistConfig = {
+  key: "unimap+",
+  storage: AsyncStorage,
+  whitelist: ["user"],
+};
 
 const store = configureStore({
   reducer: persistReducer(persistConfig, reducers),
@@ -156,6 +162,14 @@ export default function App() {
                   options={{
                     title: "Créer un compte",
                     headerBackTitle: "",
+                  }}
+                />
+                <Stack.Screen
+                  name="HomeWorkScreen"
+                  component={HomeWorkScreen}
+                  options={{
+                    title: "Domicile & Travail",
+                    headerBackTitle: "Mon compte",
                   }}
                 />
               </Stack.Navigator>
