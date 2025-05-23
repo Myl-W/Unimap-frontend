@@ -15,6 +15,8 @@ import {
 import { FontAwesome } from "@expo/vector-icons";
 import { useSelector, useDispatch } from "react-redux";
 import polyline from "@mapbox/polyline";
+import { useNavigation } from "@react-navigation/native";
+
 
 import {
   setRouteCoords,
@@ -32,11 +34,15 @@ const SearchBottomSheet = forwardRef(({ handleSheetSearch }, ref) => {
   const [search, setSearch] = useState("");
   const snapPoints = ["50%", "75%"]; // Definie la taille d'ouverture du BottomSheet
   const lastSearch = useSelector((state) => state.trips?.recentSearch);
+  const homeAddress = useSelector((state) => state.trips.homeAddress);
+  const workAddress = useSelector((state) => state.trips.workAddress);
+
+  const navigation = useNavigation();
 
   //  -------- Fonction pour rechercher un itinéraire via l'API Google Directions ------------
-  const searchGoogle = () => {
+  const searchGoogle = (destination = search) => {
     fetch(
-      `https://maps.googleapis.com/maps/api/directions/json?origin=${loc.latitude},${loc.longitude}&destination=${search}&mode=${transport}&key=${google}`
+      `https://maps.googleapis.com/maps/api/directions/json?origin=${loc.latitude},${loc.longitude}&destination=${destination}&mode=${transport}&key=${google}`
     )
       .then((response) => response.json())
       .then((data) => {
@@ -136,6 +142,24 @@ const SearchBottomSheet = forwardRef(({ handleSheetSearch }, ref) => {
     dispatch(suppRecentSearch(updatedSearch));
   };
 
+const handleHomePress = () => {
+  if (homeAddress && homeAddress.length > 0) {
+    setSearch(homeAddress);
+    searchGoogle(homeAddress);
+  } else {
+    navigation.navigate("HomeWorkScreen");
+  }
+};
+
+const handleWorkAdressPress = () => {
+  if (workAddress && workAddress.length > 0) {
+    setSearch(workAddress);
+    searchGoogle(workAddress);
+  } else {
+    navigation.navigate("HomeWorkScreen");
+  }
+};
+
   return (
     <BottomSheetModal
       ref={ref}
@@ -154,13 +178,13 @@ const SearchBottomSheet = forwardRef(({ handleSheetSearch }, ref) => {
     >
       <BottomSheetView style={styles.contentContainer}>
         <View style={styles.buttonRow}>
-          <TouchableOpacity style={styles.optionButton}>
+          <TouchableOpacity style={styles.optionButton} onPress={handleHomePress}>
             <View style={styles.optionButtonContent}>
               <FontAwesome name="home" size={24} color="black" />
               <Text style={styles.optionButtonText}>Domicile</Text>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.optionButton}>
+          <TouchableOpacity style={styles.optionButton} onPress={handleWorkAdressPress}>
             <View style={styles.optionButtonContent}>
               <FontAwesome name="briefcase" size={24} color="black" />
               <Text style={styles.optionButtonText}>Travail</Text>
