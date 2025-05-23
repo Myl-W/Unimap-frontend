@@ -58,12 +58,12 @@ export default function MapScreen() {
 
   // État local pour stocker la position actuelle de l’utilisateur
   const [currentPosition, setCurrentPosition] = useState(null);
-   // État local pour stocker l'id place de l’utilisateur
+  // État local pour stocker l'id place de l’utilisateur
   const [placeId, setPlaceId] = useState(null);
 
   useEffect(() => {
     const fetchPlaceId = async () => {
-      const response = await fetch(`${backUrl}/places`); 
+      const response = await fetch(`${backUrl}/places`);
       const data = await response.json();
       if (data.result && data.places.length > 0) {
         setPlaceId(data.places[0]._id); // ou .at(-1) pour le dernier
@@ -84,7 +84,7 @@ export default function MapScreen() {
   const navigation = useNavigation();
 
   const tripActive = route && route.length > 0; // Vérifie si un trajet est actif
-  const bottomSheetHeight = 120 // Hauteur de la BottomSheet du trajet
+  const bottomSheetHeight = 120; // Hauteur de la BottomSheet du trajet
 
   //* Configuration des boutons dans le header (barre du haut)
   useEffect(() => {
@@ -148,7 +148,7 @@ export default function MapScreen() {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log("DATA =>", data);
+        // console.log("DATA =>", data);
         if (data.result && data.places) {
           setPlaces(data.places); // Stocke les lieux dans l'état
         }
@@ -207,11 +207,13 @@ export default function MapScreen() {
         </View>
 
         {/* Bouton pour effectuer un signalement */}
-        <View style={[
+        <View
+          style={[
             styles.buttonSignalement,
             // 10px au-dessus de la feuille, sinon 30px du bas
-            { bottom: tripActive ? bottomSheetHeight + 20 : 30 }, 
-          ]}>
+            { bottom: tripActive ? bottomSheetHeight + 20 : 30 },
+          ]}
+        >
           <TouchableOpacity
             onPress={() => signalSheetRef.current?.present()}
             accessibilityLabel="Effectuer un signalement"
