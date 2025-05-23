@@ -54,7 +54,7 @@ export default function MapScreen() {
 
   // Récupération du trajet en cours depuis Redux
   const route = useSelector((state) => state.trips.coords?.routeCoords);
-console.log('mapScreenRoute', route);
+  console.log("mapScreenRoute", route);
   // Hook de navigation
   const navigation = useNavigation();
 
@@ -141,6 +141,7 @@ console.log('mapScreenRoute', route);
         {/* Bouton d’accès aux filtres */}
         <View>
           <TouchableOpacity
+            style={styles.buttonFiltre}
             onPress={() => filterSheetRef.current?.present()}
             accessibilityLabel="Sélectionner des filtres"
             accessibilityRole="button"
