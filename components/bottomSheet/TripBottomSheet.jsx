@@ -51,7 +51,6 @@ const TripBottomSheet = ({ isRouteActive, onStopTrip }) => {
   const navigation = useNavigation();
   const snapPoints = useMemo(() => ["15%", "15%"], []); // Definie la taille d'ouverture du BottomSheet
   const tripinfos = useSelector((state) => state.trips.value.tripInfos);
-  console.log("TripBottomSheet tripInfos", tripinfos);
   
 
   // ------------- Calcul de l'heure d'arrivée ------------
