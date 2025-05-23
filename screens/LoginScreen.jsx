@@ -11,8 +11,8 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
+  Text,
 } from "react-native";
-import Text from "../assets/fonts/CustomText";
 import { userInfos } from "../reducers/user";
 import Popup from "../components/modals/popup";
 
@@ -42,7 +42,6 @@ export default function LoginScreen({ navigation }) {
 
         if (data.result && data.token) {
           //  ------  Si il y a data et token -------
-          console.log("Token reçu:", data.token);
           try {
             await AsyncStorage.setItem("userToken", data.token); //  ------Enregistrement du token -----------
             navigation.navigate("Map"); //  ----- Navigation vers MapScreen ----------

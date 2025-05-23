@@ -1,18 +1,10 @@
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import {
-  StyleSheet,
-  StatusBar,
-  View,
-  ActivityIndicator,
-  AccessibilityInfo,
-} from "react-native";
+import { StyleSheet, StatusBar, AccessibilityInfo } from "react-native";
 import { useEffect, useState } from "react";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { useFonts } from "expo-font";
-import fonts from "./assets/fonts/kanit";
 
 // -------------------  IMPORT DES PAGES -----------------------
 import HomeScreen from "./screens/HomeScreen";
@@ -37,7 +29,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import LoginScreen from "./screens/LoginScreen";
 import RegisterScreen from "./screens/RegisterScreen";
 
-const persistConfig = { key: "unimap+", storage: AsyncStorage };
+const persistConfig = { key: "unimap+", storage: AsyncStorage, whitelist: ["user"] };
 
 const store = configureStore({
   reducer: persistReducer(persistConfig, reducers),
@@ -85,7 +77,6 @@ const DrawerNavigator = ({ screenReaderEnabled }) => {
 };
 
 export default function App() {
-  const [fontsLoaded] = useFonts(fonts);
   const [screenReaderEnabled, setScreenReaderEnabled] = useState(false);
 
   useEffect(() => {
@@ -105,15 +96,6 @@ export default function App() {
       subscription.remove();
     };
   }, []);
-
-  // ---------  Application de la police KANIT ----------
-  if (!fontsLoaded) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  }
 
   return (
     <Provider store={store}>

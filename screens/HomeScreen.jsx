@@ -6,9 +6,8 @@ import {
   TouchableOpacity, // Bouton tactile avec retour visuel
   View, // Conteneur de base pour structurer l'interface
   Image, // Pour afficher des images
-  Alert, // Module d'affichage de popups d'alerte (non utilisé ici, mais importé)
+  Text, // Composant de texte de base
 } from "react-native";
-import Text from "../assets/fonts/CustomText"; // Composant personnalisé pour du texte avec une police spécifique
 import { useDispatch } from "react-redux"; // Hook Redux pour dispatcher des actions
 import MapView from "react-native-maps"; // Composant de carte interactive
 import * as Location from "expo-location"; // Module Expo pour accéder aux services de géolocalisation

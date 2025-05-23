@@ -4,9 +4,9 @@ import {
   StyleSheet,
   View,
   TouchableOpacity,
+  Text,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import Text from "../assets/fonts/CustomText";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 
 export default function CompteScreen({ navigation }) {
@@ -50,7 +50,7 @@ export default function CompteScreen({ navigation }) {
           <View style={styles.avatarContainer}>
             <View style={styles.point}>
               <View style={styles.pointContent}>
-                <Text style={styles.number}>#9999</Text>{" "}
+                <Text style={styles.number}>#9999</Text>
                 {/* Numéro de l'utilisateur (fictif ici) */}
               </View>
             </View>
@@ -141,9 +141,7 @@ export default function CompteScreen({ navigation }) {
                   style={styles.icon}
                 />
                 <Text style={styles.optionButtonText}>Domicile</Text>
-
-                <Text style={styles.optionButtonText}> / </Text>
-
+                <Text style={styles.optionButtonText}>{" / "}</Text>
                 {/* Icône travail */}
                 <FontAwesome
                   name="briefcase"
@@ -162,18 +160,19 @@ export default function CompteScreen({ navigation }) {
               accessibilityLabel="Aller aux paramètres"
               accessibilityRole="button"
               style={styles.optionButton}
-              onPress={() => navigation.navigate("Parametre")} // Navigation vers l'écran Parametre
+              onPress={() => navigation.navigate("Parametre")}
             >
-              <Text style={styles.optionButtonText}>
+              <View style={styles.iconTextRow}>
                 <FontAwesome
                   name="gear"
                   size={24}
                   color="black"
-                  accessibilityLabel="Parametre"
+                  accessibilityLabel="Paramètre"
                   accessibilityRole="image"
-                />{" "}
+                  style={styles.icon}
+                />
                 <Text style={styles.optionButtonText}>Paramètres</Text>
-              </Text>
+              </View>
             </TouchableOpacity>
           </View>
         </View>
