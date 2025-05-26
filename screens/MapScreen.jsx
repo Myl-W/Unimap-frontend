@@ -58,7 +58,7 @@ export default function MapScreen() {
 
   // État local pour stocker la position actuelle de l’utilisateur
   const [currentPosition, setCurrentPosition] = useState(null);
-   // État local pour stocker l'id place de l’utilisateur
+   // État local pour stocker l'id place de l’utilisateur 
   const [placeId, setPlaceId] = useState(null);
 
   // -------- Récupère le token utilisateur stocké localement --------
@@ -71,7 +71,6 @@ export default function MapScreen() {
       console.error("Erreur lors de la récupération du token :", error);
     }
   };
-
 
   useEffect(() => {
      const fetchPlaceId = async () => {
@@ -87,13 +86,11 @@ export default function MapScreen() {
       },
     })
       const data = await response.json();
-      console.log('data', data)
       if (data.result && data.places.length > 0) {
         setPlaceId(data.places[0]._id); // ou .at(-1) pour le dernier
         console.log("✅ Place ID récupéré :", data.places[0]._id);
       }
     };
-
     fetchPlaceId();
   }, []);
 
@@ -171,7 +168,6 @@ export default function MapScreen() {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log("DATA =>", data);
         if (data.result && data.places) {
           setPlaces(data.places); // Stocke les lieux dans l'état
         }
@@ -182,7 +178,7 @@ export default function MapScreen() {
   const handleStopTrip = () => {
     dispatch(resetRouteCoords());
   };
-
+  console.log('place', places)
   //* ----------- Rendu du composant principal -----------
   return (
     <View style={styles.container}>
