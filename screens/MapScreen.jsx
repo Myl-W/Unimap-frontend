@@ -58,12 +58,11 @@ export default function MapScreen() {
 
   // État local pour stocker la position actuelle de l’utilisateur
   const [currentPosition, setCurrentPosition] = useState(null);
-   // État local pour stocker l'id place de l’utilisateur 
+  // État local pour stocker l'id place de l’utilisateur 
   const [placeId, setPlaceId] = useState(null);
 
   // -------- Récupère le token utilisateur stocké localement --------
   const getToken = async () => {
-    
     try {
       const token = await AsyncStorage.getItem("userToken");
       return token;
@@ -73,18 +72,18 @@ export default function MapScreen() {
   };
 
   useEffect(() => {
-     const fetchPlaceId = async () => {
-     const token = await getToken();
+    const fetchPlaceId = async () => {
+      const token = await getToken();
       if (!token) {
         console.error("Aucun token trouvé");
         return;
       }
       const response = await fetch(`${BACK_URL}/places`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       const data = await response.json();
       if (data.result && data.places.length > 0) {
         setPlaceId(data.places[0]._id); // ou .at(-1) pour le dernier
@@ -93,7 +92,6 @@ export default function MapScreen() {
     };
     fetchPlaceId();
   }, []);
-
 
   // Etat pour stocker les lieux à afficher sur la carte
   const [places, setPlaces] = useState([]);
@@ -104,7 +102,7 @@ export default function MapScreen() {
   const navigation = useNavigation();
 
   const tripActive = route && route.length > 0; // Vérifie si un trajet est actif
-  const bottomSheetHeight = 120 // Hauteur de la BottomSheet du trajet
+  const bottomSheetHeight = 120; // Hauteur de la BottomSheet du trajet
 
   //* Configuration des boutons dans le header (barre du haut)
   useEffect(() => {
@@ -226,11 +224,13 @@ export default function MapScreen() {
         </View>
 
         {/* Bouton pour effectuer un signalement */}
-        <View style={[
+        <View
+          style={[
             styles.buttonSignalement,
             // 10px au-dessus de la feuille, sinon 30px du bas
-            { bottom: tripActive ? bottomSheetHeight + 20 : 30 }, 
-          ]}>
+            { bottom: tripActive ? bottomSheetHeight + 20 : 30 },
+          ]}
+        >
           <TouchableOpacity
             onPress={() => signalSheetRef.current?.present()}
             accessibilityLabel="Effectuer un signalement"
