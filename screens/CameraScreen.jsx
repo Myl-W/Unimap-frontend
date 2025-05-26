@@ -86,13 +86,17 @@ export default function CameraScreen() {
         Authorization: `Bearer ${token}`,
       },
       body: formData,
-    }).then((response) => response.json());
-    if (data.result) {
-      photo && dispatch(addPhoto(data.url));
-      navigation.navigate("AddSignalement");
-    } else {
-      console.error("Erreur lors de l'upload de la photo");
-    }
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.result) {
+          console.log("data.url", data.url);
+          photo && dispatch(addPhoto(data.url));
+          navigation.navigate("Signalement", { placeId: data.place._id });
+        } else {
+          console.error("Erreur lors de l'upload de la photo");
+        }
+      });
   };
 
   return (
