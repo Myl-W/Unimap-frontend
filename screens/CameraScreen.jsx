@@ -88,12 +88,15 @@ export default function CameraScreen() {
       body: formData,
     })
       .then((response) => response.json())
-      if (data.result) {
+      .then(data => {
+        if (data.result) {
+        console.log('data.url', data.url)
         photo && dispatch(addPhoto(data.url));
-        navigation.navigate("AddSignalement", { placeId: data.place._id });
+        navigation.navigate("Signalement", { placeId: data.place._id });
       } else {
         console.error("Erreur lors de l'upload de la photo");
       }
+      })
   };
 
   return (
