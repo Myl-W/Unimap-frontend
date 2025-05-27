@@ -36,7 +36,7 @@ export default function ParametreScreen({ navigation }) {
   const dispatch = useDispatch();
 
   // Récupération des infos de l'utilisateur dans le store Redux
-  const userInfo = useSelector((state) => state.user.value.profile);
+  const userInfo = useSelector((state) => state.user.profile);
 
   // État local pour stocker l'URI de l'image de profil
   const [profileImage, setProfileImage] = useState(null);
