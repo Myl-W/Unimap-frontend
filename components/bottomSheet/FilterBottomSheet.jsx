@@ -45,7 +45,9 @@ const FilterBottomSheet = forwardRef(({ handleSheetFilters }, ref) => {
   };
 
   const handleCheckHandicap = (key) => {
+    // Vérifie si la clé est dans la liste des handicaps
     if (handicapKeys.includes(key)) {
+      // Si la clé est déjà sélectionnée, on la désélectionne
       dispatch(toggleHandicap(key));
     }
   };
@@ -66,14 +68,14 @@ const FilterBottomSheet = forwardRef(({ handleSheetFilters }, ref) => {
       ref={ref}
       onChange={handleSheetFilters}
       snapPoints={snapPoints}
-      enableDismissOnClose={true}
-      backdropComponent={(backdropProps) => (
+      enableDismissOnClose={true} // Permet de fermer le BottomSheet en cliquant en dehors
+      backdropComponent={(backdropProps) => ( // Composant de fond sombre
         <BottomSheetBackdrop
           {...backdropProps} // Permet de faire apparaitre le fond sombre
           appearsOnIndex={0} // Rend le fond sombre visible
           disappearsOnIndex={-1} // Rend le fond sombre invisible
           opacity={0.3} // Opacité du fond sombre
-          pressBehavior="close"
+          pressBehavior="close" // Permet de fermer le BottomSheet en cliquant sur le fond sombre
         />
       )}
     >

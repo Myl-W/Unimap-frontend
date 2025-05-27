@@ -13,7 +13,8 @@ function parseDurationToMinutes(durationStr) {
   // Cherche le nombre de minutes dans la chaîne grâce à des expressions régulières (mMatch).
   const mMatch = durationStr.match(/(\d+)\s*min/);
   // Si hMatch ou mMatch existent, on les convertit en entiers.
-  // Si elle trouve des heures, elle les convertit en minutes (heures * 60) et les ajoute au total.
+  // Si elle trouve des heures, elle les convertit en minutes (heures * 60) et les ajoute au total. 
+  // "10" signifie qu’on convertit en base décimale (donc un nombre classique, pas en binaire, octal, etc.).
   if (hMatch) total += parseInt(hMatch[1], 10) * 60;
   // Si elle trouve des minutes, elle les ajoute directement au total.
   if (mMatch) total += parseInt(mMatch[1], 10);
@@ -78,11 +79,6 @@ const TripBottomSheet = ({ isRouteActive, onStopTrip }) => {
   // Fonction pour ouvrir la page Parametre
   const goToParametre = () => {
     navigation.navigate("Parametre");
-  };
-
-  // Fonction pour fermer la bottom sheet (continuer le trajet)
-  const handleContinue = () => {
-    bottomSheetRef.current?.snapToIndex(0); // 20%
   };
 
   // Ce useEffect permet d'ouvrir automatiquement la TripBottomSheet à 20% (snapToIndex(0))

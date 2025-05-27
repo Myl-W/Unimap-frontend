@@ -34,14 +34,14 @@ const SearchBottomSheet = forwardRef(({ handleSheetSearch }, ref) => {
   const [search, setSearch] = useState("");
   const snapPoints = ["50%", "75%"]; // Definie la taille d'ouverture du BottomSheet
   const lastSearch = useSelector((state) => state.trips?.recentSearch);
-  const homeAddress = useSelector((state) => state.trips.homeAddress);
-  const workAddress = useSelector((state) => state.trips.workAddress);
+  const homeAddress = useSelector((state) => state.user.value.homeAddress);
+  const workAddress = useSelector((state) => state.user.value.workAddress);
 
   const navigation = useNavigation();
 
   //  -------- Fonction pour rechercher un itinéraire via l'API Google Directions ------------
   const searchGoogle = (destination) => {
-    fetch(//"encodeURIComponent(destination)" encode l'adresse pour qu'elle soit compatible avec une URL (remplace les espaces, virgules, etc.)
+    fetch(
       `https://maps.googleapis.com/maps/api/directions/json?origin=${loc.latitude},${loc.longitude}&destination=${destination}&mode=${transport}&key=${google}`
     )
       .then((response) => response.json())
@@ -92,6 +92,7 @@ const SearchBottomSheet = forwardRef(({ handleSheetSearch }, ref) => {
 
   // fonction pour mapper le tableau afin d'afficher les elements dans le bottomSheet
   const renderRecentSearch = () => {
+    // "?." est utilisé pour verifié si lastSearch n'est pas undefined ou null
     return lastSearch?.map((item, index) => (
       <View key={index} style={styles.historyAdress}>
         <View style={styles.historyLign}>

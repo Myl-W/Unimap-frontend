@@ -27,6 +27,8 @@ import { useDispatch, useSelector } from "react-redux";
 // Actions Redux : enregistrer la position utilisateur et réinitialiser le trajet
 import { userLoc, resetRouteCoords } from "../reducers/trips";
 
+import { setHomeAddress, setWorkAddress } from "../reducers/user";
+
 // Import
 import Constants from "expo-constants";
 
@@ -177,6 +179,19 @@ export default function MapScreen() {
     dispatch(resetRouteCoords());
   };
   console.log('place', places)
+
+  useEffect(() => {
+  if (!token) return;
+  fetch(`${BACK_URL}/address`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+    .then(res => res.json())
+    .then(data => {
+      dispatch(setWorkAddress(data.workAddress));
+      dispatch(setHomeAddress(data.homeAddress));
+    });
+  }, [token]);
+  
   //* ----------- Rendu du composant principal -----------
   return (
     <View style={styles.container}>

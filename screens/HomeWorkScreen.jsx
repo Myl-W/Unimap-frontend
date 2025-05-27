@@ -8,13 +8,16 @@ import {
 } from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { useSelector, useDispatch } from "react-redux";
-import { setHomeAddress, setWorkAddress } from "../reducers/trips";
+import { setHomeAddress, setWorkAddress } from "../reducers/user";
 import React, { useState } from "react";
+import Constants from "expo-constants";
 
 export default function HomeWorkScreen() {
   const dispatch = useDispatch();
-  const homeAddress = useSelector((state) => state.trips.homeAddress);
-  const workAddress = useSelector((state) => state.trips.workAddress);
+  const homeAddress = useSelector((state) => state.user.value.homeAddress);
+  const workAddress = useSelector((state) => state.user.value.workAddress);
+  const token = useSelector((state) => state.user.profile.token);
+  const BACK_URL = Constants.expoConfig?.extra?.BACK_URL;  
   const [modalVisible, setModalVisible] = useState(false);
   const [modalType, setModalType] = useState(null); // "home" ou "work"
   const [addressInput, setAddressInput] = useState("");
@@ -34,17 +37,65 @@ export default function HomeWorkScreen() {
     setModalVisible(true);
   };
     // Fonction pour valider l'adresse saisie
-  const handleValidate = () => {
+  const handleValidate = async () => {
+    let body = {}
+    if (modalType === "home") body.homeAddress = addressInput;
+    if (modalType === "work") body.workAddress = addressInput;
+
+  try {
+    const response = await fetch(`${BACK_URL}/address`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(body),
+  });
+  const data = await response.json();
+
+  if (data.homeAddress !== undefined || data.workAddress !== undefined) {
     if (modalType === "home") dispatch(setHomeAddress(addressInput));
     if (modalType === "work") dispatch(setWorkAddress(addressInput));
     setModalVisible(false);
-  };
+  } else {
+    alert("Erreur lors de la mise à jour de l'adresse !");
+  }
+  } catch (error) {
+    alert("Erreur réseau ou serveur !");
+    console.error("Erreur lors de la mise à jour de l'adresse :", error);
+  }
+}
+
+
     // Fonction pour supprimer l'adresse
-  const handleDelete = () => {
-    if (modalType === "home") dispatch(setHomeAddress(null));
-    if (modalType === "work") dispatch(setWorkAddress(null));
-    setModalVisible(false);
-  };
+const handleDelete = async () => {
+  let body = {};
+  if (modalType === "home") body.homeAddress = null;
+  if (modalType === "work") body.workAddress = null;
+
+  try {
+    const response = await fetch(`${BACK_URL}/address`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(body),
+    });
+    const data = await response.json();
+
+    if (data.homeAddress !== undefined || data.workAddress !== undefined) {
+      if (modalType === "home") dispatch(setHomeAddress(null));
+      if (modalType === "work") dispatch(setWorkAddress(null));
+      setModalVisible(false);
+    } else {
+      alert("Erreur lors de la suppression de l'adresse !");
+    }
+  } catch (error) {
+    alert("Erreur réseau ou serveur !");
+    console.error("Erreur lors de la suppression de l'adresse :", error);
+  }
+};
 
   return (
     <View style={styles.container}>

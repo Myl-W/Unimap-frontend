@@ -5,6 +5,8 @@ const initialState = {
     nickname: null,
     places: [],
     photo: null,
+    homeAddress: null,
+    workAddress: null,
   },
   profile: {
     userId: "",
@@ -34,6 +36,13 @@ export const userSlice = createSlice({
         token: "",
         username: "",
       };
+      state.value = {
+        nickname: null,
+        places: [],
+        photo: null,
+        homeAddress: null,
+        workAddress: null,
+      };
     },
     userInfos: (state, action) => {
       state.profile = action.payload;
@@ -49,6 +58,12 @@ export const userSlice = createSlice({
     updateUsername: (state, action) => {
       state.profile.username = action.payload;
     },
+    setHomeAddress: (state, action) => {
+      state.value.homeAddress = action.payload;
+    },
+    setWorkAddress: (state, action) => {
+      state.value.workAddress = action.payload;
+    },
   },
 });
 
@@ -59,5 +74,7 @@ export const {
   addPhoto,
   updateFullName,
   updateUsername,
+  setHomeAddress,
+  setWorkAddress,
 } = userSlice.actions;
 export default userSlice.reducer;

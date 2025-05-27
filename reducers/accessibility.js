@@ -30,6 +30,7 @@ const accessibilitySlice = createSlice({
     resetAccessibility: () => ({ ...initialState }),
     setMultipleHandicaps: (state, action) => {
       const keys = action.payload;
+      // Pour chaque clé, si elle existe dans le state, on la passe à true
       keys.forEach((key) => {
         if (key in state) {
           state[key] = true;
@@ -38,7 +39,11 @@ const accessibilitySlice = createSlice({
     },
     toggleMultiple: (state, action) => {
       const keys = action.payload;
+
+        // Vérifie s'il y a au moins une case à cocher qui n'est pas activée
       const shouldEnable = keys.some((key) => !state[key]);
+      // Si au moins une case n'est pas activée, on active toutes les cases
+      // Sinon, on désactive toutes les cases
       keys.forEach((key) => {
         if (key in state) {
           state[key] = shouldEnable;

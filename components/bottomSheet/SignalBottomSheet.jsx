@@ -26,7 +26,7 @@ const SignalBottomSheet = forwardRef(({ handleSheetSignal, placeId }, ref) => {
   };
 
   const icons = getSignalButtons(signalButtonStyles);
-
+  // Regroupe les icônes par lignes de 3 pour l'affichage
   const chunkedIcons = [...Array(Math.ceil(icons.length / 3))].map((_, i) =>
     icons.slice(i * 3, i * 3 + 3)
   );
