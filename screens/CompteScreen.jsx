@@ -5,6 +5,7 @@ import {
   View,
   TouchableOpacity,
   Text,
+  Image,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
@@ -14,6 +15,7 @@ export default function CompteScreen({ navigation }) {
 
   // -------- Récupération des informations de l'utilisateur depuis le reducer Redux ------------
   const userInfo = useSelector((state) => state.user.profile);
+  const userPhoto = useSelector((state) => state.user.profile.profilePhoto);
 
   // ------ Formattage de la date de naissance (au format français) ------
   const dateObj = new Date(userInfo.birthdate);
@@ -56,14 +58,23 @@ export default function CompteScreen({ navigation }) {
             </View>
             <View style={styles.avatar}>
               {/* Icône de l'utilisateur */}
-              <FontAwesome
-                name="user"
-                size={150}
-                color="black"
-                style={styles.icon}
-                accessibilityLabel="Photo d'identité"
-                accessibilityRole="Image"
-              />
+              {userPhoto ? (
+                <Image
+                  source={{ uri: userPhoto }}
+                  style={{ width: '100%', height: '100%', borderRadius: 8 }}
+                  accessibilityLabel="Photo d'identité"
+                  accessibilityRole="Image"
+                />
+              ) : (
+                <FontAwesome
+                  name="user"
+                  size={150}
+                  color="black"
+                  style={styles.icon}
+                  accessibilityLabel="Photo d'identité"
+                  accessibilityRole="Image"
+                />
+              )}
             </View>
           </View>
 
