@@ -13,7 +13,7 @@ export default function CompteScreen({ navigation }) {
   const dispatch = useDispatch(); // Hook pour dispatcher des actions Redux
 
   // -------- Récupération des informations de l'utilisateur depuis le reducer Redux ------------
-  const userInfo = useSelector((state) => state.user.value.profile);
+  const userInfo = useSelector((state) => state.user.profile);
 
   // ------ Formattage de la date de naissance (au format français) ------
   const dateObj = new Date(userInfo.birthdate);
