@@ -14,7 +14,7 @@ import {
 import { useSelector, useDispatch } from "react-redux";
 
 // Import des hooks React
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 
 // Import des constantes de l’environnement (via app.json ou app.config.js)
 import Constants from "expo-constants";
@@ -23,68 +23,58 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // Déclaration du composant AddSignalement
 export default function AddSignalement({ navigation, route }) {
-  // État local pour le nouveau commentaire saisi par l'utilisateur
-  const [newComment, setNewComment] = useState("");
   const dispatch = useDispatch();
   const token = useSelector((state) => state.user.profile.token); // Récupère le token utilisateur
+  const photoUri = useSelector((state) => state.user.value.photo); // Récupération de l'URI de la photo depuis le store Redux (stockée après prise de photo)
+
+  // État local pour le nouveau commentaire saisi par l'utilisateur
+  const [newComment, setNewComment] = useState("");
+
   // État local pour stocker les commentaires (même si ici ils ne sont pas affichés)
   const [comments, setComments] = useState([]);
   const { placeId } = route.params || {};
   const BACK_URL = Constants.expoConfig?.extra?.BACK_URL;
 
-  // Récupération de l'URI de la photo depuis le store Redux (stockée après prise de photo)
-  const photoUri = useSelector((state) => state.user.value.photo);
-
-   // -------- Récupère le token utilisateur stocké localement --------
-  const getToken = async () => {
-    
-    try {
-      const token = await AsyncStorage.getItem("userToken");
-      return token;
-    } catch (error) {
-      console.error("Erreur lors de la récupération du token :", error);
-    }
-  };
-
-   useEffect(() => {
+  useEffect(() => {
     const fetchComments = async () => {
-      const token = await getToken();
       if (!token) {
         console.error("Aucun token trouvé");
         return;
       }
-
       try {
         const response = await fetch(`${BACK_URL}/comments/${placeId}`, {
-          method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
 
         const data = await response.json();
+        console.log("data", data);
 
         if (data.result && data.comments.length > 0) {
           setComments(data.comments);
           console.log("✅ Commentaires récupérés", data.comments[0]._id);
         }
       } catch (error) {
-        console.error("Erreur lors de la récupération des commentaires :", error);
+        console.error(
+          "Erreur lors de la récupération des commentaires :",
+          error
+        );
       }
     };
     fetchComments();
   }, [placeId]);
 
-   const handleAddComment = async () => {
+  const handleAddComment = async () => {
     if (!newComment.trim() || !placeId) return;
-    console.log('placeId', placeId)
+    console.log("placeId", placeId);
     try {
       const response = await fetch(`${BACK_URL}/comments`, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-         },
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({
           picture: photoUri,
           comment: newComment,
@@ -93,18 +83,18 @@ export default function AddSignalement({ navigation, route }) {
       });
 
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error("Network response was not ok");
       }
 
       const data = await response.json();
       if (data.result) {
         data.picture && dispatch(addPhoto(data.picture));
-        setNewComment('');
-        alert('Comment added successfully!');
-        navigation.navigate('Map'); // Naviguer vers l'écran Map après avoir ajouté le commentaire
+        setNewComment("");
+        alert("Comment added successfully!");
+        navigation.navigate("Map"); // Naviguer vers l'écran Map après avoir ajouté le commentaire
       }
     } catch (error) {
-      console.error('Error adding comment:', error);
+      console.error("Error adding comment:", error);
     }
   };
 
@@ -130,28 +120,33 @@ export default function AddSignalement({ navigation, route }) {
           <Image source={{ uri: photoUri }} style={styles.photoDisplayed} />
         )}
 
-           <TextInput
-            placeholder="Ajouter un commentaire"
-            value={newComment}
-            onChangeText={setNewComment}
-            style={styles.commentInput}
-          />
-          <TouchableOpacity onPress={handleAddComment} style={styles.addCommentButton}>
-            <Text style={styles.addCommentText}>Ajouter un commentaire</Text>
-          </TouchableOpacity>
-          
-           <View style={styles.container}>
-              {comments.length > 0 ? (
-                comments.map((comment) => (
-                  <View key={comment._id} style={styles.comment}>
-                    <Text>{comment.comment}</Text>
-                  </View>
-                ))
-              ) : (
-                <Text>Aucun commentaire trouvé</Text>
-              )}
-          </View>
-          
+        <TextInput
+          placeholder="Ajouter un commentaire"
+          value={newComment}
+          onChangeText={setNewComment}
+          style={styles.commentInput}
+        />
+        <TouchableOpacity
+          onPress={handleAddComment}
+          style={styles.addCommentButton}
+        >
+          <Text style={styles.addCommentText}>Ajouter un commentaire</Text>
+        </TouchableOpacity>
+
+        <View style={styles.container}>
+          {comments.length > 0 ? (
+            (console.log("comments", comments),
+            comments
+              .filter((comment) => comment.placeId === placeId)
+              .map((comment) => (
+                <View key={comment._id} style={styles.comment}>
+                  <Text>{comment.comment}</Text>
+                </View>
+              )))
+          ) : (
+            <Text>Aucun commentaire trouvé</Text>
+          )}
+        </View>
       </KeyboardAvoidingView>
     </View>
   );
@@ -196,23 +191,23 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   commentInput: {
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     borderWidth: 1,
     borderRadius: 5,
     marginTop: 10,
     padding: 8,
-    backgroundColor: 'white',
-    width: '70%',
+    backgroundColor: "white",
+    width: "70%",
   },
   addCommentButton: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: "#4CAF50",
     padding: 10,
     marginTop: 10,
     borderRadius: 5,
-    alignItems: 'center',
+    alignItems: "center",
   },
   addCommentText: {
-    color: 'white',
-    fontWeight: 'bold',
+    color: "white",
+    fontWeight: "bold",
   },
 });
