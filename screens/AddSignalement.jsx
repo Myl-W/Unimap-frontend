@@ -27,9 +27,8 @@ export default function AddSignalement({ navigation, route }) {
   const [newComment, setNewComment] = useState("");
   const dispatch = useDispatch();
   const token = useSelector((state) => state.user.profile.token); // Récupère le token utilisateur
-  // État local pour stocker les commentaires (même si ici ils ne sont pas affichés)
-  const [comments, setComments] = useState([]);
-  const { placeId } = route.params || {};
+  const [comments, setComments] = useState([]); // État local pour stocker les commentaires (même si ici ils ne sont pas affichés)
+  const { placeId } = route.params || {}; // destructuration sécurisée de route.params pour éviter une erreur si route.params est undefined
   const BACK_URL = Constants.expoConfig?.extra?.BACK_URL;
 
   // Récupération de l'URI de la photo depuis le store Redux (stockée après prise de photo)
@@ -48,6 +47,7 @@ export default function AddSignalement({ navigation, route }) {
 
    useEffect(() => {
     const fetchComments = async () => {
+      // Récupère le token d'authentification
       const token = await getToken();
       if (!token) {
         console.error("Aucun token trouvé");
@@ -55,15 +55,17 @@ export default function AddSignalement({ navigation, route }) {
       }
 
       try {
+        // Envoie une requête GET vers /comments/:placeId
         const response = await fetch(`${BACK_URL}/comments/${placeId}`, {
           method: "GET",
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`, // Ajoute le token
           },
         });
 
         const data = await response.json();
 
+        // Si la réponse est bonne et qu’il y a des commentaires, on les stocke dans le state
         if (data.result && data.comments.length > 0) {
           setComments(data.comments);
           console.log("✅ Commentaires récupérés", data.comments[0]._id);
@@ -72,23 +74,26 @@ export default function AddSignalement({ navigation, route }) {
         console.error("Erreur lors de la récupération des commentaires :", error);
       }
     };
-    fetchComments();
-  }, [placeId]);
+    fetchComments();// On exécute la fonction dès que placeId change
+  }, [placeId]);// Déclenché à chaque changement de placeId
 
    const handleAddComment = async () => {
+
+     // On n'envoie rien si le commentaire est vide ou si aucun lieu n’est ciblé
     if (!newComment.trim() || !placeId) return;
-    console.log('placeId', placeId)
+
     try {
+      // Envoie de la requête POST vers /comments avec les données du commentaire
       const response = await fetch(`${BACK_URL}/comments`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}` // Ajout du token
          },
         body: JSON.stringify({
-          picture: photoUri,
-          comment: newComment,
-          placeId: placeId,
+          picture: photoUri, // URI de la photo (facultatif selon ton backend)
+          comment: newComment, // Texte du commentaire
+          placeId: placeId, // ID du lieu concerné
         }),
       });
 
@@ -98,10 +103,11 @@ export default function AddSignalement({ navigation, route }) {
 
       const data = await response.json();
       if (data.result) {
+        // Si un lien photo est renvoyé, on le stocke via Redux
         data.picture && dispatch(addPhoto(data.picture));
-        setNewComment('');
+        setNewComment('');// Vide le champ texte
         alert('Comment added successfully!');
-        navigation.navigate('Map'); // Naviguer vers l'écran Map après avoir ajouté le commentaire
+        navigation.navigate('Map'); // // Redirection vers la carte après avoir ajouté le commentaire
       }
     } catch (error) {
       console.error('Error adding comment:', error);

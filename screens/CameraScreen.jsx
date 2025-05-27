@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { StyleSheet, View, TouchableOpacity, SafeAreaView } from "react-native";
 import { Camera } from "expo-camera";
 import { CameraView } from "expo-camera";
@@ -7,7 +7,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { addPhoto } from "../reducers/user";
 import { FontAwesome } from "@expo/vector-icons";
 import Constants from "expo-constants";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function CameraScreen() {
   // Vérifie si l'écran est actuellement visible
@@ -90,9 +89,10 @@ export default function CameraScreen() {
       .then((response) => response.json())
       .then(data => {
         if (data.result) {
-        console.log('data.url', data.url)
+          // Si l'upload a réussi et qu'une photo est bien présente, on l'ajoute au store Redux
         photo && dispatch(addPhoto(data.url));
-        navigation.navigate("Signalement", { placeId: data.place._id });
+        // On navigue vers "Signalement" en passant le `placeId` retourné par le serveur
+        navigation.navigate("Signalement", { placeId: data.place._id }); 
       } else {
         console.error("Erreur lors de l'upload de la photo");
       }
