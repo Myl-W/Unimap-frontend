@@ -8,7 +8,7 @@ import { Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // Action pour réinitialiser les données utilisateur dans le store Redux
-import { resetUser } from "../reducers/user";
+import { addProfilePhoto, resetUser } from "../reducers/user";
 
 // Composants natifs pour la mise en page
 import {
@@ -32,11 +32,15 @@ import { useState } from "react";
 // Composant natif pour afficher des images
 import { Image } from "react-native";
 
+import Constants from "expo-constants"; // Pour accéder aux variables d'environnement définies dans le fichier app.config.js
+
 export default function ParametreScreen({ navigation }) {
   const dispatch = useDispatch();
 
   // Récupération des infos de l'utilisateur dans le store Redux
-  const userInfo = useSelector((state) => state.user.profile);
+  const userPhoto = useSelector((state) => state.user.profile.profilePhoto);
+  const userInfo = useSelector((state) => state.user.profile); // Infos utilisateur (email, token, etc.)
+  const BACK_URL = Constants.expoConfig?.extra?.BACK_URL; // URL du backend, récupérée depuis les variables d'environnement
 
   // État local pour stocker l'URI de l'image de profil
   const [profileImage, setProfileImage] = useState(null);
@@ -71,6 +75,27 @@ export default function ParametreScreen({ navigation }) {
   };
 
   // ------------------- GESTION DE LA PHOTO DE PROFIL -------------------
+  const uploadProfileImage = async (uri) => {
+    const formData = new FormData();
+    formData.append("photo", {
+      uri,
+      name: "profile.jpg",
+      type: "image/jpeg",
+    });
+
+    const response = await fetch(`${BACK_URL}/profile/photo`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+      body: formData,
+    });
+    const data = await response.json();
+    if (data.result) {
+      setProfileImage(data.photo);
+      dispatch(addProfilePhoto(data.photo)); // Met à jour l'image de profil dans le store Redux
+    }
+  };
 
   // Ouvre la galerie d’images du téléphone
   const pickImage = async () => {
@@ -89,7 +114,7 @@ export default function ParametreScreen({ navigation }) {
 
     if (!result.canceled) {
       setProfileImage(result.assets[0].uri);
-      // Optionnel : Envoyer cette image au serveur pour sauvegarde
+      await uploadProfileImage(result.assets[0].uri); // Envoie l'image sélectionnée au serveur
     }
   };
 
@@ -109,6 +134,7 @@ export default function ParametreScreen({ navigation }) {
 
     if (!result.canceled) {
       setProfileImage(result.assets[0].uri);
+      await uploadProfileImage(result.assets[0].uri);
     }
   };
 
@@ -137,6 +163,7 @@ export default function ParametreScreen({ navigation }) {
       ]
     );
   };
+
 
   // Affiche un menu avec les options liées à la photo de profil
   const showImagePickerOptions = () => {
@@ -188,9 +215,9 @@ export default function ParametreScreen({ navigation }) {
 
         {/* Affichage de la photo ou icône par défaut */}
         <View style={styles.avatarContour}>
-          {profileImage ? (
+          {userPhoto ? (
             <Image
-              source={{ uri: profileImage }}
+              source={{ uri: userPhoto }}
               style={styles.avatar}
               accessibilityLabel="Photo de profil"
             />

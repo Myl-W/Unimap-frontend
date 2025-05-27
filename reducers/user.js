@@ -9,6 +9,7 @@ const initialState = {
     workAddress: null,
   },
   profile: {
+    profilePhoto: "",
     userId: "",
     firstname: "",
     lastname: "",
@@ -28,6 +29,7 @@ export const userSlice = createSlice({
     },
     resetUser: (state) => {
       state.profile = {
+        profilePhoto: "",
         userId: "",
         firstname: "",
         lastname: "",
@@ -64,6 +66,9 @@ export const userSlice = createSlice({
     setWorkAddress: (state, action) => {
       state.value.workAddress = action.payload;
     },
+    addProfilePhoto: (state, action) => {
+      state.profile.profilePhoto = action.payload;
+    },
   },
 });
 
@@ -76,5 +81,6 @@ export const {
   updateUsername,
   setHomeAddress,
   setWorkAddress,
+  addProfilePhoto,
 } = userSlice.actions;
 export default userSlice.reducer;

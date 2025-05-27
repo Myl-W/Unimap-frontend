@@ -13,7 +13,7 @@ import {
   ScrollView,
   Text,
 } from "react-native";
-import { userInfos } from "../reducers/user";
+import { addProfilePhoto, userInfos } from "../reducers/user";
 import Popup from "../components/modals/popup";
 
 export default function LoginScreen({ navigation }) {
@@ -38,7 +38,9 @@ export default function LoginScreen({ navigation }) {
     })
       .then((response) => response.json())
       .then(async (data) => {
-        dispatch(userInfos(data)); //  ------  Dispatch des infos reçu vers le reducer -------
+        //  ------  Dispatch des infos reçu vers le reducer -------
+        dispatch(userInfos(data));
+        dispatch(addProfilePhoto(data.profilePhoto)); 
 
         if (data.result && data.token) {
           //  ------  Si il y a data et token -------
