@@ -10,10 +10,10 @@ import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { useRef, useState, useEffect } from "react";
 
 // Composants de base React Native
-import { View, StyleSheet, TouchableOpacity, Image } from "react-native";
+import { View, StyleSheet, TouchableOpacity, Image, Text } from "react-native";
 
 // Carte interactive avec possibilité de tracer des lignes (routes)
-import MapView, { Polyline, Marker } from "react-native-maps";
+import MapView, { Polyline, Marker, Callout } from "react-native-maps";
 
 // Librairie Expo pour accéder à la géolocalisation
 import * as Location from "expo-location";
@@ -29,6 +29,7 @@ import { userLoc, resetRouteCoords } from "../reducers/trips";
 
 // Import
 import Constants from "expo-constants";
+import { upComments } from "../components/comments/comments";
 
 //* Import des composants BottomSheet personnalisés
 import SearchBottomSheet from "../components/bottomSheet/SearchBottomSheet";
@@ -41,6 +42,7 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 
 //* Déclaration du composant principal de l'écran de carte
 export default function MapScreen() {
+  const navigation = useNavigation();
   // Permet de déclencher des actions Redux
   const dispatch = useDispatch();
   const token = useSelector((state) => state.user.profile.token); // Récupère le token utilisateur
@@ -58,7 +60,7 @@ export default function MapScreen() {
 
   // État local pour stocker la position actuelle de l’utilisateur
   const [currentPosition, setCurrentPosition] = useState(null);
-  // État local pour stocker l'id place de l’utilisateur 
+  // État local pour stocker l'id place de l’utilisateur
   const [placeId, setPlaceId] = useState(null);
 
   // -------- Récupère le token utilisateur stocké localement --------
@@ -87,7 +89,6 @@ export default function MapScreen() {
       const data = await response.json();
       if (data.result && data.places.length > 0) {
         setPlaceId(data.places[0]._id); // ou .at(-1) pour le dernier
-        console.log("✅ Place ID récupéré :", data.places[0]._id);
       }
     };
     fetchPlaceId();
@@ -98,8 +99,6 @@ export default function MapScreen() {
 
   // Récupération du trajet en cours depuis Redux
   const route = useSelector((state) => state.trips.coords?.routeCoords);
-  // Hook de navigation
-  const navigation = useNavigation();
 
   const tripActive = route && route.length > 0; // Vérifie si un trajet est actif
   const bottomSheetHeight = 120; // Hauteur de la BottomSheet du trajet
@@ -159,24 +158,57 @@ export default function MapScreen() {
 
   // Récupère les lieux à afficher sur la carte
   useEffect(() => {
-    fetch(`${BACK_URL}/places`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
+    // Déclaration d'une fonction asynchrone interne pour récupérer les lieux depuis l'API
+    const fetchPlaces = async () => {
+      try {
+        // Envoie une requête GET à l'API pour récupérer tous les lieux
+        const response = await fetch(`${BACK_URL}/places`, {
+          headers: {
+            // Ajoute le token JWT dans les headers pour l'authentification
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        // On attend la réponse sous forme de JSON
+        const data = await response.json();
+
+        // Si la réponse est valide et contient bien un tableau "places"
         if (data.result && data.places) {
-          setPlaces(data.places); // Stocke les lieux dans l'état
+          // On met à jour le state local avec les lieux récupérés
+          setPlaces(data.places);
         }
-      });
-  }, []);
+      } catch (error) {
+        // En cas d'erreur lors de la requête ou du traitement de la réponse
+        console.error("Erreur lors du chargement des lieux :", error);
+      }
+    };
+
+    // On appelle la fonction fetchPlaces seulement si le token est disponible
+    if (token) fetchPlaces();
+
+    // Le hook s'exécutera à chaque fois que la valeur de "token" change
+  }, [token]);
 
   //* Fonction appelée pour stopper un trajet (reset du store Redux)
   const handleStopTrip = () => {
     dispatch(resetRouteCoords());
   };
-  console.log('place', places)
+
+  // Fonction asynchrone qui récupère les commentaires du lieu identifié par "key"
+  const handlePress = async (key) => {
+    // Appel de la fonction upComments
+    // On récupère les commentaires associés à la clé "key"
+    // Si upComments ne retourne rien (undefined), on met un tableau vide par défaut avec || []
+    const comments = (await upComments(key, token, navigation)) || [];
+
+    // Ensuite, on navigue vers l'écran "PlaceScreen"
+    // On passe en paramètres l'id du lieu ainsi que les commentaires récupérés
+    navigation.navigate("PlaceScreen", {
+      id: key,
+      comments: comments,
+    });
+  };
+
   //* ----------- Rendu du composant principal -----------
   return (
     <View style={styles.container}>
@@ -203,7 +235,33 @@ export default function MapScreen() {
               longitude: place.longitude,
             }}
             title="Lieu"
-          />
+          >
+            {/*mposant qui permet de personnaliser l'affichage d'un marqueur sur la carte*/}
+            <Callout onPress={() => handlePress(place._id)}>
+              {/* Vue qui contient le contenu affiché dans le callout, ici une largeur fixe */}
+              <View
+                style={{
+                  width: 124,
+                  padding: 2,
+                  backgroundColor: "white",
+                }}
+              >
+                {/* Affiche le nom du lieu */}
+                <Text>{place.name}</Text>
+                {/* Si la place a une image (picture), on l'affiche */}
+                {place.picture && (
+                  <Image
+                    source={{ uri: place.picture }}
+                    style={{
+                      width: 120,
+                      height: 100,
+                    }}
+                    resizeMode="cover"
+                  />
+                )}
+              </View>
+            </Callout>
+          </Marker>
         ))}
 
         {/* Si un trajet est en cours, on trace une ligne */}
@@ -358,5 +416,27 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     fontSize: 16,
     fontFamily: "Kanit",
+  },
+
+  calloutContainer: {
+    width: 150,
+    padding: 10,
+    backgroundColor: "white",
+    borderRadius: 10,
+    elevation: 4, // Android shadow
+    shadowColor: "#000", // iOS shadow
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+  },
+  calloutTitle: {
+    fontWeight: "bold",
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  calloutImage: {
+    width: "100%",
+    height: 75,
+    borderRadius: 8,
   },
 });

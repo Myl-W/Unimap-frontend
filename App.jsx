@@ -14,6 +14,7 @@ import FavorisScreen from "./screens/FavorisScreen";
 import ParametreScreen from "./screens/ParametreScreen";
 import AddSignalement from "./screens/AddSignalement";
 import CameraScreen from "./screens/CameraScreen";
+import PlaceScreen from "./screens/PlaceScreen";
 
 // ----------------------  REDUCERS  + LOCALSTORAGE  ---------------------
 import { Provider } from "react-redux";
@@ -169,6 +170,14 @@ export default function App() {
                   options={{
                     title: "Domicile & Travail",
                     headerBackTitle: "Mon compte",
+                  }}
+                />
+                <Stack.Screen
+                  name="PlaceScreen"
+                  component={PlaceScreen}
+                  options={{
+                    title: "PlaceScreen",
+                    headerBackTitle: "",
                   }}
                 />
               </Stack.Navigator>
