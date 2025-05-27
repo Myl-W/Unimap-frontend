@@ -87,16 +87,16 @@ export default function CameraScreen() {
       body: formData,
     })
       .then((response) => response.json())
-      .then(data => {
+      .then((data) => {
         if (data.result) {
           // Si l'upload a réussi et qu'une photo est bien présente, on l'ajoute au store Redux
-        photo && dispatch(addPhoto(data.url));
-        // On navigue vers "Signalement" en passant le `placeId` retourné par le serveur
-        navigation.navigate("Signalement", { placeId: data.place._id }); 
-      } else {
-        console.error("Erreur lors de l'upload de la photo");
-      }
-      })
+          photo && dispatch(addPhoto(data.url));
+          // On navigue vers "Signalement" en passant le `placeId` retourné par le serveur
+          navigation.navigate("Signalement", { placeId: data.place._id });
+        } else {
+          console.error("Erreur lors de l'upload de la photo");
+        }
+      });
   };
 
   return (
