@@ -4,7 +4,6 @@ const initialState = {
   value: {
     nickname: null,
     places: [],
-    photo: null,
     homeAddress: null,
     workAddress: null,
   },
@@ -41,16 +40,12 @@ export const userSlice = createSlice({
       state.value = {
         nickname: null,
         places: [],
-        photo: null,
         homeAddress: null,
         workAddress: null,
       };
     },
     userInfos: (state, action) => {
       state.profile = action.payload;
-    },
-    addPhoto: (state, action) => {
-      state.value.photo = action.payload;
     },
     updateFullName: (state, action) => {
       const { firstname, lastname } = action.payload;
@@ -76,7 +71,6 @@ export const {
   updateEmail,
   resetUser,
   userInfos,
-  addPhoto,
   updateFullName,
   updateUsername,
   setHomeAddress,
