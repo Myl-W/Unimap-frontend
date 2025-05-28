@@ -110,7 +110,7 @@ export default function MapScreen() {
   }, [currentPosition]); // Exécuté à chaque changement de position
 
   // Récupère les lieux à afficher sur la carte
-  console.log("setplaces", places);
+  // console.log("setplaces", places);
   useEffect(() => {
     console.log("Récupération des lieux depuis l'API...");
     // Déclaration d'une fonction asynchrone interne pour récupérer les lieux depuis l'API
@@ -199,7 +199,7 @@ export default function MapScreen() {
       >
         {/* -------- Affiche un marker pour chaque lieu récupéré --------- il met 5 secondes à s'afficher */}
         {places.map((place) => {
-          console.log("place", place);
+          // console.log("place", place);
           return (
             <Marker
               key={place._id} // Clé unique pour chaque marqueur
