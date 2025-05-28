@@ -15,6 +15,7 @@ import {
 } from "react-native";
 import { addProfilePhoto, userInfos } from "../reducers/user";
 import Popup from "../components/modals/popup";
+import { FontAwesome } from "@expo/vector-icons";
 
 export default function LoginScreen({ navigation }) {
   const backUrl = Constants.expoConfig?.extra?.BACK_URL;
@@ -22,6 +23,7 @@ export default function LoginScreen({ navigation }) {
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   //  -------- Fonction pour la connexion utilisateur ------------
   const handleLogin = () => {
@@ -84,14 +86,30 @@ export default function LoginScreen({ navigation }) {
             value={email}
             keyboardType="email-address"
             style={styles.input}
+            autoCapitalize="none"
+            textContentType="emailAddress"
           />
-          <TextInput
-            placeholder="Mot de passe"
-            onChangeText={setPassword}
-            value={password}
-            keyboardType="email-address"
-            style={styles.input}
-          />
+          <View style={styles.passwordContainer}>
+            <TextInput
+              placeholder="Mot de passe"
+              onChangeText={setPassword}
+              value={password}
+              keyboardType="email-address"
+              style={styles.passwordInput}
+              secureTextEntry={!isPasswordVisible}
+              textContentType="password"
+            />
+            <TouchableOpacity
+              style={styles.eyeIcon}
+              onPress={() => setIsPasswordVisible(!isPasswordVisible)}
+            >
+              <FontAwesome
+                name={isPasswordVisible ? "eye" : "eye-slash"}
+                size={24}
+                color="black"
+              />
+            </TouchableOpacity>
+          </View>
           <TouchableOpacity
             onPress={handleLogin}
             style={styles.button}
@@ -231,5 +249,26 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     marginBottom: 15,
     color: "#000",
+  },
+  passwordContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: "80%",
+    height: 44,
+    borderWidth: 1,
+    borderRadius: 8,
+    marginVertical: 10,
+    paddingHorizontal: 10,
+    backgroundColor: "white",
+    borderColor: "#ccc",
+    fontSize: 16,
+  },
+  passwordInput: {
+    flex: 1,
+    height: "100%",
+    fontSize: 16,
+  },
+  eyeIcon: {
+    padding: 5,
   },
 });

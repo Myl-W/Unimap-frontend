@@ -88,7 +88,8 @@ export default function HomeScreen({ navigation }) {
         </TouchableOpacity>
 
         {/* Lien pour accéder à la carte sans compte */}
-        <TouchableOpacity onPress={() => navigation.navigate("Map")}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("Map")}>
           <Text style={styles.textInscription}>
             Continuer en tant qu'invitée
           </Text>
@@ -124,6 +125,7 @@ const styles = StyleSheet.create({
   },
   button: {
     alignItems: "center",
+    justifyContent: "center",
     width: "92%",
     height: 50,
     marginTop: 20,
