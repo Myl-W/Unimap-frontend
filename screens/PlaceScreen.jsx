@@ -129,8 +129,8 @@ export default function PlaceScreen({ route }) {
         </TouchableOpacity>
 
         {/* Affichage des commentaires */}
-        {comments.length > 0 ? (
-          comments.map((comment) => (
+        {commentList.length > 0 ? (
+          commentList.map((comment) => (
             <View key={comment._id}>
               <Text style={{ fontWeight: "bold" }}>
                 {comment.userId.firstname} {comment.userId.lastname?.charAt(0)}.
