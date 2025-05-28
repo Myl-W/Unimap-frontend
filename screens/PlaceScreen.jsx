@@ -12,10 +12,7 @@ import Constants from "expo-constants";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
-import { useIsFocused } from "@react-navigation/native";
-
 export default function PlaceScreen({ route }) {
-  const isFocused = useIsFocused();
   const [newComment, setNewComment] = useState("");
   const [commentList, setCommentList] = useState([]);
   const [picture, setPicture] = useState(null); // Photo du lieu
@@ -40,10 +37,10 @@ export default function PlaceScreen({ route }) {
       setCommentList(comments);
     }
   }, [comments]);
+  console.log(comments);
 
   // On récupère la photo associée au lieu via l’ID
   useEffect(() => {
-    // if (isFocused) {
     console.log("route id", route.params.id);
     if (!placeId) return;
 
@@ -132,8 +129,8 @@ export default function PlaceScreen({ route }) {
         </TouchableOpacity>
 
         {/* Affichage des commentaires */}
-        {commentList.length > 0 ? (
-          commentList.map((comment) => (
+        {comments.length > 0 ? (
+          comments.map((comment) => (
             <View key={comment._id}>
               <Text style={{ fontWeight: "bold" }}>
                 {comment.userId.firstname} {comment.userId.lastname?.charAt(0)}.
