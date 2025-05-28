@@ -13,7 +13,10 @@ import { useEffect, useState } from "react";
 // Hooks pour accéder à Redux (store global)
 import { useSelector } from "react-redux";
 
+import { useIsFocused } from "@react-navigation/native";
+
 export default function PlaceScreen({ route }) {
+  const isFocused = useIsFocused();
   const [picture, setPicture] = useState(null); // État pour stocker la photo du lieu
 
   // Adresse backend récupérée depuis les variables d’environnement (app.config.json)
@@ -37,6 +40,8 @@ export default function PlaceScreen({ route }) {
   console.log("id", id);
 
   useEffect(() => {
+    // if (isFocused) {
+console.log("route id", route.params.id);
     fetch(`${BACK_URL}/place/${route.params.id}`, {
       method: "GET",
       headers: {
@@ -61,6 +66,8 @@ export default function PlaceScreen({ route }) {
         // En cas d'erreur réseau ou autre, on affiche dans la console
         console.error("Erreur lors de la récupération de la photo :", error);
       });
+    // }
+    
   }, [route.params]);
 
   return (
@@ -91,6 +98,9 @@ export default function PlaceScreen({ route }) {
           comments.map((comment) => {
             return (
               <View key={comment._id}>
+                <Text style={{ fontWeight: 'bold' }}>
+                  {comment.userId.firstname} {comment.userId.lastname?.charAt(0)}.
+                </Text>
                 <Text style={styles.comment}>{comment.comment}</Text>
               </View>
             );
