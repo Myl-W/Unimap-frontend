@@ -6,25 +6,12 @@ import "react-native-reanimated";
 // Fournit un contexte pour afficher des BottomSheets (panneaux glissants)
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 
-// Hooks de React pour gérer l’état, les effets et les références
 import { useRef, useState, useEffect } from "react";
-
-// Composants de base React Native
 import { View, StyleSheet, TouchableOpacity, Image, Text } from "react-native";
-
-// Carte interactive avec possibilité de tracer des lignes (routes)
 import MapView, { Polyline, Marker, Callout } from "react-native-maps";
-
-// Librairie Expo pour accéder à la géolocalisation
 import * as Location from "expo-location";
-
-// Hook pour interagir avec la navigation
 import { useIsFocused, useNavigation } from "@react-navigation/native";
-
-// Hooks pour accéder à Redux (store global)
 import { useDispatch, useSelector } from "react-redux";
-
-// Actions Redux : enregistrer la position utilisateur et réinitialiser le trajet
 import { userLoc, resetRouteCoords } from "../reducers/trips";
 
 import { setHomeAddress, setWorkAddress } from "../reducers/user";
@@ -46,11 +33,10 @@ export default function MapScreen() {
   // Vérifie si l'écran est actuellement visible
   const isFocused = useIsFocused();
   const navigation = useNavigation();
-  // Permet de déclencher des actions Redux
-  const dispatch = useDispatch();
-  const token = useSelector((state) => state.user.profile.token); // Récupère le token utilisateur
 
-  // Adresse backend récupérée depuis les variables d’environnement (app.config.json)
+  const dispatch = useDispatch();
+  const token = useSelector((state) => state.user.profile.token);
+
   const BACK_URL = Constants.expoConfig?.extra?.BACK_URL;
 
   // Références vers les différents BottomSheets (permet d’ouvrir/fermer ces panneaux)
@@ -61,10 +47,7 @@ export default function MapScreen() {
   // Référence vers la carte, utilisée pour manipuler l'affichage (zoom, centrage, etc.)
   const mapRef = useRef(null);
 
-  // État local pour stocker la position actuelle de l’utilisateur
   const [currentPosition, setCurrentPosition] = useState(null);
-
-  // Etat pour stocker les lieux à afficher sur la carte
   const [places, setPlaces] = useState([]);
 
   // Récupération du trajet en cours depuis Redux
@@ -105,7 +88,7 @@ export default function MapScreen() {
       let location = await Location.getCurrentPositionAsync({}); // Récupère la position
       setCurrentPosition(location.coords); // Met à jour l’état
     })();
-  }, []); // Exécuté une seule fois au montage
+  }, []);
 
   //* Mise à jour de la carte et du store Redux lorsque la position change
   useEffect(() => {

@@ -7,7 +7,7 @@ import {
 } from "@gorhom/bottom-sheet";
 import { useNavigation } from "@react-navigation/native";
 
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { toggleSignalement } from "../../reducers/signalement";
 import {
   getSignalButtons,
@@ -34,8 +34,8 @@ const SignalBottomSheet = forwardRef(({ handleSheetSignal, placeId }, ref) => {
   const handleToggleSignal = (key) => {
     handleToggle(key);
     ref?.current?.close();
-    navigation.navigate("Signalement", {placeId : placeId});
-    console.log('id de signalbottomsheet', placeId)
+    navigation.navigate("Signalement", { placeId: placeId });
+    console.log("id de signalbottomsheet", placeId);
   };
 
   return (

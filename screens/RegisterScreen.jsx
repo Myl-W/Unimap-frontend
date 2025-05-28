@@ -18,7 +18,7 @@ import { toggleHandicap } from "../reducers/accessibility";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
 export default function RegisterScreen({ navigation }) {
-  const backUrl = Constants.expoConfig?.extra?.BACK_URL; // URL backend récupérée depuis les variables d'environnement
+  const BACK_URL = Constants.expoConfig?.extra?.BACK_URL; // URL backend récupérée depuis les variables d'environnement
   const dispatch = useDispatch();
 
   // États pour stocker les informations saisies par l'utilisateur
@@ -63,7 +63,7 @@ export default function RegisterScreen({ navigation }) {
     );
 
     // Requête HTTP POST vers le backend pour enregistrer l'utilisateur
-    fetch(`${backUrl}/register`, {
+    fetch(`${BACK_URL}/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

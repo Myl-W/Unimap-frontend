@@ -17,7 +17,7 @@ import { addProfilePhoto, userInfos } from "../reducers/user";
 import Popup from "../components/modals/popup";
 
 export default function LoginScreen({ navigation }) {
-  const backUrl = Constants.expoConfig?.extra?.BACK_URL;
+  const BACK_URL = Constants.expoConfig?.extra?.BACK_URL;
   const dispatch = useDispatch();
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
@@ -25,7 +25,7 @@ export default function LoginScreen({ navigation }) {
 
   //  -------- Fonction pour la connexion utilisateur ------------
   const handleLogin = () => {
-    fetch(`${backUrl}/login`, {
+    fetch(`${BACK_URL}/login`, {
       //  ------  fetch vers la route /login du backend ------------
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -40,7 +40,7 @@ export default function LoginScreen({ navigation }) {
       .then(async (data) => {
         //  ------  Dispatch des infos reçu vers le reducer -------
         dispatch(userInfos(data));
-        dispatch(addProfilePhoto(data.profilePhoto)); 
+        dispatch(addProfilePhoto(data.profilePhoto));
 
         if (data.result && data.token) {
           //  ------  Si il y a data et token -------

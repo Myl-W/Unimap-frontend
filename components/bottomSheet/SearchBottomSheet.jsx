@@ -17,7 +17,6 @@ import { useSelector, useDispatch } from "react-redux";
 import polyline from "@mapbox/polyline";
 import { useNavigation } from "@react-navigation/native";
 
-
 import {
   setRouteCoords,
   setTripInfos,
@@ -118,7 +117,7 @@ const SearchBottomSheet = forwardRef(({ handleSheetSearch }, ref) => {
 
   // Fonction pour ajouter une adresse aux favoris
   const addFavorites = (index) => {
-    fetch(`${backUrl}/addFavorites`, {
+    fetch(`${BACK_URL}/addFavorites`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ lastname, firstname }),
@@ -143,23 +142,23 @@ const SearchBottomSheet = forwardRef(({ handleSheetSearch }, ref) => {
     dispatch(suppRecentSearch(updatedSearch));
   };
 
-const handleHomePress = () => {
-  if (homeAddress && homeAddress.length > 0) {
-    setSearch(homeAddress);
-    searchGoogle(homeAddress);
-  } else {
-    navigation.navigate("HomeWorkScreen");
-  }
-};
+  const handleHomePress = () => {
+    if (homeAddress && homeAddress.length > 0) {
+      setSearch(homeAddress);
+      searchGoogle(homeAddress);
+    } else {
+      navigation.navigate("HomeWorkScreen");
+    }
+  };
 
-const handleWorkAdressPress = () => {
-  if (workAddress && workAddress.length > 0) {
-    setSearch(workAddress);
-    searchGoogle(workAddress);
-  } else {
-    navigation.navigate("HomeWorkScreen");
-  }
-};
+  const handleWorkAdressPress = () => {
+    if (workAddress && workAddress.length > 0) {
+      setSearch(workAddress);
+      searchGoogle(workAddress);
+    } else {
+      navigation.navigate("HomeWorkScreen");
+    }
+  };
 
   return (
     <BottomSheetModal
@@ -179,13 +178,19 @@ const handleWorkAdressPress = () => {
     >
       <BottomSheetView style={styles.contentContainer}>
         <View style={styles.buttonRow}>
-          <TouchableOpacity style={styles.optionButton} onPress={handleHomePress}>
+          <TouchableOpacity
+            style={styles.optionButton}
+            onPress={handleHomePress}
+          >
             <View style={styles.optionButtonContent}>
               <FontAwesome name="home" size={24} color="black" />
               <Text style={styles.optionButtonText}>Domicile</Text>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.optionButton} onPress={handleWorkAdressPress}>
+          <TouchableOpacity
+            style={styles.optionButton}
+            onPress={handleWorkAdressPress}
+          >
             <View style={styles.optionButtonContent}>
               <FontAwesome name="briefcase" size={24} color="black" />
               <Text style={styles.optionButtonText}>Travail</Text>

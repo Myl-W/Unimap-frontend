@@ -1,20 +1,20 @@
-import { useState, useEffect } from "react"; // Hooks React pour gérer l'état et les effets de bord
+import { useState, useEffect } from "react";
 import {
-  KeyboardAvoidingView, // Composant qui ajuste l'affichage lorsque le clavier est visible
-  Platform, // Permet de détecter la plateforme (iOS ou Android)
-  StyleSheet, // Pour styliser les composants avec du CSS-in-JS
-  TouchableOpacity, // Bouton tactile avec retour visuel
-  View, // Conteneur de base pour structurer l'interface
-  Image, // Pour afficher des images
-  Text, // Composant de texte de base
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  Image,
+  Text,
 } from "react-native";
-import { useDispatch } from "react-redux"; // Hook Redux pour dispatcher des actions
-import MapView from "react-native-maps"; // Composant de carte interactive
-import * as Location from "expo-location"; // Module Expo pour accéder aux services de géolocalisation
+import { useDispatch } from "react-redux";
+import MapView from "react-native-maps";
+import * as Location from "expo-location";
 
 export default function HomeScreen({ navigation }) {
-  const backUrl = process.env.BACK_URL; // URL backend, récupérée depuis les variables d'environnement
-  const dispatch = useDispatch(); // Initialisation du dispatcher Redux
+  const BACK_URL = process.env.BACK_URL;
+  const dispatch = useDispatch();
   const [currentPosition, setCurrentPosition] = useState(null); // État local pour stocker la position actuelle de l'utilisateur
 
   // Redirige vers l'écran d'inscription
