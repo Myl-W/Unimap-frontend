@@ -11,61 +11,24 @@ import {
 } from "react-native";
 
 // Import du hook Redux pour accéder au store global
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
 // Import des hooks React
-import { use, useEffect, useState } from "react";
+import { useState } from "react";
 
 // Import des constantes de l’environnement (via app.json ou app.config.js)
 import Constants from "expo-constants";
-import { addPhoto } from "../reducers/user";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // Déclaration du composant AddSignalement
 export default function AddSignalement({ navigation, route }) {
-  const dispatch = useDispatch();
   const token = useSelector((state) => state.user.profile.token); // Récupère le token utilisateur
-  const photoUri = useSelector((state) => state.user.value.photo); // Récupération de l'URI de la photo depuis le store Redux (stockée après prise de photo)
 
   // État local pour le nouveau commentaire saisi par l'utilisateur
   const [newComment, setNewComment] = useState("");
 
-  // État local pour stocker les commentaires (même si ici ils ne sont pas affichés)
-  const [comments, setComments] = useState([]);
+  // Récupération de l'ID du lieu depuis les paramètres de la route
   const { placeId } = route.params || {};
   const BACK_URL = Constants.expoConfig?.extra?.BACK_URL;
-
-  useEffect(() => {
-    const fetchComments = async () => {
-      if (!token) {
-        console.error("Aucun token trouvé");
-        return;
-      }
-      try {
-        // Envoie une requête GET vers /comments/:placeId
-        const response = await fetch(`${BACK_URL}/comments/${placeId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`, // Ajoute le token
-          },
-        });
-
-        const data = await response.json();
-        console.log("data", data);
-
-        // Si la réponse est bonne et qu’il y a des commentaires, on les stocke dans le state
-        if (data.result && data.comments.length > 0) {
-          setComments(data.comments);
-          console.log("✅ Commentaires récupérés", data.comments[0]._id);
-        }
-      } catch (error) {
-        console.error(
-          "Erreur lors de la récupération des commentaires :",
-          error
-        );
-      }
-    };
-    fetchComments(); // On exécute la fonction dès que placeId change
-  }, [placeId]); // Déclenché à chaque changement de placeId
 
   const handleAddComment = async () => {
     // On n'envoie rien si le commentaire est vide ou si aucun lieu n’est ciblé
@@ -80,7 +43,6 @@ export default function AddSignalement({ navigation, route }) {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          picture: photoUri, // URI de la photo (facultatif selon ton backend)
           comment: newComment, // Texte du commentaire
           placeId: placeId, // ID du lieu concerné
         }),
@@ -92,8 +54,6 @@ export default function AddSignalement({ navigation, route }) {
 
       const data = await response.json();
       if (data.result) {
-        // Si un lien photo est renvoyé, on le stocke via Redux
-        data.picture && dispatch(addPhoto(data.picture));
         setNewComment("");
         alert("Comment added successfully!");
         navigation.navigate("Map"); // Naviguer vers l'écran Map après avoir ajouté le commentaire
@@ -120,11 +80,6 @@ export default function AddSignalement({ navigation, route }) {
           <Text style={styles.takePhotoText}>📸 Prendre une photo</Text>
         </TouchableOpacity>
 
-        {/* Si une photo a été prise, elle est affichée ici */}
-        {photoUri && (
-          <Image source={{ uri: photoUri }} style={styles.photoDisplayed} />
-        )}
-
         <TextInput
           placeholder="Ajouter un commentaire"
           value={newComment}
@@ -137,21 +92,6 @@ export default function AddSignalement({ navigation, route }) {
         >
           <Text style={styles.addCommentText}>Ajouter un commentaire</Text>
         </TouchableOpacity>
-
-        <View style={styles.container}>
-          {comments.length > 0 ? (
-            (console.log("comments", comments),
-            comments
-              .filter((comment) => comment.placeId === placeId)
-              .map((comment) => (
-                <View key={comment._id} style={styles.comment}>
-                  <Text>{comment.comment}</Text>
-                </View>
-              )))
-          ) : (
-            <Text>Aucun commentaire trouvé</Text>
-          )}
-        </View>
       </KeyboardAvoidingView>
     </View>
   );
