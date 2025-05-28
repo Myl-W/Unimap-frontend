@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import Constants from "expo-constants";
 // Hooks de React pour gérer l’état, les effets et les références
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 // Hooks pour accéder à Redux (store global)
 import { useSelector } from "react-redux";
@@ -34,30 +34,34 @@ export default function PlaceScreen({ route }) {
     );
   }
 
-  fetch(`${BACK_URL}/place/${id}`, {
-    method: "GET",
-    headers: {
-      // On envoie un header d'autorisation avec le token JWT
-      Authorization: `Bearer ${token}`,
-    },
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      // Condition pour vérifier que la récupération est réussie :
-      // - data.result est vrai (succès)
+  console.log("id", id);
 
-      if (data.result) {
-        const picture = data.place.picture; // On récupère la photo du lieu
-        setPicture(picture); // On met à jour l'état avec la photo
-      } else {
-        // Si aucune photo n'a été trouvé
-        console.log("Aucune photo trouvé pour ce lieu");
-      }
+  useEffect(() => {
+    fetch(`${BACK_URL}/place/${route.params.id}`, {
+      method: "GET",
+      headers: {
+        // On envoie un header d'autorisation avec le token JWT
+        Authorization: `Bearer ${token}`,
+      },
     })
-    .catch((error) => {
-      // En cas d'erreur réseau ou autre, on affiche dans la console
-      console.error("Erreur lors de la récupération de la photo :", error);
-    });
+      .then((response) => response.json())
+      .then((data) => {
+        // Condition pour vérifier que la récupération est réussie :
+        // - data.result est vrai (succès)
+
+        if (data.result) {
+          const picture = data.place.picture; // On récupère la photo du lieu
+          setPicture(picture); // On met à jour l'état avec la photo
+        } else {
+          // Si aucune photo n'a été trouvé
+          console.log("Aucune photo trouvé pour ce lieu");
+        }
+      })
+      .catch((error) => {
+        // En cas d'erreur réseau ou autre, on affiche dans la console
+        console.error("Erreur lors de la récupération de la photo :", error);
+      });
+  }, [route.params]);
 
   return (
     // Conteneur principal de l’écran

@@ -3,8 +3,7 @@ import { StyleSheet, View, TouchableOpacity, SafeAreaView } from "react-native";
 import { Camera } from "expo-camera";
 import { CameraView } from "expo-camera";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
-import { useDispatch, useSelector } from "react-redux";
-import { addPhoto } from "../reducers/user";
+import { useSelector } from "react-redux";
 import { FontAwesome } from "@expo/vector-icons";
 import Constants from "expo-constants";
 
@@ -15,9 +14,8 @@ export default function CameraScreen() {
   // Permet de naviguer entre les écrans
   const navigation = useNavigation();
 
-  // Accès au dispatch Redux
-  const dispatch = useDispatch();
-  const token = useSelector((state) => state.user.profile.token); // Récupère le token utilisateur
+  /// Récupère le token utilisateur
+  const token = useSelector((state) => state.user.profile.token);
 
   // Récupère la position de l'utilisateur depuis le store Redux
   const { latitude, longitude } = useSelector((state) => state.trips.value);
@@ -78,7 +76,7 @@ export default function CameraScreen() {
     formData.append("latitude", latitude);
     formData.append("longitude", longitude);
 
-    // Envoi de la photo vers l’API
+    // Envoi de la photo vers BDD
     fetch(`${BACK_URL}/upload`, {
       method: "POST",
       headers: {
@@ -89,8 +87,6 @@ export default function CameraScreen() {
       .then((response) => response.json())
       .then((data) => {
         if (data.result) {
-          // Si l'upload a réussi et qu'une photo est bien présente, on l'ajoute au store Redux
-          photo && dispatch(addPhoto(data.url));
           // On navigue vers "Signalement" en passant le `placeId` retourné par le serveur
           navigation.navigate("Signalement", { placeId: data.place._id });
         } else {

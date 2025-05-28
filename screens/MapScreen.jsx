@@ -19,7 +19,7 @@ import MapView, { Polyline, Marker, Callout } from "react-native-maps";
 import * as Location from "expo-location";
 
 // Hook pour interagir avec la navigation
-import { useNavigation } from "@react-navigation/native";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
 
 // Hooks pour accéder à Redux (store global)
 import { useDispatch, useSelector } from "react-redux";
@@ -38,12 +38,13 @@ import SearchBottomSheet from "../components/bottomSheet/SearchBottomSheet";
 import FilterBottomSheet from "../components/bottomSheet/FilterBottomSheet";
 import SignalBottomSheet from "../components/bottomSheet/SignalBottomSheet";
 import TripBottomSheet from "../components/bottomSheet/TripBottomSheet";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 //* Import des icônes FontAwesome
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 
 //* Déclaration du composant principal de l'écran de carte
 export default function MapScreen() {
+  // Vérifie si l'écran est actuellement visible
+  const isFocused = useIsFocused();
   const navigation = useNavigation();
   // Permet de déclencher des actions Redux
   const dispatch = useDispatch();
@@ -62,39 +63,6 @@ export default function MapScreen() {
 
   // État local pour stocker la position actuelle de l’utilisateur
   const [currentPosition, setCurrentPosition] = useState(null);
-  // État local pour stocker l'id place de l’utilisateur
-  const [placeId, setPlaceId] = useState(null);
-
-  // -------- Récupère le token utilisateur stocké localement --------
-  const getToken = async () => {
-    try {
-      const token = await AsyncStorage.getItem("userToken");
-      return token;
-    } catch (error) {
-      console.error("Erreur lors de la récupération du token :", error);
-    }
-  };
-
-  useEffect(() => {
-    const fetchPlaceId = async () => {
-      const token = await getToken();
-      if (!token) {
-        console.error("Aucun token trouvé");
-        return;
-      }
-      const response = await fetch(`${BACK_URL}/places`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const data = await response.json();
-      if (data.result && data.places.length > 0) {
-        setPlaceId(data.places[0]._id); // ou .at(-1) pour le dernier
-      }
-    };
-    fetchPlaceId();
-  }, []);
 
   // Etat pour stocker les lieux à afficher sur la carte
   const [places, setPlaces] = useState([]);
@@ -159,7 +127,9 @@ export default function MapScreen() {
   }, [currentPosition]); // Exécuté à chaque changement de position
 
   // Récupère les lieux à afficher sur la carte
+  console.log("setplaces", places);
   useEffect(() => {
+    console.log("Récupération des lieux depuis l'API...");
     // Déclaration d'une fonction asynchrone interne pour récupérer les lieux depuis l'API
     const fetchPlaces = async () => {
       try {
@@ -189,7 +159,7 @@ export default function MapScreen() {
     if (token) fetchPlaces();
 
     // Le hook s'exécutera à chaque fois que la valeur de "token" change
-  }, [token]);
+  }, [token, isFocused]); // Exécuté à chaque changement de token ou si l'écran est visible
 
   //* Fonction appelée pour stopper un trajet (reset du store Redux)
   const handleStopTrip = () => {
@@ -228,55 +198,62 @@ export default function MapScreen() {
     <View style={styles.container}>
       {/* Affichage de la carte */}
       <MapView
+        key={places.length} // Redemander à Clément ou Carine expliquation
         ref={mapRef}
         mapType="normal"
         style={styles.map}
         showsUserLocation // Affiche la position de l’utilisateur sur la carte
-        initialRegion={{
-          // Région initiale affichée (Paris par défaut)
-          latitude: 48.8566,
-          longitude: 2.3522,
-          latitudeDelta: 0.05,
-          longitudeDelta: 0.05,
-        }}
+        region={
+          currentPosition
+            ? {
+                latitude: currentPosition.latitude,
+                longitude: currentPosition.longitude,
+                latitudeDelta: 0.05,
+                longitudeDelta: 0.05,
+              }
+            : null
+        } // Centre la carte sur la position actuelle de l’utilisateur
       >
         {/* -------- Affiche un marker pour chaque lieu récupéré --------- il met 5 secondes à s'afficher */}
-        {places.map((place) => (
-          <Marker
-            key={place._id} // Clé unique pour chaque marqueur
-            coordinate={{
-              latitude: place.latitude,
-              longitude: place.longitude,
-            }}
-            title="Lieu"
-          >
-            {/*mposant qui permet de personnaliser l'affichage d'un marqueur sur la carte*/}
-            <Callout onPress={() => handlePress(place._id)}>
-              {/* Vue qui contient le contenu affiché dans le callout, ici une largeur fixe */}
-              <View
-                style={{
-                  width: 124,
-                  padding: 2,
-                  backgroundColor: "white",
-                }}
-              >
-                {/* Affiche le nom du lieu */}
-                <Text>{place.name}</Text>
-                {/* Si la place a une image (picture), on l'affiche */}
-                {place.picture && (
-                  <Image
-                    source={{ uri: place.picture }}
-                    style={{
-                      width: 120,
-                      height: 100,
-                    }}
-                    resizeMode="cover"
-                  />
-                )}
-              </View>
-            </Callout>
-          </Marker>
-        ))}
+        {places.map((place) => {
+          console.log("place", place);
+          return (
+            <Marker
+              key={place._id} // Clé unique pour chaque marqueur
+              coordinate={{
+                latitude: place.latitude,
+                longitude: place.longitude,
+              }}
+              title="Lieu"
+            >
+              {/*composant qui permet de personnaliser l'affichage d'un marqueur sur la carte*/}
+              <Callout onPress={() => handlePress(place._id)}>
+                {/* Vue qui contient le contenu affiché dans le callout, ici une largeur fixe */}
+                <View
+                  style={{
+                    width: 124,
+                    padding: 2,
+                    backgroundColor: "white",
+                  }}
+                >
+                  {/* Affiche le nom du lieu */}
+                  {/* <Text>{place.name}</Text> */}
+                  {/* Si la place a une image (picture), on l'affiche */}
+                  {place.picture && (
+                    <Image
+                      source={{ uri: place.picture }}
+                      style={{
+                        width: 120,
+                        height: 100,
+                      }}
+                      resizeMode="cover"
+                    />
+                  )}
+                </View>
+              </Callout>
+            </Marker>
+          );
+        })}
 
         {/* Si un trajet est en cours, on trace une ligne */}
         {route && route.length > 0 && (
@@ -327,7 +304,7 @@ export default function MapScreen() {
         <FilterBottomSheet ref={filterSheetRef} />
 
         {/* BottomSheet de signalement */}
-        <SignalBottomSheet ref={signalSheetRef} placeId={placeId} />
+        <SignalBottomSheet ref={signalSheetRef} />
 
         {/* BottomSheet du trajet (affiche bouton stop si un trajet est actif) */}
         <TripBottomSheet
