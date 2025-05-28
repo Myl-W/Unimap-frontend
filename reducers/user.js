@@ -69,6 +69,9 @@ export const userSlice = createSlice({
     addProfilePhoto: (state, action) => {
       state.profile.profilePhoto = action.payload;
     },
+    updateUser: (state, action) => {
+      state.profile = action.payload;
+    },
   },
 });
 
@@ -82,5 +85,6 @@ export const {
   setHomeAddress,
   setWorkAddress,
   addProfilePhoto,
+  updateUser,
 } = userSlice.actions;
 export default userSlice.reducer;

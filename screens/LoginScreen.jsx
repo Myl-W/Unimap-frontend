@@ -40,7 +40,7 @@ export default function LoginScreen({ navigation }) {
       .then(async (data) => {
         //  ------  Dispatch des infos reçu vers le reducer -------
         dispatch(userInfos(data));
-        dispatch(addProfilePhoto(data.profilePhoto)); 
+        dispatch(addProfilePhoto(data.profilePhoto));
 
         if (data.result && data.token) {
           //  ------  Si il y a data et token -------
