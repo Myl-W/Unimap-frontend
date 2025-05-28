@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { MaterialIcons } from "@expo/vector-icons";
+import { MaterialIcons, FontAwesome } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Constants from "expo-constants";
 import {
@@ -15,6 +15,7 @@ import {
   Text,
 } from "react-native";
 import { toggleHandicap } from "../reducers/accessibility";
+import { addProfilePhoto, userInfos } from "../reducers/user";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
 export default function RegisterScreen({ navigation }) {
@@ -26,8 +27,9 @@ export default function RegisterScreen({ navigation }) {
   const [lastname, setLastname] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [date, setDate] = useState(new Date()); // Date de naissance par défaut = aujourd’hui
+  const [date, setDate] = useState(new Date()); // Date de naissance par défaut = aujourd'hui
   const [show, setShow] = useState(false); // Contrôle d'affichage du date picker
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false); // État pour la visibilité du mot de passe
 
   // Fonction appelée lorsqu'une nouvelle date est sélectionnée
   const onChange = (event, selectedDate) => {
@@ -37,7 +39,7 @@ export default function RegisterScreen({ navigation }) {
     }
   };
 
-  const accessibility = useSelector((state) => state.accessibility); // Accès à l’état global redux lié aux handicaps
+  const accessibility = useSelector((state) => state.accessibility); // Accès à l'état global redux lié aux handicaps
 
   // Liste des handicaps proposés
   const handicapKeys = [
@@ -52,7 +54,7 @@ export default function RegisterScreen({ navigation }) {
 
   // Fonction pour activer/désactiver un handicap donné
   const handleToggle = (key) => {
-    dispatch(toggleHandicap(key)); // Envoie une action redux pour modifier l’état
+    dispatch(toggleHandicap(key)); // Envoie une action redux pour modifier l'état
   };
 
   // Fonction principale appelée lors du clic sur "S'inscrire"
@@ -78,9 +80,15 @@ export default function RegisterScreen({ navigation }) {
       .then((response) => response.json())
       .then(async (data) => {
         if (data.result && data.token) {
+          // Dispatch des infos reçues vers le reducer
+          dispatch(userInfos(data));
+          if (data.profilePhoto) {
+            dispatch(addProfilePhoto(data.profilePhoto));
+          }
+
           try {
-            // Sauvegarde du token en local (stockage persistant)
-            await AsyncStorage.setItem("token", data.token);
+            // Sauvegarde du token en local avec la même clé que dans LoginScreen
+            await AsyncStorage.setItem("userToken", data.token);
             // Navigation vers la page de carte après inscription
             navigation.navigate("Map");
           } catch (error) {
@@ -110,12 +118,16 @@ export default function RegisterScreen({ navigation }) {
             onChangeText={setLastname}
             value={lastname}
             style={styles.input}
+            autoCapitalize="words" // Met en majuscule les premières lettres de chaque mot
+            textContentType="name" // Indique que le champ est un nom
           />
           <TextInput
             placeholder="Prénom"
             onChangeText={setFirstname}
             value={firstname}
             style={styles.input}
+            autoCapitalize="words"
+            textContentType="name"
           />
           <TextInput
             placeholder="Email"
@@ -123,14 +135,31 @@ export default function RegisterScreen({ navigation }) {
             value={email}
             keyboardType="email-address"
             style={styles.input}
+            autoCapitalize="none" // Ne met pas en majuscule les premières lettres
+            textContentType="emailAddress" // Indique que le champ est une adresse email
           />
-          <TextInput
-            placeholder="Mot de passe"
-            onChangeText={setPassword}
-            value={password}
-            keyboardType="email-address"
-            style={styles.input}
-          />
+
+          {/* Champ mot de passe avec l'icône d'œil */}
+          <View style={styles.passwordContainer}>
+            <TextInput
+              style={styles.passwordInput}
+              placeholder="Mot de passe"
+              secureTextEntry={!isPasswordVisible}
+              textContentType="password"
+              value={password}
+              onChangeText={(text) => setPassword(text)}
+            />
+            <TouchableOpacity
+              style={styles.eyeIcon}
+              onPress={() => setIsPasswordVisible(!isPasswordVisible)}
+            >
+              <FontAwesome
+                name={isPasswordVisible ? "eye" : "eye-slash"}
+                size={24}
+                color="black"
+              />
+            </TouchableOpacity>
+          </View>
 
           {/* Sélection de la date de naissance */}
           <View style={styles.inputDate}>
@@ -328,5 +357,26 @@ const styles = StyleSheet.create({
   image: {
     width: 60,
     height: 60,
+  },
+  passwordContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: "80%",
+    height: 44,
+    borderWidth: 1,
+    borderRadius: 8,
+    marginVertical: 8,
+    paddingHorizontal: 12,
+    backgroundColor: "white",
+    borderColor: "#ccc",
+    fontSize: 16,
+  },
+  passwordInput: {
+    flex: 1,
+    height: "100%",
+    fontSize: 16,
+  },
+  eyeIcon: {
+    padding: 5,
   },
 });
