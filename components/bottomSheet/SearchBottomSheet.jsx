@@ -23,13 +23,19 @@ import {
   recentSearch,
   suppRecentSearch,
 } from "../../reducers/trips";
+import { addFavorite, deleteFavorite } from "../../reducers/user";
+import Constants from "expo-constants";
 
 // forwardRef permet de passer une référence à un composant enfant
 const SearchBottomSheet = forwardRef(({ handleSheetSearch }, ref) => {
   const transport = useSelector((state) => state.trips.selectedTransport);
   const dispatch = useDispatch();
   const loc = useSelector((state) => state.trips.value);
+  const searchAddress = useSelector((state) => state.trips.searchAddress);
+  const token = useSelector((state) => state.user.profile.token);
+  const favorites = useSelector((state) => state.user.value.favorites) || [];
   const google = process.env.EXPO_PUBLIC_API_GOOGLE;
+  const BACK_URL = Constants.expoConfig?.extra?.BACK_URL;
   const [search, setSearch] = useState("");
   const snapPoints = ["50%", "75%"]; // Definie la taille d'ouverture du BottomSheet
   const lastSearch = useSelector((state) => state.trips?.recentSearch);
@@ -38,8 +44,24 @@ const SearchBottomSheet = forwardRef(({ handleSheetSearch }, ref) => {
 
   const navigation = useNavigation();
 
+  // Écouter les changements d'adresse de recherche
+  useEffect(() => {
+    if (searchAddress) {
+      // Si l'adresse vient des favoris, on utilise l'adresse directement
+      const destination =
+        typeof searchAddress === "object"
+          ? searchAddress.address
+          : searchAddress;
+      setSearch(destination);
+      searchGoogle(
+        destination,
+        typeof searchAddress === "object" && searchAddress.fromFavorites
+      );
+    }
+  }, [searchAddress]);
+
   //  -------- Fonction pour rechercher un itinéraire via l'API Google Directions ------------
-  const searchGoogle = (destination) => {
+  const searchGoogle = (destination, fromFavorites = false) => {
     fetch(
       `https://maps.googleapis.com/maps/api/directions/json?origin=${loc.latitude},${loc.longitude}&destination=${destination}&mode=${transport}&key=${google}`
     )
@@ -50,7 +72,9 @@ const SearchBottomSheet = forwardRef(({ handleSheetSearch }, ref) => {
         // ------------- Enregistrement dans l'historique des recherches -------------------
         const searchRecent = {
           arrival: arrival,
+          isFavorite: fromFavorites || isAddressInFavorites(arrival),
         };
+
         dispatch(recentSearch(searchRecent));
 
         // ------------- Récupération de la polyline  -------------------
@@ -73,8 +97,6 @@ const SearchBottomSheet = forwardRef(({ handleSheetSearch }, ref) => {
         //  ----------- Mise à jour du réducer avec les coordonnées de la route -------------
         dispatch(setRouteCoords(coords));
         ref?.current?.close();
-
-        // ------------- Fermeture de la bottomSheet --------------------------
       })
       .catch((error) => {
         console.error("Erreur lors de la récupération de la route :", error);
@@ -89,21 +111,61 @@ const SearchBottomSheet = forwardRef(({ handleSheetSearch }, ref) => {
     }
   }, [transport]);
 
+  // Vérifie si une adresse est dans les favoris
+  const isAddressInFavorites = (address) => {
+    if (!address) return false;
+    const normalizedSearchAddress = address.trim().toLowerCase();
+    return favorites.some(
+      (fav) => fav.address.trim().toLowerCase() === normalizedSearchAddress
+    );
+  };
+
+  // Trouve le favori par son adresse
+  const findFavoriteByAddress = (address) => {
+    return favorites.find((fav) => fav.address === address);
+  };
+
+  // Trouve l'index d'un favori par son adresse
+  const findFavoriteIndex = (address) => {
+    return favorites.findIndex((fav) => fav.address === address);
+  };
+
+  // Trouve le prochain numéro disponible pour les favoris
+  const getNextFavoriteNumber = () => {
+    const favoriteNumbers = favorites
+      .map((fav) => {
+        const match = fav.name.match(/^Favori (\d+)$/);
+        return match ? parseInt(match[1]) : 0;
+      })
+      .filter((num) => !isNaN(num));
+
+    if (favoriteNumbers.length === 0) return 1;
+    return Math.max(...favoriteNumbers) + 1;
+  };
+
   // fonction pour mapper le tableau afin d'afficher les elements dans le bottomSheet
-  const renderRecentSearch = () => {
+  const renderRecentSearch = (a, b) => {
     // "?." est utilisé pour verifié si lastSearch n'est pas undefined ou null
-    return lastSearch?.map((item, index) => (
+    return lastSearch?.slice().reverse().map((item, index) => (
       <View key={index} style={styles.historyAdress}>
         <View style={styles.historyLign}>
           <FontAwesome name="clock-o" size={24} color="black" />
-          <TouchableOpacity onPress={() => addFavorites(index)}>
-            <FontAwesome name="heart" size={22} color="black" />
+          <TouchableOpacity onPress={() => toggleFavorite(item.arrival)}>
+            <FontAwesome
+              name="heart"
+              size={22}
+              color={
+               isAddressInFavorites(item.arrival)
+                  ? "#e74c3c"
+                  : "black"
+              }
+            />
           </TouchableOpacity>
         </View>
         <View>
           <Text style={styles.addressHistory}>{item.arrival}</Text>
         </View>
-        <TouchableOpacity onPress={() => handleDelete(index)}>
+        <TouchableOpacity onPress={() => handleDelete(lastSearch.length - 1 - index)}>
           <FontAwesome
             name="trash"
             size={24}
@@ -113,25 +175,6 @@ const SearchBottomSheet = forwardRef(({ handleSheetSearch }, ref) => {
         </TouchableOpacity>
       </View>
     ));
-  };
-
-  // Fonction pour ajouter une adresse aux favoris
-  const addFavorites = (index) => {
-    fetch(`${BACK_URL}/addFavorites`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ lastname, firstname }),
-    })
-      .then((response) => response.json())
-      .then(async (data) => {
-        if (data.result && data.token) {
-        } else {
-          console.warn("Échec de l'ajout aux favoris.");
-        }
-      })
-      .catch((error) => {
-        console.error("Erreur lors de l'ajout aux favoris:", error);
-      });
   };
 
   const handleDelete = (index) => {
@@ -159,6 +202,83 @@ const SearchBottomSheet = forwardRef(({ handleSheetSearch }, ref) => {
       navigation.navigate("HomeWorkScreen");
     }
   };
+
+  // Fonction pour ajouter ou supprimer des favoris
+  const toggleFavorite = async (address) => {
+    const isFavorite = isAddressInFavorites(address);
+    if (isFavorite) {
+      // Si c'est déjà un favori, on le supprime
+      const favorite = findFavoriteByAddress(address);
+      if (!favorite) {
+        return;
+      }
+
+      try {
+        const response = await fetch(`${BACK_URL}/favorites/${favorite._id}`, {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await response.json();
+
+        if (data.result) {
+          dispatch(deleteFavorite(favorite._id));
+          // Mettre à jour la recherche récente
+          if (lastSearch) {
+            const updatedSearch = lastSearch.map((item) =>
+              item.arrival === address ? { ...item, isFavorite: false } : item
+            );
+            dispatch(suppRecentSearch(updatedSearch));
+          }
+        }
+      } catch (error) {
+        console.error("Erreur lors de la suppression du favori:", error);
+      }
+    } else {
+      // Si ce n'est pas un favori, on l'ajoute
+      try {
+        const nextNumber = getNextFavoriteNumber();
+        const response = await fetch(`${BACK_URL}/favorites`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            name: `Favori ${nextNumber}`,
+            address: address,
+          }),
+        });
+
+        const data = await response.json();
+
+
+        if (data.result) {
+          dispatch(addFavorite(data.favorite));
+          // Mettre à jour la recherche récente
+          if (lastSearch) {
+            const updatedSearch = lastSearch.map((item) =>
+              item.arrival === address ? { ...item, isFavorite: true } : item
+            );
+            dispatch(suppRecentSearch(updatedSearch));
+          }
+        }
+      } catch (error) {
+        console.error("Erreur lors de l'ajout aux favoris:", error);
+      }
+    }
+  };
+
+  // Effet pour mettre à jour l'état des favoris dans les recherches récentes
+  useEffect(() => {
+    if (lastSearch && lastSearch.length > 0) {
+      lastSearch.forEach((item) => {
+        const isFavorite = isAddressInFavorites(item.arrival);
+      });
+    }
+  }, [favorites, lastSearch]);
 
   return (
     <BottomSheetModal
