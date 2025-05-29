@@ -8,7 +8,7 @@ import {
 import { useNavigation } from "@react-navigation/native";
 
 import { useDispatch } from "react-redux";
-import { toggleSignalement } from "../../reducers/signalement";
+import { toggleSignalement, signalColor } from "../../reducers/signalement";
 import {
   getSignalButtons,
   signalButtonStyles,
@@ -33,6 +33,7 @@ const SignalBottomSheet = forwardRef(({ handleSheetSignal, placeId }, ref) => {
 
   const handleToggleSignal = (key) => {
     handleToggle(key);
+    dispatch(signalColor(key)); // envoyé vers le reducer la couleur du signalement cliqué
     ref?.current?.close();
     navigation.navigate("Signalement", { placeId: placeId });
     console.log("id de signalbottomsheet", placeId);
