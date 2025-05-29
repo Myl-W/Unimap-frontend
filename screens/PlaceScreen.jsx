@@ -89,7 +89,7 @@ export default function PlaceScreen({ route }) {
       const data = await response.json();
       if (data.result) {
         setNewComment("");
-        setCommentList((newComments) => [...newComments, data.comment]); // Ajoute le nouveau commentaire à la liste
+        setCommentList((newComments) => [data.comment, ...newComments]); // Ajoute le nouveau commentaire à la liste
       }
     } catch (error) {
       console.error("Error adding comment:", error);
