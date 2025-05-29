@@ -132,6 +132,7 @@ export default function PlaceScreen({ route }) {
   const handleCloseModal = () => {
     setShowModal(false);
   };
+  console.log("commentList", commentList);
 
   return (
     <View style={styles.container}>
@@ -258,10 +259,10 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   commentHeader: {
-  flexDirection: "row",
-  justifyContent: "space-between",
-  alignItems: "center",
-  marginBottom: 5,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 5,
   },
   author: {
     fontWeight: "bold",
