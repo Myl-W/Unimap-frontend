@@ -17,11 +17,13 @@ import {
 import { toggleHandicap } from "../reducers/accessibility";
 import { addProfilePhoto, userInfos } from "../reducers/user";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import Popup from "../components/modals/popup";
 
 export default function RegisterScreen({ navigation }) {
   const BACK_URL = Constants.expoConfig?.extra?.BACK_URL; // URL backend récupérée depuis les variables d'environnement
   const dispatch = useDispatch();
 
+  const [showModal, setShowModal] = useState(false);
   // États pour stocker les informations saisies par l'utilisateur
   const [firstname, setFirstname] = useState("");
   const [lastname, setLastname] = useState("");
@@ -40,6 +42,14 @@ export default function RegisterScreen({ navigation }) {
   };
 
   const accessibility = useSelector((state) => state.accessibility); // Accès à l'état global redux lié aux handicaps
+
+  // ------ Fonction pour afficher / fermer la modal ------
+  const handlePressModal = () => {
+    setShowModal(true);
+  };
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
 
   // Liste des handicaps proposés
   const handicapKeys = [
@@ -219,28 +229,37 @@ export default function RegisterScreen({ navigation }) {
 
           <Text style={styles.textOu}>Ou</Text>
 
-          {/* Boutons d'inscription avec réseaux sociaux (non fonctionnels ici) */}
+          {/* -------------- Boutons d'inscription avec Google / Facebook / Apple (non fonctionnels ici) ----------------*/}
           <View style={styles.imageContent}>
-            <TouchableOpacity onPress={handleRegister} activeOpacity={0.8}>
+            <TouchableOpacity onPress={handlePressModal} activeOpacity={0.8}>
               <Image
                 style={styles.image}
                 source={require("../assets/google.png")}
               />
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={handleRegister} activeOpacity={0.8}>
+            {/* --------- Modal -------- */}
+            <Popup visible={showModal} onClose={handleCloseModal} />
+
+            <TouchableOpacity onPress={handlePressModal} activeOpacity={0.8}>
               <Image
                 style={styles.image}
                 source={require("../assets/facebook.png")}
               />
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={handleRegister} activeOpacity={0.8}>
+            {/* --------- Modal -------- */}
+            <Popup visible={showModal} onClose={handleCloseModal} />
+
+            <TouchableOpacity onPress={handlePressModal} activeOpacity={0.8}>
               <Image
                 style={styles.image}
                 source={require("../assets/apple.png")}
               />
             </TouchableOpacity>
+
+            {/* --------- Modal -------- */}
+            <Popup visible={showModal} onClose={handleCloseModal} />
           </View>
         </ScrollView>
       </KeyboardAvoidingView>

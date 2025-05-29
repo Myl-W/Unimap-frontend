@@ -114,9 +114,9 @@ const SearchBottomSheet = forwardRef(({ handleSheetSearch }, ref) => {
   // Vérifie si une adresse est dans les favoris
   const isAddressInFavorites = (address) => {
     if (!address) return false;
-    const normalizedSearchAddress = address.trim().toLowerCase();
+    const normalizedSearchAddress = address.trim().toLowerCase(); // Normalise l'adresse de recherche pour la comparaison
     return favorites.some(
-      (fav) => fav.address.trim().toLowerCase() === normalizedSearchAddress
+      (fav) => fav.address.trim().toLowerCase() === normalizedSearchAddress // Vérifie si l'adresse est dans les favoris
     );
   };
 
@@ -125,28 +125,23 @@ const SearchBottomSheet = forwardRef(({ handleSheetSearch }, ref) => {
     return favorites.find((fav) => fav.address === address);
   };
 
-  // Trouve l'index d'un favori par son adresse
-  const findFavoriteIndex = (address) => {
-    return favorites.findIndex((fav) => fav.address === address);
-  };
-
   // Trouve le prochain numéro disponible pour les favoris
   const getNextFavoriteNumber = () => {
     const favoriteNumbers = favorites
       .map((fav) => {
-        const match = fav.name.match(/^Favori (\d+)$/);
-        return match ? parseInt(match[1]) : 0;
+        const match = fav.name.match(/^Favori (\d+)$/); // Extrait le numéro de favori
+        return match ? parseInt(match[1]) : 0; // Retourne le numéro de favori ou 0 si aucun numéro n'est trouvé
       })
-      .filter((num) => !isNaN(num));
+      .filter((num) => !isNaN(num)); // Filtre les numéros valides
 
-    if (favoriteNumbers.length === 0) return 1;
-    return Math.max(...favoriteNumbers) + 1;
+    if (favoriteNumbers.length === 0) return 1; // Si aucun numéro de favori n'est trouvé, retourne 1
+    return Math.max(...favoriteNumbers) + 1; // Retourne le numéro de favori le plus élevé + 1
   };
 
   // fonction pour mapper le tableau afin d'afficher les elements dans le bottomSheet
-  const renderRecentSearch = (a, b) => {
+  const renderRecentSearch = () => {
     // "?." est utilisé pour verifié si lastSearch n'est pas undefined ou null
-    return lastSearch?.slice().reverse().map((item, index) => (
+    return lastSearch?.slice().reverse().map((item, index) => ( // Inverse le tableau et map les éléments
       <View key={index} style={styles.historyAdress}>
         <View style={styles.historyLign}>
           <FontAwesome name="clock-o" size={24} color="black" />
@@ -163,7 +158,7 @@ const SearchBottomSheet = forwardRef(({ handleSheetSearch }, ref) => {
           </TouchableOpacity>
         </View>
         <View>
-          <Text style={styles.addressHistory}>{item.arrival}</Text>
+          <Text style={styles.addressHistory} onPress={() => searchGoogle(item.arrival)}>{item.arrival}</Text>
         </View>
         <TouchableOpacity onPress={() => handleDelete(lastSearch.length - 1 - index)}>
           <FontAwesome
@@ -205,7 +200,7 @@ const SearchBottomSheet = forwardRef(({ handleSheetSearch }, ref) => {
 
   // Fonction pour ajouter ou supprimer des favoris
   const toggleFavorite = async (address) => {
-    const isFavorite = isAddressInFavorites(address);
+    const isFavorite = isAddressInFavorites(address); // Vérifie si l'adresse est déjà un favori
     if (isFavorite) {
       // Si c'est déjà un favori, on le supprime
       const favorite = findFavoriteByAddress(address);
@@ -224,13 +219,13 @@ const SearchBottomSheet = forwardRef(({ handleSheetSearch }, ref) => {
         const data = await response.json();
 
         if (data.result) {
-          dispatch(deleteFavorite(favorite._id));
+          dispatch(deleteFavorite(favorite._id)); // Supprime le favori du store Redux
           // Mettre à jour la recherche récente
           if (lastSearch) {
             const updatedSearch = lastSearch.map((item) =>
-              item.arrival === address ? { ...item, isFavorite: false } : item
+              item.arrival === address ? { ...item, isFavorite: false } : item // Met à jour le tableau des recherches récentes pour indiquer que l'adresse n'est plus un favori
             );
-            dispatch(suppRecentSearch(updatedSearch));
+            dispatch(suppRecentSearch(updatedSearch)); // Met à jour le store Redux avec le tableau modifié
           }
         }
       } catch (error) {
@@ -239,7 +234,7 @@ const SearchBottomSheet = forwardRef(({ handleSheetSearch }, ref) => {
     } else {
       // Si ce n'est pas un favori, on l'ajoute
       try {
-        const nextNumber = getNextFavoriteNumber();
+        const nextNumber = getNextFavoriteNumber(); // Récupère le prochain numéro de favori
         const response = await fetch(`${BACK_URL}/favorites`, {
           method: "POST",
           headers: {
@@ -256,7 +251,7 @@ const SearchBottomSheet = forwardRef(({ handleSheetSearch }, ref) => {
 
 
         if (data.result) {
-          dispatch(addFavorite(data.favorite));
+          dispatch(addFavorite(data.favorite)); // Ajoute le favori au store Redux
           // Mettre à jour la recherche récente
           if (lastSearch) {
             const updatedSearch = lastSearch.map((item) =>
@@ -274,8 +269,8 @@ const SearchBottomSheet = forwardRef(({ handleSheetSearch }, ref) => {
   // Effet pour mettre à jour l'état des favoris dans les recherches récentes
   useEffect(() => {
     if (lastSearch && lastSearch.length > 0) {
-      lastSearch.forEach((item) => {
-        const isFavorite = isAddressInFavorites(item.arrival);
+      lastSearch.forEach((item) => {   // Parcourt chaque élément du tableau lastSearch
+        isAddressInFavorites(item.arrival); // Vérifie si l'adresse est un favori
       });
     }
   }, [favorites, lastSearch]);
