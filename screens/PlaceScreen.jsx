@@ -7,6 +7,7 @@ import {
   Image,
   TextInput,
   TouchableOpacity,
+  ScrollView,
 } from "react-native";
 import Constants from "expo-constants";
 import { useEffect, useState } from "react";
@@ -133,8 +134,8 @@ export default function PlaceScreen({ route }) {
           <Image
             source={{ uri: picture }}
             style={{
-              width: 250,
-              height: 250,
+              width: 300,
+              height: 260,
               borderRadius: 20,
               marginBottom: 20,
             }}
@@ -191,19 +192,19 @@ const styles = StyleSheet.create({
   title: {
     width: "100%",
     textAlign: "center",
-    fontSize: 30,
+    fontSize: 24,
     fontWeight: "550",
     color: "black",
     textShadowColor: "grey",
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 2,
-    marginBottom: 20,
-    marginTop: 20,
+    marginBottom: 10,
+    marginTop: 10,
   },
   comment: {
-    width: "90%",
-    textAlign: "center",
-    fontSize: 16,
+    width: "80%",
+    alignSelf: "center",
+    fontSize: 20,
     margin: 10,
     borderWidth: 1,
     borderColor: "black",
@@ -216,7 +217,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 8,
     backgroundColor: "white",
-    width: "70%",
+    width: "80%",
   },
   addCommentButton: {
     backgroundColor: "#4CAF50",
@@ -224,6 +225,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     borderRadius: 5,
     alignItems: "center",
+    width: "80%",
   },
   addCommentText: {
     color: "white",
