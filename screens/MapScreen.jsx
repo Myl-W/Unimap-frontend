@@ -61,7 +61,6 @@ export default function MapScreen() {
 
   const [currentPosition, setCurrentPosition] = useState(null);
   const [places, setPlaces] = useState([]);
-  const [selectedSignalement, setSelectedSignalement] = useState(null); // ex : "fauteuil, malentendant, etc."
 
   // Récupération du trajet en cours depuis Redux
   const route = useSelector((state) => state.trips.coords?.routeCoords);
