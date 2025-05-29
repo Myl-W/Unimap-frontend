@@ -7,6 +7,7 @@ import {
   Image,
   TextInput,
   TouchableOpacity,
+  ScrollView,
 } from "react-native";
 import Constants from "expo-constants";
 import { useEffect, useState } from "react";
@@ -106,8 +107,8 @@ export default function PlaceScreen({ route }) {
           <Image
             source={{ uri: picture }}
             style={{
-              width: 250,
-              height: 250,
+              width: 300,
+              height: 260,
               borderRadius: 20,
               marginBottom: 20,
             }}
@@ -127,20 +128,22 @@ export default function PlaceScreen({ route }) {
         >
           <Text style={styles.addCommentText}>Ajouter un commentaire</Text>
         </TouchableOpacity>
-
-        {/* Affichage des commentaires */}
-        {commentList.length > 0 ? (
-          commentList.map((comment) => (
-            <View key={comment._id}>
-              <Text style={{ fontWeight: "bold" }}>
-                {comment.userId.firstname} {comment.userId.lastname?.charAt(0)}.
-              </Text>
-              <Text style={styles.comment}>{comment.comment}</Text>
-            </View>
-          ))
-        ) : (
-          <Text>Aucun commentaire pour ce lieu.</Text>
-        )}
+        <ScrollView style={{ marginTop: 10, width: "100%" }}>
+          {/* Affichage des commentaires */}
+          {commentList.length > 0 ? (
+            commentList.map((comment) => (
+              <View key={comment._id} style={styles.comment}>
+                <Text style={{ fontWeight: "bold", fontSize: 16 }}>
+                  {comment.userId.firstname}
+                  {comment.userId.lastname?.charAt(0)}.
+                </Text>
+                <Text style={{ fontSize: 16 }}>{comment.comment}</Text>
+              </View>
+            ))
+          ) : (
+            <Text>Aucun commentaire pour ce lieu.</Text>
+          )}
+        </ScrollView>
       </KeyboardAvoidingView>
     </View>
   );
@@ -161,19 +164,19 @@ const styles = StyleSheet.create({
   title: {
     width: "100%",
     textAlign: "center",
-    fontSize: 30,
+    fontSize: 24,
     fontWeight: "550",
     color: "black",
     textShadowColor: "grey",
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 2,
-    marginBottom: 20,
-    marginTop: 20,
+    marginBottom: 10,
+    marginTop: 10,
   },
   comment: {
-    width: "90%",
-    textAlign: "center",
-    fontSize: 16,
+    width: "80%",
+    alignSelf: "center",
+    fontSize: 20,
     margin: 10,
     borderWidth: 1,
     borderColor: "black",
@@ -186,7 +189,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 8,
     backgroundColor: "white",
-    width: "70%",
+    width: "80%",
   },
   addCommentButton: {
     backgroundColor: "#4CAF50",
@@ -194,6 +197,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     borderRadius: 5,
     alignItems: "center",
+    width: "80%",
   },
   addCommentText: {
     color: "white",
