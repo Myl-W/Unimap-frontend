@@ -44,7 +44,7 @@ const store = configureStore({
 });
 
 const persistor = persistStore(store);
-//persistor.purge(); // Vide le stockage persistant
+// persistor.purge(); // Vide le stockage persistant
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
 
