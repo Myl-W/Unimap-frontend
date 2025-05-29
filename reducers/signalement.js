@@ -7,8 +7,9 @@ const initialState = {
   canne: false,
   poussette: false,
   alerte: false,
-  parkink: false,
+  parking: false,
   baby: false,
+  color: "",
 };
 
 const signalementSlice = createSlice({
@@ -20,8 +21,12 @@ const signalementSlice = createSlice({
       state[key] = !state[key];
     },
     resetSignalement: () => ({ ...initialState }),
+    signalColor: (state, action) => {
+      state.color = action.payload;
+    },
   },
 });
 
-export const { toggleSignalement, resetSignalement } = signalementSlice.actions;
+export const { toggleSignalement, resetSignalement, signalColor } =
+  signalementSlice.actions;
 export default signalementSlice.reducer;
