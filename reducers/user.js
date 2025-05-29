@@ -76,15 +76,15 @@ export const userSlice = createSlice({
       state.value.favorites.push(action.payload); 
     },
     updateFavorite: (state, action) => {
-      const { id, updatedFavorite } = action.payload;
-      const index = state.value.favorites.findIndex((fav) => fav._id === id);
-      if (index !== -1) {
-        state.value.favorites[index] = updatedFavorite;
+      const { id, updatedFavorite } = action.payload; // Récupère l'id et le favori mis à jour
+      const index = state.value.favorites.findIndex((fav) => fav._id === id); // Trouve l'index du favori à mettre à jour
+      if (index !== -1) { // Vérifie si l'index existe
+        state.value.favorites[index] = updatedFavorite; // Met à jour le favori dans le tableau
       }
     },
     deleteFavorite: (state, action) => {
       state.value.favorites = state.value.favorites.filter(
-        (fav) => fav._id !== action.payload
+        (fav) => fav._id !== action.payload // Filtre le tableau pour supprimer le favori avec l'id correspondant
       );
     },
   },
