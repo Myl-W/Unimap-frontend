@@ -162,14 +162,16 @@ export default function PlaceScreen({ route }) {
           {commentList.length > 0 ? (
             commentList.map((comment) => (
               <View key={comment._id} style={styles.comment}>
-                <Text style={{ fontWeight: "bold", fontSize: 16 }}>
-                  {comment.userId.firstname}
-                  {comment.userId.lastname?.charAt(0)}.
-                </Text>
-                <Text style={styles.timeAgo}>
-                  {timeSince(comment.createdAt)}
-                </Text>
-                <Text style={{ fontSize: 16 }}>{comment.comment}</Text>
+                <View style={styles.commentHeader}>
+                  <Text style={styles.author}>
+                    {comment.userId.firstname}
+                    {comment.userId.lastname?.charAt(0)}.
+                  </Text>
+                  <Text style={styles.timeAgo}>
+                    {timeSince(comment.createdAt)}
+                  </Text>
+                </View>
+                <Text style={styles.commentText}>{comment.comment}</Text>
               </View>
             ))
           ) : (
@@ -234,5 +236,24 @@ const styles = StyleSheet.create({
   addCommentText: {
     color: "white",
     fontWeight: "bold",
+  },
+  commentHeader: {
+  flexDirection: "row",
+  justifyContent: "space-between",
+  alignItems: "center",
+  marginBottom: 5,
+  },
+  author: {
+    fontWeight: "bold",
+    fontSize: 16,
+    color: "#000",
+  },
+  timeAgo: {
+    fontSize: 12,
+    color: "gray",
+  },
+  commentText: {
+    fontSize: 16,
+    color: "#000",
   },
 });
