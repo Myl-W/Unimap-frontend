@@ -141,7 +141,9 @@ export default function PlaceScreen({ route }) {
               </View>
             ))
           ) : (
-            <Text>Aucun commentaire pour ce lieu.</Text>
+            <Text style={{ fontSize: 16, textAlign: "center", marginTop: 10 }}>
+              Aucun commentaire pour ce lieu.
+            </Text>
           )}
         </ScrollView>
       </KeyboardAvoidingView>
