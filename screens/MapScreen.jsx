@@ -28,6 +28,17 @@ import TripBottomSheet from "../components/bottomSheet/TripBottomSheet";
 //* Import des icônes FontAwesome
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 
+// ------- Configuration des couleurs de signalements ----------- //
+const signalementColors = {
+  sourd: "#4CAF50",
+  fauteuil: "#007bff",
+  malvoyant: "#fa0000",
+  pousette: "#fa8900",
+  canne: "#00faf2",
+  parking: "#000000",
+  baby: "#c505ff",
+};
+
 //* Déclaration du composant principal de l'écran de carte
 export default function MapScreen() {
   // Vérifie si l'écran est actuellement visible
@@ -49,6 +60,7 @@ export default function MapScreen() {
 
   const [currentPosition, setCurrentPosition] = useState(null);
   const [places, setPlaces] = useState([]);
+  const [selectedSignalement, setSelectedSignalement] = useState(null); // ex : "fauteuil, malentendant, etc."
 
   // Récupération du trajet en cours depuis Redux
   const route = useSelector((state) => state.trips.coords?.routeCoords);
@@ -181,7 +193,7 @@ export default function MapScreen() {
     <View style={styles.container}>
       {/* Affichage de la carte */}
       <MapView
-        key={places.length} // Redemander à Clément ou Carine expliquation
+        key={places.length} // Redemander à Clément ou Carine explication
         ref={mapRef}
         mapType="normal"
         style={styles.map}
@@ -197,9 +209,13 @@ export default function MapScreen() {
             : null
         } // Centre la carte sur la position actuelle de l’utilisateur
       >
-        {/* -------- Affiche un marker pour chaque lieu récupéré --------- il met 5 secondes à s'afficher */}
+        {/* ------------ Affiche un marker pour chaque lieu récupéré --------- */}
         {places.map((place) => {
-          // console.log("place", place);
+          // console.log(
+          //   "selected singalement color",
+          //   signalementColors[selectedSignalement],
+          //   selectedSignalement
+          // );
           return (
             <Marker
               key={place._id} // Clé unique pour chaque marqueur
@@ -207,7 +223,9 @@ export default function MapScreen() {
                 latitude: place.latitude,
                 longitude: place.longitude,
               }}
-              title="Lieu"
+              pinColor={
+                place.handicap ? signalementColors[place.handicap] : "#ffb71e"
+              }
             >
               {/*composant qui permet de personnaliser l'affichage d'un marqueur sur la carte*/}
               <Callout onPress={() => handlePress(place._id)}>
@@ -286,7 +304,7 @@ export default function MapScreen() {
         {/* BottomSheet des filtres */}
         <FilterBottomSheet ref={filterSheetRef} />
 
-        {/* BottomSheet de signalement */}
+        {/* BottomSheet de signalement  &  mis à jour du signalement sélectionné */}
         <SignalBottomSheet ref={signalSheetRef} />
 
         {/* BottomSheet du trajet (affiche bouton stop si un trajet est actif) */}
