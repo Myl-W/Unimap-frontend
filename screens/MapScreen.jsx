@@ -28,7 +28,7 @@ import TripBottomSheet from "../components/bottomSheet/TripBottomSheet";
 //* Import des icônes FontAwesome
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 
-// ------- Configuration des couleurs de signalements ----------- //
+// ------- Configuration des couleurs de signalements  ------------ //
 const signalementColors = {
   sourd: "#4CAF50",
   fauteuil: "#007bff",
