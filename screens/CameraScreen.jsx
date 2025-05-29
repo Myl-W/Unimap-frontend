@@ -9,11 +9,13 @@ import {
 import { Camera } from "expo-camera";
 import { CameraView } from "expo-camera";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { FontAwesome } from "@expo/vector-icons";
 import Constants from "expo-constants";
+import { signalColor } from "../reducers/signalement";
 
 export default function CameraScreen() {
+  const dispatch = useDispatch();
   // Vérifie si l'écran est actuellement visible
   const isFocused = useIsFocused();
 
@@ -25,8 +27,6 @@ export default function CameraScreen() {
 
   // Recupere la couleur du bouton
   const handicap = useSelector((state) => state.signalement.color);
-
-  console.log("handicap", handicap);
 
   // Récupère la position de l'utilisateur depuis le store Redux
   const { latitude, longitude } = useSelector((state) => state.trips.value);
@@ -112,6 +112,7 @@ export default function CameraScreen() {
           console.error("Erreur lors de l'upload de la photo");
         }
       });
+    dispatch(signalColor("")); // Réinitialise la couleur du signalement
     setPhoto(null); // Réinitialise l'état de la photo après l'envoi
   };
 

@@ -1,13 +1,13 @@
 // Import des composants React Native nécessaires à l'interface utilisateur
 import {
-  KeyboardAvoidingView, // Évite que le clavier masque les champs de texte
-  Platform, // Pour adapter le comportement selon iOS ou Android
-  StyleSheet, // Pour créer des styles en JS
-  View, // Conteneur de base
-  Text, // Affichage de texte
-  TextInput, // Champ de saisie
-  TouchableOpacity, // Bouton pressable
-  Image, // Affichage d’image
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Image,
 } from "react-native";
 
 // Import du hook Redux pour accéder au store global
