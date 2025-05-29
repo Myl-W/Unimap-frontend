@@ -40,7 +40,7 @@ export const getSignalButtons = (styles) => [
     label: "Ajouter un dispositif pour personnes avec poussette",
   },
   {
-    key: "cane",
+    key: "canne",
     icon: (
       <FontAwesome6 name="person-walking-with-cane" size={42} color="black" />
     ),
