@@ -23,6 +23,11 @@ export default function CameraScreen() {
   /// Récupère le token utilisateur
   const token = useSelector((state) => state.user.profile.token);
 
+  // Recupere la couleur du bouton
+  const handicap = useSelector((state) => state.signalement.color);
+
+  console.log("handicap", handicap);
+
   // Récupère la position de l'utilisateur depuis le store Redux
   const { latitude, longitude } = useSelector((state) => state.trips.value);
 
@@ -87,6 +92,8 @@ export default function CameraScreen() {
     // Ajoute la latitude et la longitude du store Redux
     formData.append("latitude", latitude);
     formData.append("longitude", longitude);
+    // Ajout du handicap
+    formData.append("handicap", handicap);
 
     // Envoi de la photo vers BDD
     fetch(`${BACK_URL}/upload`, {
