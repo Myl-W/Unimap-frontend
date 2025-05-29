@@ -32,7 +32,8 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 const signalementColors = {
   sourd: "#4CAF50",
   fauteuil: "#007bff",
-  malvoyant: "#fa0000",
+  alerte: "#ffb71e",
+  aveugle: "#fa0000",
   pousette: "#fa8900",
   canne: "#00faf2",
   parking: "#000000",
