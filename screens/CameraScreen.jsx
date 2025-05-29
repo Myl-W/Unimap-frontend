@@ -1,5 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { StyleSheet, View, TouchableOpacity, SafeAreaView } from "react-native";
+import {
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  SafeAreaView,
+  Image,
+} from "react-native";
 import { Camera } from "expo-camera";
 import { CameraView } from "expo-camera";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
@@ -32,6 +38,9 @@ export default function CameraScreen() {
   // Flash activé ou non
   const [flash, setFlash] = useState("off");
 
+  // Etat pour stocker la photo prise
+  const [photo, setPhoto] = useState(null);
+
   // Adresse backend récupérée depuis les variables d’environnement (app.config.json)
   const BACK_URL = Constants.expoConfig?.extra?.BACK_URL;
 
@@ -58,14 +67,17 @@ export default function CameraScreen() {
     setFlash((prev) => (prev === "off" ? "on" : "off"));
   };
 
-  // -------- Fonction pour prendre une photo, l'envoyer à l’API et la stocker --------
+  // -------- Fonction pour prendre une photo -------- //
   const takePicture = async () => {
     // Prise de photo avec qualité réduite pour l'upload
-    const photo = await cameraRef.current?.takePictureAsync({
+    const photoData = await cameraRef.current?.takePictureAsync({
       quality: 0.3,
     });
+    setPhoto(photoData); // Stocke la photo pour validation avant l'envoi
+  };
 
-    // Préparation de la photo à envoyer via une requête POST
+  // -------- Fonction pour envoyer la photo à la BDD -------- //
+  const sendPhoto = async () => {
     const formData = new FormData();
     formData.append("photoFromFront", {
       uri: photo?.uri,
@@ -93,8 +105,53 @@ export default function CameraScreen() {
           console.error("Erreur lors de l'upload de la photo");
         }
       });
+    setPhoto(null); // Réinitialise l'état de la photo après l'envoi
   };
 
+  // --------- Affichage conditionnel ---------- //
+  if (photo) {
+    // Si une photo est prise, propose de valider ou refaire
+    return (
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: "black",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Image
+          source={{ uri: photo.uri }}
+          style={{ width: 300, height: 600, borderRadius: 10 }}
+        />
+        <View style={{ flexDirection: "row", marginTop: 20 }}>
+          <TouchableOpacity
+            style={{
+              backgroundColor: "#4CAF50",
+              padding: 15,
+              borderRadius: 8,
+              marginRight: 20,
+            }}
+            onPress={sendPhoto} // envoyer la photo
+          >
+            <FontAwesome name="check" size={24} color="white" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{
+              backgroundColor: "#e74c3c",
+              padding: 15,
+              borderRadius: 8,
+            }}
+            onPress={() => setPhoto(null)} // on rénitialise l'état pour reprendre la photo
+          >
+            <FontAwesome name="repeat" size={24} color="white" />
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  }
+
+  // Sinon affiche le composant de la caméra
   return (
     <CameraView
       style={styles.camera}
