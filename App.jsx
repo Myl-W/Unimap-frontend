@@ -44,7 +44,7 @@ const store = configureStore({
 });
 
 const persistor = persistStore(store);
-//persistor.purge(); // Vide le stockage persistant
+// persistor.purge(); // Vide le stockage persistant
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
 
@@ -176,7 +176,7 @@ export default function App() {
                   name="PlaceScreen"
                   component={PlaceScreen}
                   options={{
-                    title: "PlaceScreen",
+                    title: "Lieu",
                     headerBackTitle: "",
                   }}
                 />

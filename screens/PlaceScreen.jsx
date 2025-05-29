@@ -94,13 +94,42 @@ export default function PlaceScreen({ route }) {
     }
   };
 
+  // Fonction utilitaire qui calcule combien de temps s'est écoulé depuis une date donnée
+  const timeSince = (date) => {
+    // On calcule le nombre total de secondes entre maintenant et la date
+    const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+    // Tableau définissant les intervalles de temps avec leur libellé et leur durée en secondes
+    const intervals = [
+      { label: "an", seconds: 31536000 }, // 1 an = 365 * 24 * 60 * 60
+      { label: "mois", seconds: 2592000 }, // ~30 jours
+      { label: "jour", seconds: 86400 }, // 1 jour
+      { label: "heure", seconds: 3600 }, // 1 heure
+      { label: "minute", seconds: 60 }, // 1 minute
+      { label: "seconde", seconds: 1 }, // 1 seconde
+    ];
+
+    // Boucle sur chaque intervalle, du plus grand au plus petit
+    for (let i = 0; i < intervals.length; i++) {
+      // On divise le nombre total de secondes par l'intervalle actuel pour obtenir le nombre d'unités écoulées
+      const interval = Math.floor(seconds / intervals[i].seconds);
+      // Dès qu'on trouve un intervalle où au moins une unité s'est écoulée, on retourne le texte
+      if (interval >= 1) {
+        return `il y a ${interval} ${
+          interval > 1 ? intervals[i].label + "s" : intervals[i].label
+        }`;
+      }
+    }
+    // Si moins d'une seconde s'est écoulée, on affiche "à l'instant"
+    return "à l'instant";
+  };
+
   return (
     <View style={styles.container}>
       <KeyboardAvoidingView
         style={styles.logContent}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
-        <Text style={styles.title}>Commentaires du lieu</Text>
+        <Text style={styles.title}>Commentaires</Text>
 
         {/* Affichage de la photo si elle est disponible */}
         {picture && (
@@ -137,13 +166,14 @@ export default function PlaceScreen({ route }) {
                   {comment.userId.firstname}
                   {comment.userId.lastname?.charAt(0)}.
                 </Text>
+                <Text style={styles.timeAgo}>
+                  {timeSince(comment.createdAt)}
+                </Text>
                 <Text style={{ fontSize: 16 }}>{comment.comment}</Text>
               </View>
             ))
           ) : (
-            <Text style={{ fontSize: 16, textAlign: "center", marginTop: 10 }}>
-              Aucun commentaire pour ce lieu.
-            </Text>
+            <Text>Aucun commentaire pour ce lieu.</Text>
           )}
         </ScrollView>
       </KeyboardAvoidingView>
