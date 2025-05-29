@@ -47,15 +47,15 @@ export default function FavorisScreen({ navigation }) {
         });
         const data = await response.json();
         if (data.result) {
-          dispatch(setFavorites(data.favorites));
+          dispatch(setFavorites(data.favorites)); // Met à jour le store Redux avec les favoris récupérés
         }
       } catch (error) {
         console.error("Erreur lors de la récupération des favoris:", error);
       }
     };
-
+    // Vérifie si le token existe et si oui, récupère les favoris depuis l'API
     if (token) {
-      fetchFavorites();
+      fetchFavorites(); 
     }
   }, [token]);
 
@@ -143,18 +143,19 @@ export default function FavorisScreen({ navigation }) {
       console.error("Erreur lors de la suppression du favori:", error);
     }
   };
-
+  // Ouvre le modal de modification pour un favori existant
   const openEditModal = (favorite) => {
     setEditingFavorite(favorite);
     setAddressName(favorite.name);
     setAddress(favorite.address);
     setEditModalVisible(true);
   };
-
+  // Ferme le clavier lorsque l'utilisateur appuie sur "Done"
   const handleSubmitEditing = () => {
     Keyboard.dismiss();
   };
 
+  // Démarre la navigation vers la carte avec l'adresse du favori
   const handleStartNavigation = (favorite) => {
     dispatch(
       setSearchAddress({
