@@ -176,7 +176,7 @@ export default function App() {
                   name="PlaceScreen"
                   component={PlaceScreen}
                   options={{
-                    title: "PlaceScreen",
+                    title: "Lieu",
                     headerBackTitle: "",
                   }}
                 />
