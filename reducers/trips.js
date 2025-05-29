@@ -9,6 +9,7 @@ const initialState = {
   coords: { routeCoords: [] },
   selectedTransport: null,
   recentSearch: [],
+  searchAddress: null,
 };
 
 export const tripSlice = createSlice({
@@ -41,25 +42,27 @@ export const tripSlice = createSlice({
     },
     recentSearch: (state, action) => {
       // Vérifie si recentSearch n'est pas un tableau (ex : s'il est null ou undefined)
-      // Si ce n’est pas un tableau, on l’initialise à un tableau vide pour éviter les erreurs plus bas
+      // Si ce n'est pas un tableau, on l'initialise à un tableau vide pour éviter les erreurs plus bas
       if (!Array.isArray(state.recentSearch)) {
         state.recentSearch = []; //  garantit que recentSearch est bien un tableau
       }
 
       // Vérifie si la recherche à ajouter existe déjà dans le tableau recentSearch
-      // On compare à la fois la ville d'arrivée (arrival) et les coordonnées de départ (departure)
-      const alreadyExists = state.recentSearch.some(
-        (item) =>
-          item.arrival === action.payload.arrival &&
-          item.departure === action.payload.departure
+      const existingIndex = state.recentSearch.findIndex(
+        (item) => item.arrival === action.payload.arrival
       );
 
-      // Si la recherche n'existe pas déjà, on l'ajoute au tableau des recherches récentes
-      if (!alreadyExists) {
+      if (existingIndex !== -1) {
+        // Si l'adresse existe déjà, on la met à jour à sa position actuelle
+        state.recentSearch[existingIndex] = action.payload;
+      } else {
+        // Si la recherche n'existe pas déjà, on l'ajoute au tableau des recherches récentes
         state.recentSearch.push(action.payload);
       }
     },
-    
+    setSearchAddress: (state, action) => {
+      state.searchAddress = action.payload;
+    },
   },
 });
 
@@ -73,5 +76,6 @@ export const {
   resetTripInfos,
   recentSearch,
   suppRecentSearch,
+  setSearchAddress,
 } = tripSlice.actions;
 export default tripSlice.reducer;

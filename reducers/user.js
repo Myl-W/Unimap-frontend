@@ -6,6 +6,7 @@ const initialState = {
     places: [],
     homeAddress: null,
     workAddress: null,
+    favorites: [],
   },
   profile: {
     profilePhoto: "",
@@ -42,6 +43,7 @@ export const userSlice = createSlice({
         places: [],
         homeAddress: null,
         workAddress: null,
+        favorites: [],
       };
     },
     userInfos: (state, action) => {
@@ -67,6 +69,24 @@ export const userSlice = createSlice({
     updateUser: (state, action) => {
       state.profile = action.payload;
     },
+    setFavorites: (state, action) => {
+      state.value.favorites = action.payload;
+    },
+    addFavorite: (state, action) => {
+      state.value.favorites.push(action.payload); 
+    },
+    updateFavorite: (state, action) => {
+      const { id, updatedFavorite } = action.payload;
+      const index = state.value.favorites.findIndex((fav) => fav._id === id);
+      if (index !== -1) {
+        state.value.favorites[index] = updatedFavorite;
+      }
+    },
+    deleteFavorite: (state, action) => {
+      state.value.favorites = state.value.favorites.filter(
+        (fav) => fav._id !== action.payload
+      );
+    },
   },
 });
 
@@ -80,5 +100,9 @@ export const {
   setWorkAddress,
   addProfilePhoto,
   updateUser,
+  setFavorites,
+  addFavorite,
+  updateFavorite,
+  deleteFavorite,
 } = userSlice.actions;
 export default userSlice.reducer;
