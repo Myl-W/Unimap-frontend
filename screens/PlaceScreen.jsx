@@ -12,12 +12,14 @@ import {
 import Constants from "expo-constants";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import Picture from "../components/modals/picture";
 
 export default function PlaceScreen({ route }) {
   const [newComment, setNewComment] = useState("");
   const [commentList, setCommentList] = useState([]);
   const [picture, setPicture] = useState(null); // Photo du lieu
   const [placeId, setPlaceId] = useState(null); // ID du lieu
+  const [showModal, setShowModal] = useState(false);
 
   const BACK_URL = Constants.expoConfig?.extra?.BACK_URL;
   const token = useSelector((state) => state.user.profile.token);
@@ -123,6 +125,14 @@ export default function PlaceScreen({ route }) {
     return "à l'instant";
   };
 
+  // ------ Fonction pour afficher / fermer la modal ------
+  const handlePressModal = () => {
+    setShowModal(true);
+  };
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
+
   return (
     <View style={styles.container}>
       <KeyboardAvoidingView
@@ -133,16 +143,18 @@ export default function PlaceScreen({ route }) {
 
         {/* Affichage de la photo si elle est disponible */}
         {picture && (
-          <Image
-            source={{ uri: picture }}
-            style={{
-              width: 300,
-              height: 260,
-              borderRadius: 20,
-              marginBottom: 20,
-            }}
-            resizeMode="cover"
-          />
+          <TouchableOpacity onPress={handlePressModal} activeOpacity={0.8}>
+            <Image
+              source={{ uri: picture }}
+              style={{
+                width: 300,
+                height: 300,
+                borderRadius: 20,
+                marginBottom: 20,
+              }}
+              resizeMode="cover"
+            />
+          </TouchableOpacity>
         )}
 
         <TextInput
@@ -175,9 +187,17 @@ export default function PlaceScreen({ route }) {
               </View>
             ))
           ) : (
-            <Text>Aucun commentaire pour ce lieu.</Text>
+            <Text style={{ fontSize: 16, textAlign: "center", marginTop: 10 }}>
+              Aucun commentaire pour ce lieu.
+            </Text>
           )}
         </ScrollView>
+        {/* --------- Modal pour l'affichage de l'image en grand  -------- */}
+        <Picture
+          visible={showModal}
+          onClose={handleCloseModal}
+          picture={picture}
+        />
       </KeyboardAvoidingView>
     </View>
   );
