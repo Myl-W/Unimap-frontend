@@ -100,7 +100,7 @@ export default function AddSignalement({ navigation, route }) {
 // Définition des styles utilisés plus haut dans le composant
 const styles = StyleSheet.create({
   container: {
-    flex: 1, // Prend tout l’espace disponible
+    flex: 1,
     backgroundColor: "white",
   },
   logContent: {
@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
   photoDisplayed: {
     width: 300,
     height: 300,
-    resizeMode: "cover", // Recouvre entièrement l’espace sans déformer
+    resizeMode: "cover",
     borderRadius: 10,
   },
   commentInput: {

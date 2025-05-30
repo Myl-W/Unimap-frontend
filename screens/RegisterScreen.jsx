@@ -20,16 +20,15 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import Popup from "../components/modals/popup";
 
 export default function RegisterScreen({ navigation }) {
-  const BACK_URL = Constants.expoConfig?.extra?.BACK_URL; // URL backend récupérée depuis les variables d'environnement
+  const BACK_URL = Constants.expoConfig?.extra?.BACK_URL;
   const dispatch = useDispatch();
 
   const [showModal, setShowModal] = useState(false);
-  // États pour stocker les informations saisies par l'utilisateur
   const [firstname, setFirstname] = useState("");
   const [lastname, setLastname] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [date, setDate] = useState(new Date()); // Date de naissance par défaut = aujourd'hui
+  const [date, setDate] = useState(new Date());
   const [show, setShow] = useState(false); // Contrôle d'affichage du date picker
   const [isPasswordVisible, setIsPasswordVisible] = useState(false); // État pour la visibilité du mot de passe
 
@@ -99,7 +98,7 @@ export default function RegisterScreen({ navigation }) {
           try {
             // Sauvegarde du token en local avec la même clé que dans LoginScreen
             await AsyncStorage.setItem("userToken", data.token);
-            // Navigation vers la page de carte après inscription
+
             navigation.navigate("Map");
           } catch (error) {
             console.error("Erreur en sauvegardant le token:", error);
@@ -181,7 +180,7 @@ export default function RegisterScreen({ navigation }) {
               display="default"
               onChange={onChange}
               onPress={() => setShow(true)}
-              maximumDate={new Date()} // Empêche de choisir une date future
+              maximumDate={new Date()}
               locale="fr-FR"
             />
           </View>

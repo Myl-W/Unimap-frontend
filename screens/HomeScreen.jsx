@@ -30,10 +30,8 @@ export default function HomeScreen({ navigation }) {
   useEffect(() => {
     // Fonction pour gérer les permissions de localisation et suivre la position
     const getLocationPermission = async () => {
-      // Demande d'autorisation pour accéder à la localisation
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status === "granted") {
-        // Si la permission est accordée, on démarre la surveillance de la position
         Location.watchPositionAsync(
           { distanceInterval: 10 }, // Rafraîchit la position tous les 10 mètres parcourus
           (location) => {
@@ -45,18 +43,18 @@ export default function HomeScreen({ navigation }) {
       }
     };
 
-    getLocationPermission(); // Appel de la fonction lors du montage du composant
-  }, []); // Le tableau vide garantit que l'effet ne s'exécute qu'une seule fois (au montage)
+    getLocationPermission();
+  }, []);
 
   return (
     <View style={styles.container}>
       <MapView
-        mapType="normal" // Type de carte affichée (ici carte classique)
+        mapType="normal"
         style={StyleSheet.absoluteFillObject} // Étend la carte sur toute la surface du parent
-        scrollEnabled={false} // Désactive le déplacement manuel de la carte
-        zoomEnabled={false} // Désactive le zoom (par pincement)
-        rotateEnabled={false} // Empêche l'utilisateur de faire pivoter la carte
-        pitchEnabled={false} // Empêche l'inclinaison 3D de la carte
+        scrollEnabled={false}
+        zoomEnabled={false}
+        rotateEnabled={false}
+        pitchEnabled={false}
       />
 
       <KeyboardAvoidingView
@@ -88,8 +86,7 @@ export default function HomeScreen({ navigation }) {
         </TouchableOpacity>
 
         {/* Lien pour accéder à la carte sans compte */}
-        <TouchableOpacity
-          onPress={() => navigation.navigate("Map")}>
+        <TouchableOpacity onPress={() => navigation.navigate("Map")}>
           <Text style={styles.textInscription}>
             Continuer en tant qu'invitée
           </Text>
@@ -101,7 +98,7 @@ export default function HomeScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1, // Prend tout l'espace disponible
+    flex: 1,
   },
   logContent: {
     position: "absolute",
@@ -118,9 +115,9 @@ const styles = StyleSheet.create({
     fontSize: 34,
     fontWeight: "650",
     color: "black",
-    textShadowColor: "grey", // Ombre de texte grise
-    textShadowOffset: { width: 1, height: 1 }, // Décalage de l'ombre
-    textShadowRadius: 2, // Flou de l'ombre
+    textShadowColor: "grey",
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
     marginTop: 20,
   },
   button: {
@@ -151,6 +148,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     width: 250,
     height: 250,
-    resizeMode: "contain", // Garde les proportions de l'image
+    resizeMode: "contain",
   },
 });

@@ -1,13 +1,6 @@
-// Import des hooks Redux pour accéder au store et dispatcher des actions
 import { useDispatch, useSelector } from "react-redux";
-
-// Composant natif pour afficher des alertes système
 import { Alert } from "react-native";
-
-// Stockage asynchrone local pour stocker/effacer le token utilisateur
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
-// Action pour réinitialiser les données utilisateur dans le store Redux
 import { addProfilePhoto, resetUser, updateUser } from "../reducers/user";
 
 // Composants natifs pour la mise en page
@@ -21,8 +14,6 @@ import {
   Modal,
   TextInput,
 } from "react-native";
-
-// Icônes FontAwesome
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 
 // Import des fonctionnalités de gestion d'image (galerie et appareil photo)
@@ -336,7 +327,7 @@ export default function ParametreScreen({ navigation }) {
       if (result.result) {
         // Si la suppression est réussie
         await AsyncStorage.removeItem("userToken"); // Supprime le token stocké localement
-        dispatch(resetUser()); // Réinitialise l'état utilisateur dans Redux
+        dispatch(resetUser());
         navigation.reset({
           index: 0,
           routes: [{ name: "Login" }], // Redirige vers l'écran Login

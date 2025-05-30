@@ -11,7 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 
 export default function CompteScreen({ navigation }) {
-  const dispatch = useDispatch(); // Hook pour dispatcher des actions Redux
+  const dispatch = useDispatch();
 
   // -------- Récupération des informations de l'utilisateur depuis le reducer Redux ------------
   const userInfo = useSelector((state) => state.user.profile);
@@ -22,7 +22,7 @@ export default function CompteScreen({ navigation }) {
   const formattedDate = dateObj.toLocaleDateString("fr-FR");
 
   // --------- Calcul de l'âge de l'utilisateur à partir de sa date de naissance ---------
-  const today = new Date(); // Date actuelle
+  const today = new Date();
   let age = today.getFullYear() - dateObj.getFullYear(); // Différence en années
   const monthDiff = today.getMonth() - dateObj.getMonth(); // Différence en mois
   const dayDiff = today.getDate() - dateObj.getDate(); // Différence en jours
@@ -61,7 +61,7 @@ export default function CompteScreen({ navigation }) {
               {userPhoto ? (
                 <Image
                   source={{ uri: userPhoto }}
-                  style={{ width: '100%', height: '100%', borderRadius: 8 }}
+                  style={{ width: "100%", height: "100%", borderRadius: 8 }}
                   accessibilityLabel="Photo d'identité"
                   accessibilityRole="Image"
                 />

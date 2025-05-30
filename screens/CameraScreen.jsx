@@ -18,8 +18,6 @@ export default function CameraScreen() {
   const dispatch = useDispatch();
   // Vérifie si l'écran est actuellement visible
   const isFocused = useIsFocused();
-
-  // Permet de naviguer entre les écrans
   const navigation = useNavigation();
 
   /// Récupère le token utilisateur

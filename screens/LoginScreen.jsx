@@ -34,22 +34,20 @@ export default function LoginScreen({ navigation }) {
       body: JSON.stringify({
         //  ------- Envoi email et password dans le body de la requete  --------
 
-        email: email.trim().toLowerCase(), // -----  Format sans espaces et en minuscule ------
+        email: email.trim().toLowerCase(),
         password: password.trim(),
       }),
     })
       .then((response) => response.json())
       .then(async (data) => {
-        //  ------  Dispatch des infos reçu vers le reducer -------
         dispatch(userInfos(data));
         dispatch(addProfilePhoto(data.profilePhoto));
 
         if (data.result && data.token) {
-          //  ------  Si il y a data et token -------
           console.log("Token reçu:", data.token);
           try {
             await AsyncStorage.setItem("userToken", data.token); //  ------Enregistrement du token -----------
-            navigation.navigate("Map"); //  ----- Navigation vers MapScreen ----------
+            navigation.navigate("Map");
           } catch (error) {
             console.error("Erreur en sauvegardant le token:", error);
             alert("Erreur lors de la sauvegarde du token.");
