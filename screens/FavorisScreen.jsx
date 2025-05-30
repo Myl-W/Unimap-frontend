@@ -33,7 +33,7 @@ export default function FavorisScreen({ navigation }) {
   const favorites = useSelector((state) => state.user.value.favorites) || [];
   const dispatch = useDispatch();
   const BACK_URL = Constants.expoConfig?.extra?.BACK_URL;
-  const google = process.env.EXPO_PUBLIC_API_GOOGLE;
+  const google = Constants.expoConfig?.extra?.API_GOOGLE;
   const loc = useSelector((state) => state.trips.value);
   const transport = useSelector((state) => state.trips.selectedTransport);
 
@@ -55,13 +55,15 @@ export default function FavorisScreen({ navigation }) {
     };
     // Vérifie si le token existe et si oui, récupère les favoris depuis l'API
     if (token) {
-      fetchFavorites(); 
+      fetchFavorites();
     }
   }, [token]);
 
   const handleAddFavorite = async () => {
     try {
-      const res = await fetch(`https://maps.googleapis.com/maps/api/directions/json?origin=${loc.latitude},${loc.longitude}&destination=${address}&mode=${transport}&key=${google}`)
+      const res = await fetch(
+        `https://maps.googleapis.com/maps/api/directions/json?origin=${loc.latitude},${loc.longitude}&destination=${address}&mode=${transport}&key=${google}`
+      );
       const data1 = await res.json();
       const arrival = data1.routes[0].legs[0].end_address;
 

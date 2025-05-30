@@ -27,7 +27,17 @@ export default {
       favicon: "./assets/favicon.png",
     },
     extra: {
+      eas: {
+        projectId: "9f172688-1684-4e38-8ec6-2c0f064a48bd",
+      },
       BACK_URL: process.env.BACK_URL,
+      API_GOOGLE: process.env.API_GOOGLE,
+    },
+    updates: {
+      url: "https://u.expo.dev/9f172688-1684-4e38-8ec6-2c0f064a48bd",
+    },
+    runtimeVersion: {
+      policy: "appVersion",
     },
   },
 };

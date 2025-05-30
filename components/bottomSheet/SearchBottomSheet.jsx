@@ -42,7 +42,7 @@ const SearchBottomSheet = forwardRef(({ handleSheetSearch }, ref) => {
   const workAddress = useSelector((state) => state.user.value.workAddress);
 
   // Varibales d'environnement
-  const google = process.env.EXPO_PUBLIC_API_GOOGLE;
+  const google = Constants.expoConfig?.extra?.API_GOOGLE;
   const BACK_URL = Constants.expoConfig?.extra?.BACK_URL;
 
   // State pour la recherche d'adresse
