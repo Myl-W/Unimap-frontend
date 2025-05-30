@@ -5,18 +5,16 @@ const initialState = {
   aveugle: false,
   fauteuil: false,
   canne: false,
+  malentendant: false,
+  autisme: false,
   poussette: false,
   alerte: false,
   pied: false,
   voiture: false,
   malvoyant: false,
   moto: false,
-  malentendant: false,
   velo: false,
   bus: false,
-  autisme: false,
-  cane: false,
-  autres2: false,
 };
 
 const accessibilitySlice = createSlice({
@@ -40,7 +38,7 @@ const accessibilitySlice = createSlice({
     toggleMultiple: (state, action) => {
       const keys = action.payload;
 
-        // Vérifie s'il y a au moins une case à cocher qui n'est pas activée
+      // Vérifie s'il y a au moins une case à cocher qui n'est pas activée
       const shouldEnable = keys.some((key) => !state[key]);
       // Si au moins une case n'est pas activée, on active toutes les cases
       // Sinon, on désactive toutes les cases

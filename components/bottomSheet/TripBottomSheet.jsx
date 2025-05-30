@@ -13,7 +13,7 @@ function parseDurationToMinutes(durationStr) {
   // Cherche le nombre de minutes dans la chaîne grâce à des expressions régulières (mMatch).
   const mMatch = durationStr.match(/(\d+)\s*min/);
   // Si hMatch ou mMatch existent, on les convertit en entiers.
-  // Si elle trouve des heures, elle les convertit en minutes (heures * 60) et les ajoute au total. 
+  // Si elle trouve des heures, elle les convertit en minutes (heures * 60) et les ajoute au total.
   // "10" signifie qu’on convertit en base décimale (donc un nombre classique, pas en binaire, octal, etc.).
   if (hMatch) total += parseInt(hMatch[1], 10) * 60;
   // Si elle trouve des minutes, elle les ajoute directement au total.
@@ -36,13 +36,13 @@ function formatDuration(durationStr) {
   // 10 signifie qu’on convertit en base décimale (donc un nombre classique, pas en binaire, octal, etc.).
   if (hMatch) hours = parseInt(hMatch[1], 10);
   if (mMatch) minutes = parseInt(mMatch[1], 10);
-  // Si le nombre d'heures est égal à 0, on affiche le nombre de minutes. 
+  // Si le nombre d'heures est égal à 0, on affiche le nombre de minutes.
   // Sinon, on affiche le format "H:MMh".
   if (hours === 0) {
     return `${minutes} min`;
   } else {
-  //Convertit les minutes en chaîne de caractères.
-  // 'padStart' -- Ajoute un zéro devant si besoin pour toujours avoir deux chiffres (ex : 5 devient "05").
+    //Convertit les minutes en chaîne de caractères.
+    // 'padStart' -- Ajoute un zéro devant si besoin pour toujours avoir deux chiffres (ex : 5 devient "05").
     return `${hours}:${minutes.toString().padStart(2, "0")}h`;
   }
 }
@@ -50,20 +50,19 @@ function formatDuration(durationStr) {
 const TripBottomSheet = ({ isRouteActive, onStopTrip }) => {
   const bottomSheetRef = useRef(null);
   const navigation = useNavigation();
-  const snapPoints = useMemo(() => ["15%", "15%"], []); // Definie la taille d'ouverture du BottomSheet
+  const snapPoints = useMemo(() => ["15%", "15%"], []); // useMemo pour éviter de recréer le tableau à chaque rendu
   const tripinfos = useSelector((state) => state.trips.value.tripInfos);
-  
 
   // ------------- Calcul de l'heure d'arrivée ------------
-  let arrivalTimeStr = "";  // Variable qui contiendra l'heure d'arrivée formatée
+  let arrivalTimeStr = ""; // Variable qui contiendra l'heure d'arrivée formatée
   // Si tripinfos existe et contient une durée, on calcule l'heure d'arrivée
   if (tripinfos && tripinfos.duration) {
     // Récupère la date et l'heure actuelles
-    const now = new Date(); 
+    const now = new Date();
     // On convertit la durée en minutes
     const durationMinutes = parseDurationToMinutes(tripinfos.duration);
     // On ajoute la durée au temps actuel pour obtenir l'heure d'arrivée
-    // getTime() renvoie le temps en millisecondes 
+    // getTime() renvoie le temps en millisecondes
     // On multiplie la durée en minutes par 60000 pour la convertir en millisecondes
     const arrival = new Date(now.getTime() + durationMinutes * 60000);
     // Récupère les heures d'arrivée
@@ -92,10 +91,9 @@ const TripBottomSheet = ({ isRouteActive, onStopTrip }) => {
       // Cette ligne demande à la BottomSheet de se positionner à l’index 0 de ses snapPoints
       bottomSheetRef.current?.snapToIndex(0); // 20%
     } else {
-      bottomSheetRef.current?.dismiss();
+      bottomSheetRef.current?.dismiss(); // Ferme la BottomSheet si le trajet n'est plus actif
     }
   }, [isRouteActive]);
-
 
   return (
     <BottomSheetModal
@@ -129,9 +127,9 @@ const TripBottomSheet = ({ isRouteActive, onStopTrip }) => {
         </View>
       </BottomSheetView>
       <View style={styles.buttonRow}>
-          <TouchableOpacity style={styles.stopTrip} onPress={onStopTrip}>
-            <Text style={styles.stopButtonText}>Arrêt</Text>
-          </TouchableOpacity>
+        <TouchableOpacity style={styles.stopTrip} onPress={onStopTrip}>
+          <Text style={styles.stopButtonText}>Arrêt</Text>
+        </TouchableOpacity>
       </View>
     </BottomSheetModal>
   );

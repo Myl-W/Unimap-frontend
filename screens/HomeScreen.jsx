@@ -84,13 +84,6 @@ export default function HomeScreen({ navigation }) {
         >
           <Text style={styles.textButton}>S'inscrire</Text>
         </TouchableOpacity>
-
-        {/* Lien pour accéder à la carte sans compte */}
-        <TouchableOpacity onPress={() => navigation.navigate("Map")}>
-          <Text style={styles.textInscription}>
-            Continuer en tant qu'invitée
-          </Text>
-        </TouchableOpacity>
       </KeyboardAvoidingView>
     </View>
   );
@@ -134,14 +127,6 @@ const styles = StyleSheet.create({
     color: "black",
     fontWeight: "600",
     fontSize: 18,
-  },
-  textInscription: {
-    width: "100%",
-    textAlign: "left",
-    marginLeft: 30,
-    marginTop: 20,
-    fontSize: 15,
-    color: "#B6DCFD",
   },
   image: {
     marginTop: 30,

@@ -1,40 +1,25 @@
 import { forwardRef } from "react";
 import { TouchableOpacity, View, StyleSheet, Text } from "react-native";
+// BottomSheet
 import {
-  BottomSheetModal,
-  BottomSheetView,
-  BottomSheetBackdrop,
+  BottomSheetModal, // Composant principal du BottomSheet
+  BottomSheetView, // Vue principale du BottomSheet
+  BottomSheetBackdrop, // Composant de fond sombre du BottomSheet
 } from "@gorhom/bottom-sheet";
+// Icons
 import { MaterialIcons, FontAwesome } from "@expo/vector-icons";
+// Redux
 import { useDispatch, useSelector } from "react-redux";
 import { toggleHandicap, toggleMultiple } from "../../reducers/accessibility";
 import { setTransport, resetTransport } from "../../reducers/trips";
 
 // forwardRef permet de passer une référence à un composant enfant
 const FilterBottomSheet = forwardRef(({ handleSheetFilters }, ref) => {
-  const transport = useSelector((state) => state.trips.selectedTransport);
-
   const snapPoints = ["50%", "75%"]; // Definie la taille d'ouverture du BottomSheet
 
+  // Reducers pour les handicaps et les transports
+  const transport = useSelector((state) => state.trips.selectedTransport);
   const dispatch = useDispatch();
-
-  const handicapKeys = [
-    "sourd",
-    "aveugle",
-    "fauteuil",
-    "canne",
-    "malvoyant",
-    "malentendant",
-    "autisme",
-  ];
-
-  const transportKeys = [
-    "walking",
-    "driving",
-    "two_wheeler",
-    "bicycling",
-    "transit",
-  ];
 
   const handleToggleHandicaps = () => {
     dispatch(toggleMultiple(handicapKeys));
@@ -57,7 +42,26 @@ const FilterBottomSheet = forwardRef(({ handleSheetFilters }, ref) => {
     }
   };
 
-  //  ---------- RECUPERATION BOOLEAN DU REDUCER ----------------
+  // Checkbox keys for handicaps and transports
+  const handicapKeys = [
+    "sourd",
+    "aveugle",
+    "fauteuil",
+    "canne",
+    "malvoyant",
+    "malentendant",
+    "autisme",
+  ];
+
+  const transportKeys = [
+    "walking",
+    "driving",
+    "two_wheeler",
+    "bicycling",
+    "transit",
+  ];
+
+  //  ---------- RECUPERATION BOOLEAN DES FILTRES DU REDUCER ----------------
 
   const accessibility = useSelector((state) => state.accessibility);
 
@@ -69,7 +73,9 @@ const FilterBottomSheet = forwardRef(({ handleSheetFilters }, ref) => {
       onChange={handleSheetFilters}
       snapPoints={snapPoints}
       enableDismissOnClose={true} // Permet de fermer le BottomSheet en cliquant en dehors
-      backdropComponent={(backdropProps) => ( // Composant de fond sombre
+      backdropComponent={(
+        backdropProps // Composant de fond sombre
+      ) => (
         <BottomSheetBackdrop
           {...backdropProps} // Permet de faire apparaitre le fond sombre
           appearsOnIndex={0} // Rend le fond sombre visible
@@ -83,14 +89,14 @@ const FilterBottomSheet = forwardRef(({ handleSheetFilters }, ref) => {
         style={styles.contentContainer}
         accessible={true}
         accessibilityViewIsModal={true}
-        accessibilityLabel="Menu des options de signalement"
+        accessibilityLabel="Menu des options de signalement" // Annonce vocale pour les utilisateurs de lecteurs d'écran
       >
         <View style={styles.buttonRow}>
           <TouchableOpacity
             style={styles.optionButton}
             onPress={handleToggleHandicaps}
             accessibilityLabel="Sélectionner tous les handicaps"
-            accessibilityRole="button"
+            accessibilityRole="button" // Expliquer le rôle cliquable pour les lecteurs d'écran
           >
             <View style={styles.optionButtonContent}>
               <FontAwesome name="wheelchair" size={24} color="black" />

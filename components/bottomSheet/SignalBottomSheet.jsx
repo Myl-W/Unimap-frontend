@@ -36,7 +36,6 @@ const SignalBottomSheet = forwardRef(({ handleSheetSignal, placeId }, ref) => {
     dispatch(signalColor(key)); // envoyé vers le reducer la couleur du signalement cliqué
     ref?.current?.close();
     navigation.navigate("Signalement", { placeId: placeId });
-    console.log("id de signalbottomsheet", placeId);
   };
 
   return (
@@ -60,6 +59,7 @@ const SignalBottomSheet = forwardRef(({ handleSheetSignal, placeId }, ref) => {
           <View key={idx} style={styles.buttonRow}>
             {row.map((item) => (
               <View key={item.key} style={item.style}>
+                {/* Tout les boutons sont accessibles et cliquables */}
                 <TouchableOpacity
                   style={
                     item.key === "alerte"
@@ -71,15 +71,7 @@ const SignalBottomSheet = forwardRef(({ handleSheetSignal, placeId }, ref) => {
                   accessibilityLabel={item.label}
                   accessibilityRole="button"
                 >
-                  <View
-                    style={
-                      item.key === "alerte"
-                        ? styles.optionButtonContentAlert
-                        : styles.optionButtonContent
-                    }
-                  >
-                    {item.icon}
-                  </View>
+                  <View>{item.icon}</View>
                 </TouchableOpacity>
               </View>
             ))}
